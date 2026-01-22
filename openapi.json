@@ -2,12 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "Cyrisma Partner API",
-    "description": `CYRISMA’s next-generation API will assist organizations that use the CYRISMA risk management platform to further automate and enhance overall risk management. 
-
-The API provides provisioning and reporting features meaning that deployments can be automated and scan data can be retrieved for further aggregation and reporting. The API will enable the setup of new partners and instances, review of partner and instance status and utilization, and management of partners through their lifecycle. 
-
-Access to CYRISMA risk management is based on a foundation of secure API access token authentication and identity management.
-`,
+    "description": "CYRISMA’s next-generation API will assist organizations that use the CYRISMA risk management platform to further automate and enhance overall risk management. The API provides provisioning and reporting features meaning that deployments can be automated and scan data can be retrieved for further aggregation and reporting. The API will enable the setup of new partners and instances, review of partner and instance status and utilization, and management of partners through their lifecycle.  Access to CYRISMA risk management is based on a foundation of secure API access token authentication and identity management.",
     "version": "v1"
   },
   "paths": {
