@@ -23,10 +23,10 @@
           {
             "name": "assetType",
             "in": "query",
-            "description": "    The **assetType** query parameter determines which asset types are returned by the API. \r\n\r\n    When:\r\n    - **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\r\n    - **assetType=external**, the response includes assets with **External – IP Addresses** and **External – Web Application URLs** vulnerabilities.",
+            "description": "The **assetType** query parameter determines which asset types are returned by the API.\n\nWhen:\n- **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\n- **assetType=external**, the response includes assets with **External – IP Addresses** and **External – Web Application URLs** vulnerabilities.",
             "schema": {
               "type": "string",
-              "description": "    The **assetType** query parameter determines which asset types are returned by the API. \r\n\r\n    When:\r\n    - **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\r\n    - **assetType=external**, the response includes assets with **External – IP Addresses** and **External – Web Application URLs** vulnerabilities."
+              "description": "The **assetType** query parameter determines which asset types are returned by the API.\n\nWhen:\n- **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\n- **assetType=external**, the response includes assets with **External – IP Addresses** and **External – Web Application URLs** vulnerabilities."
             }
           }
         ],
