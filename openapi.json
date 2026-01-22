@@ -2,10 +2,217 @@
   "openapi": "3.0.4",
   "info": {
     "title": "Cyrisma Partner API",
-    "description": "Cyrisma partner-facing API.",
+    "description": `CYRISMA’s next-generation API will assist organizations that use the CYRISMA risk management platform to further automate and enhance overall risk management. 
+
+The API provides provisioning and reporting features meaning that deployments can be automated and scan data can be retrieved for further aggregation and reporting. The API will enable the setup of new partners and instances, review of partner and instance status and utilization, and management of partners through their lifecycle. 
+
+Access to CYRISMA risk management is based on a foundation of secure API access token authentication and identity management.
+`,
     "version": "v1"
   },
   "paths": {
+    "/partner/agent/status": {
+      "get": {
+        "tags": [
+          "Agent"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/dashboards/overall": {
+      "get": {
+        "tags": [
+          "Dashboards"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/dashboards/data": {
+      "get": {
+        "tags": [
+          "Dashboards"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/dashboards/vulnerability": {
+      "get": {
+        "tags": [
+          "Dashboards"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/dashboards/baseline": {
+      "get": {
+        "tags": [
+          "Dashboards"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/dashboards/vulnerability/cve": {
+      "get": {
+        "tags": [
+          "Dashboards"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/instances/token-insert": {
+      "post": {
+        "tags": [
+          "Instances"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/plans/mitigation": {
+      "get": {
+        "tags": [
+          "Mitigations"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/plans/mitigation/{mit_id}": {
+      "get": {
+        "tags": [
+          "Mitigations"
+        ],
+        "parameters": [
+          {
+            "name": "mit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/scans/completed": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/scans/data-scans/targets": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/scans/data": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/scans/vulnerability": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/scans/baseline": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/partner/scans/vulnerability/{scanId}": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "parameters": [
+          {
+            "name": "scanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/partner/vulnerability/assets": {
       "get": {
         "tags": [
@@ -186,6 +393,38 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/config/webhook": {
+      "post": {
+        "tags": [
+          "Webhook Configuration"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Webhook Configuration"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Webhook Configuration"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
