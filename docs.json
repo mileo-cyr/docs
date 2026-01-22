@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "CYRISMA Documentation",
+  "name": "Cyrisma Documentation",
   "colors": {
     "primary": "#5941E0",
     "light": "#7B68EE",
