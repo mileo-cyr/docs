@@ -1,21 +1,16 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Cyrisma Partner API",
-    "description": "Cyrisma partner-facing API.",
-    "version": "v1"
-  },
   "paths": {
     "/partner/vulnerability/assets": {
       "get": {
         "tags": ["InstanceAPI"],
-        "summary": "Assets with vulnerabilities",
-        "description": "PARTNER ENDPOINT\n\n- Authorization header is required\n- Header format: access_token {token}",
+        "summary": "List assets with vulnerability counts",
+        "description": "Returns a list of assets and their vulnerability totals (critical/high/medium/low/info), along with basic asset metadata.\n\n**Authentication**: Send an `Authorization` header in the format:\n`access_token {token}`",
         "operationId": "GetAssetsList",
         "parameters": [
           {
             "in": "query",
             "name": "assetType",
+            "description": "Optional filter for the type of asset to include (for example: agent-based, IP-based, webapp). If omitted, all supported asset types are returned.",
             "schema": {
               "type": "string"
             }
@@ -35,29 +30,24 @@
               }
             }
           },
-          "422": {
-            "description": "Unprocessable Entity"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "401": { "description": "Unauthorized" },
+          "422": { "description": "Unprocessable Entity" },
+          "500": { "description": "Internal Server Error" }
         }
       }
     },
+
     "/partner/vulnerability/assets/authenticated": {
       "get": {
         "tags": ["InstanceAPI"],
-        "summary": "Internal Authenticated Vulnerability Asset Details",
-        "description": "PARTNER ENDPOINT\n\n- Authorization header is required\n- Header format: access_token {token}",
+        "summary": "Get internal authenticated scan details for an asset",
+        "description": "Returns vulnerability findings for a single asset based on the **Internal Authenticated** scan type.\n\nUse this endpoint when you already know the asset identifier and want detailed CVE/root-cause information.\n\n**Authentication**: Send an `Authorization` header in the format:\n`access_token {token}`",
         "operationId": "GetInternalAuthenticatedVulnerabilities",
         "parameters": [
           {
             "in": "query",
             "name": "assetId",
-            "description": "Asset Id of Internal Authenticated Vulnerability scan.",
+            "description": "Asset identifier to fetch details for (Internal Authenticated scan).",
             "required": true,
             "schema": {
               "type": "integer",
@@ -79,29 +69,24 @@
               }
             }
           },
-          "422": {
-            "description": "Unprocessable Entity"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "401": { "description": "Unauthorized" },
+          "422": { "description": "Unprocessable Entity" },
+          "500": { "description": "Internal Server Error" }
         }
       }
     },
+
     "/partner/vulnerability/assets/ip": {
       "get": {
         "tags": ["InstanceAPI"],
-        "summary": "Internal Unauthenticated/External - IP Addresses Vulnerability Asset Details",
-        "description": "PARTNER ENDPOINT\n\n- Authorization header is required\n- Header format: access_token {token}",
+        "summary": "Get vulnerability details for an IP address (unauthenticated/external)",
+        "description": "Returns vulnerability findings for a device identified by IP address, based on **Internal Unauthenticated** and/or **External** scanning.\n\nUse this endpoint when you want details for a specific discovered IP.\n\n**Authentication**: Send an `Authorization` header in the format:\n`access_token {token}`",
         "operationId": "GetUnauthenticatedAndExternalVulnerabilities",
         "parameters": [
           {
             "in": "query",
             "name": "assetIp",
-            "description": "Asset Ip of Internal Unauthenticated/External - IP Addresses Vulnerability scan.",
+            "description": "The IPv4/IPv6 address to look up (for example: `192.0.2.10`).",
             "schema": {
               "type": "string"
             }
@@ -118,32 +103,25 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "422": {
-            "description": "Unprocessable Entity"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "400": { "description": "Bad Request" },
+          "401": { "description": "Unauthorized" },
+          "422": { "description": "Unprocessable Entity" },
+          "500": { "description": "Internal Server Error" }
         }
       }
     },
+
     "/partner/vulnerability/assets/webapp": {
       "get": {
         "tags": ["InstanceAPI"],
-        "summary": "External - Web Application URLs Vulnerability Asset Details",
-        "description": "PARTNER ENDPOINT\n\n- Authorization header is required\n- Header format: access_token {token}",
+        "summary": "Get web application scan findings for an asset",
+        "description": "Returns web application vulnerability findings (for example: URL-based issues) for a specific asset.\n\nUse this endpoint to retrieve the findings list and counts for a web application scan.\n\n**Authentication**: Send an `Authorization` header in the format:\n`access_token {token}`",
         "operationId": "GetWebAppFindings",
         "parameters": [
           {
             "in": "query",
             "name": "assetId",
-            "description": "Asset Id of Web Application Vulnerability scan.",
+            "description": "Asset identifier to fetch web application findings for.",
             "required": true,
             "schema": {
               "type": "integer",
@@ -162,211 +140,11 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "422": {
-            "description": "Unprocessable Entity"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "400": { "description": "Bad Request" },
+          "401": { "description": "Unauthorized" },
+          "422": { "description": "Unprocessable Entity" },
+          "500": { "description": "Internal Server Error" }
         }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "AssetList": {
-        "type": "object",
-        "properties": {
-          "TargetId": { "type": "string" },
-          "IP": { "type": "string" },
-          "Icon": { "type": "string" },
-          "ScanId": { "type": "integer", "format": "int32" },
-          "ScanType": { "type": "string", "readOnly": true },
-          "agentIsOnline": { "type": "boolean" },
-          "AssetName": { "type": "string", "readOnly": true },
-          "AssetId": { "type": "string", "readOnly": true },
-          "AssetIp": { "type": "string", "readOnly": true },
-          "OSName": { "type": "string", "readOnly": true },
-          "TotalNumberOfVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "NumberOfCriticalVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "NumberOfHighVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "NumberOfMediumVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "NumberOfLowVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "NumberOfInformationalVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "AssetScore": { "type": "string", "readOnly": true },
-          "HasAgentInstalled": { "type": "boolean", "readOnly": true },
-          "AgentIsOnline": { "type": "boolean", "readOnly": true },
-          "Tags": { "type": "string", "readOnly": true },
-          "FingerPrint": { "type": "string", "readOnly": true },
-          "FinishTime": { "type": "string", "format": "date-time", "readOnly": true }
-        },
-        "additionalProperties": false
-      },
-      "InternalAuthAsset": {
-        "type": "object",
-        "properties": {
-          "AssetScore": { "type": "string", "readOnly": true },
-          "TotalNumberOfVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "NumberOfCriticalVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "NumberOfHighVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "NumberOfMediumVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "NumberOfLowVulnerabilities": { "type": "integer", "format": "int32", "readOnly": true },
-          "AssetName": { "type": "string", "readOnly": true },
-          "AgentName": { "type": "string", "readOnly": true },
-          "LastChecked": { "type": "string", "readOnly": true },
-          "LastScan": { "type": "string", "readOnly": true },
-          "Tags": { "type": "string", "readOnly": true },
-          "RootCauses": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/InternalAuthDetailsRootCause" },
-            "readOnly": true
-          },
-          "CVEs": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/InternalAuthDetailsCVE" }
-          },
-          "OpenPorts": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/InternalAuthDetailsOpenPort" },
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "InternalAuthDetailsCVE": {
-        "type": "object",
-        "properties": {
-          "CveID": { "type": "string", "readOnly": true },
-          "CveTitle": { "type": "string", "readOnly": true },
-          "FirstSeen": { "type": "string", "format": "date-time", "readOnly": true },
-          "Exploitability": {
-            "type": "array",
-            "items": { "type": "string" },
-            "readOnly": true
-          },
-          "Severity": { "type": "string", "readOnly": true },
-          "CVSS": { "type": "number", "format": "double", "readOnly": true },
-          "EPSS": { "type": "number", "format": "double", "readOnly": true },
-          "ScanId": { "type": "integer", "format": "int32", "readOnly": true },
-          "Patchable": { "type": "boolean", "readOnly": true }
-        },
-        "additionalProperties": false
-      },
-      "InternalAuthDetailsOpenPort": {
-        "type": "object",
-        "properties": {
-          "OpenPort": { "type": "string" },
-          "OpenPortName": { "type": "string" },
-          "Protocol": { "type": "string" },
-          "Severity": { "type": "string" }
-        },
-        "additionalProperties": false
-      },
-      "InternalAuthDetailsRootCause": {
-        "type": "object",
-        "properties": {
-          "RootCause": { "type": "string" },
-          "FirstSeen": { "type": "string", "format": "date-time" },
-          "Exploitability": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "HighestCVSS": { "type": "number", "format": "double" },
-          "HighestEPSS": { "type": "number", "format": "double" },
-          "TotalNumberOfVulnerabilities": { "type": "integer", "format": "int32" },
-          "Patchable": { "type": "boolean" },
-          "Id": { "type": "integer", "format": "int32" }
-        },
-        "additionalProperties": false
-      },
-      "PartnerIpVuln": {
-        "type": "object",
-        "properties": {
-          "RiskGrade": { "type": "string" },
-          "TotalCVECount": { "type": "integer", "format": "int32" },
-          "CriticalCount": { "type": "integer", "format": "int32" },
-          "HighCount": { "type": "integer", "format": "int32" },
-          "MediumCount": { "type": "integer", "format": "int32" },
-          "LowCount": { "type": "integer", "format": "int32" },
-          "DeviceFingerprint": { "type": "string" },
-          "MACAddress": { "type": "string" },
-          "MACVendor": { "type": "string" },
-          "SNMPResult": { "type": "string" },
-          "FinishTime": { "type": "string", "format": "date-time" },
-          "CVEs": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/PartnerIpVulnCve" }
-          },
-          "OpenPorts": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/PartnerIpVulnOpenPort" }
-          }
-        },
-        "additionalProperties": false
-      },
-      "PartnerIpVulnCve": {
-        "type": "object",
-        "properties": {
-          "CveID": { "type": "string" },
-          "Title": { "type": "string" },
-          "FirstSeen": { "type": "string", "format": "date-time" },
-          "Exploitability": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "Severity": { "type": "string" },
-          "CVSS": { "type": "number", "format": "double" },
-          "EPSS": { "type": "number", "format": "double" },
-          "ScanId": { "type": "integer", "format": "int32" },
-          "Patchable": { "type": "boolean" }
-        },
-        "additionalProperties": false
-      },
-      "PartnerIpVulnOpenPort": {
-        "type": "object",
-        "properties": {
-          "ScanId": { "type": "integer", "format": "int32" },
-          "PortNumber": { "type": "string" },
-          "PortDescription": { "type": "string" },
-          "RiskLevel": { "type": "string" }
-        },
-        "additionalProperties": false
-      },
-      "PartnerWebAppVuln": {
-        "type": "object",
-        "properties": {
-          "TotalNumberFindings": { "type": "integer", "format": "int32" },
-          "NumberOfHighVulnFindings": { "type": "integer", "format": "int32" },
-          "NumberOfMedVulnFindings": { "type": "integer", "format": "int32" },
-          "NumberOfLowVulnFindings": { "type": "integer", "format": "int32" },
-          "NumberOfInfoVulnFindings": { "type": "integer", "format": "int32" },
-          "RiskGrade": { "type": "string" },
-          "Findings": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/PartnerWebAppVulnFinding" }
-          }
-        },
-        "additionalProperties": false
-      },
-      "PartnerWebAppVulnFinding": {
-        "type": "object",
-        "properties": {
-          "FindingName": { "type": "string" },
-          "FindingDescription": { "type": "string" },
-          "FindingSolution": { "type": "string" },
-          "FindingOther": { "type": "string" },
-          "FindingReferenceURLs": { "type": "string" },
-          "FindingRiskLevelName": { "type": "string" },
-          "FindingsCount": { "type": "integer", "format": "int32" },
-          "FindingDetails": { "type": "string" }
-        },
-        "additionalProperties": false
       }
     }
   }
