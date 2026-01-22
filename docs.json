@@ -58,5 +58,15 @@
     "socials": {
       "linkedin": "https://www.linkedin.com/company/cyrisma/"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/api-reference/getting-started"
+    },
+    {
+      "source": "/index",
+      "destination": "/api-reference/getting-started"
+    }
+  ]
 }
