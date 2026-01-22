@@ -1,4 +1,10 @@
 {
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Cyrisma Partner API",
+    "description": "Cyrisma partner-facing API.",
+    "version": "v1"
+  },
   "paths": {
     "/partner/vulnerability/assets": {
       "get": {
@@ -36,7 +42,6 @@
         }
       }
     },
-
     "/partner/vulnerability/assets/authenticated": {
       "get": {
         "tags": ["InstanceAPI"],
@@ -75,7 +80,6 @@
         }
       }
     },
-
     "/partner/vulnerability/assets/ip": {
       "get": {
         "tags": ["InstanceAPI"],
@@ -110,7 +114,6 @@
         }
       }
     },
-
     "/partner/vulnerability/assets/webapp": {
       "get": {
         "tags": ["InstanceAPI"],
@@ -145,6 +148,264 @@
           "422": { "description": "Unprocessable Entity" },
           "500": { "description": "Internal Server Error" }
         }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssetList": {
+        "type": "object",
+        "properties": {
+          "TargetId": { "type": "string" },
+          "IP": { "type": "string" },
+          "Icon": { "type": "string" },
+          "ScanId": { "type": "integer", "format": "int32" },
+          "ScanType": { "type": "string", "readOnly": true },
+          "agentIsOnline": { "type": "boolean" },
+          "AssetName": { "type": "string", "readOnly": true },
+          "AssetId": { "type": "string", "readOnly": true },
+          "AssetIp": { "type": "string", "readOnly": true },
+          "OSName": { "type": "string", "readOnly": true },
+          "TotalNumberOfVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfCriticalVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfHighVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfMediumVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfLowVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfInformationalVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "AssetScore": { "type": "string", "readOnly": true },
+          "HasAgentInstalled": { "type": "boolean", "readOnly": true },
+          "AgentIsOnline": { "type": "boolean", "readOnly": true },
+          "Tags": { "type": "string", "readOnly": true },
+          "FingerPrint": { "type": "string", "readOnly": true },
+          "FinishTime": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InternalAuthAsset": {
+        "type": "object",
+        "properties": {
+          "AssetScore": { "type": "string", "readOnly": true },
+          "TotalNumberOfVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfCriticalVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfHighVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfMediumVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfLowVulnerabilities": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "AssetName": { "type": "string", "readOnly": true },
+          "AgentName": { "type": "string", "readOnly": true },
+          "LastChecked": { "type": "string", "readOnly": true },
+          "LastScan": { "type": "string", "readOnly": true },
+          "Tags": { "type": "string", "readOnly": true },
+          "RootCauses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalAuthDetailsRootCause"
+            },
+            "readOnly": true
+          },
+          "CVEs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalAuthDetailsCVE"
+            }
+          },
+          "OpenPorts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalAuthDetailsOpenPort"
+            },
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InternalAuthDetailsCVE": {
+        "type": "object",
+        "properties": {
+          "CveID": { "type": "string", "readOnly": true },
+          "CveTitle": { "type": "string", "readOnly": true },
+          "FirstSeen": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "Exploitability": {
+            "type": "array",
+            "items": { "type": "string" },
+            "readOnly": true
+          },
+          "Severity": { "type": "string", "readOnly": true },
+          "CVSS": { "type": "number", "format": "double", "readOnly": true },
+          "EPSS": { "type": "number", "format": "double", "readOnly": true },
+          "ScanId": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "Patchable": { "type": "boolean", "readOnly": true }
+        },
+        "additionalProperties": false
+      },
+      "InternalAuthDetailsOpenPort": {
+        "type": "object",
+        "properties": {
+          "OpenPort": { "type": "string" },
+          "OpenPortName": { "type": "string" },
+          "Protocol": { "type": "string" },
+          "Severity": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "InternalAuthDetailsRootCause": {
+        "type": "object",
+        "properties": {
+          "RootCause": { "type": "string" },
+          "FirstSeen": { "type": "string", "format": "date-time" },
+          "Exploitability": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "HighestCVSS": { "type": "number", "format": "double" },
+          "HighestEPSS": { "type": "number", "format": "double" },
+          "TotalNumberOfVulnerabilities": { "type": "integer", "format": "int32" },
+          "Patchable": { "type": "boolean" },
+          "Id": { "type": "integer", "format": "int32" }
+        },
+        "additionalProperties": false
+      },
+      "PartnerIpVuln": {
+        "type": "object",
+        "properties": {
+          "RiskGrade": { "type": "string" },
+          "TotalCVECount": { "type": "integer", "format": "int32" },
+          "CriticalCount": { "type": "integer", "format": "int32" },
+          "HighCount": { "type": "integer", "format": "int32" },
+          "MediumCount": { "type": "integer", "format": "int32" },
+          "LowCount": { "type": "integer", "format": "int32" },
+          "DeviceFingerprint": { "type": "string" },
+          "MACAddress": { "type": "string" },
+          "MACVendor": { "type": "string" },
+          "SNMPResult": { "type": "string" },
+          "FinishTime": { "type": "string", "format": "date-time" },
+          "CVEs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PartnerIpVulnCve" }
+          },
+          "OpenPorts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerIpVulnOpenPort"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "PartnerIpVulnCve": {
+        "type": "object",
+        "properties": {
+          "CveID": { "type": "string" },
+          "Title": { "type": "string" },
+          "FirstSeen": { "type": "string", "format": "date-time" },
+          "Exploitability": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "Severity": { "type": "string" },
+          "CVSS": { "type": "number", "format": "double" },
+          "EPSS": { "type": "number", "format": "double" },
+          "ScanId": { "type": "integer", "format": "int32" },
+          "Patchable": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      },
+      "PartnerIpVulnOpenPort": {
+        "type": "object",
+        "properties": {
+          "ScanId": { "type": "integer", "format": "int32" },
+          "PortNumber": { "type": "string" },
+          "PortDescription": { "type": "string" },
+          "RiskLevel": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "PartnerWebAppVuln": {
+        "type": "object",
+        "properties": {
+          "TotalNumberFindings": { "type": "integer", "format": "int32" },
+          "NumberOfHighVulnFindings": { "type": "integer", "format": "int32" },
+          "NumberOfMedVulnFindings": { "type": "integer", "format": "int32" },
+          "NumberOfLowVulnFindings": { "type": "integer", "format": "int32" },
+          "NumberOfInfoVulnFindings": { "type": "integer", "format": "int32" },
+          "RiskGrade": { "type": "string" },
+          "Findings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerWebAppVulnFinding"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "PartnerWebAppVulnFinding": {
+        "type": "object",
+        "properties": {
+          "FindingName": { "type": "string" },
+          "FindingDescription": { "type": "string" },
+          "FindingSolution": { "type": "string" },
+          "FindingOther": { "type": "string" },
+          "FindingReferenceURLs": { "type": "string" },
+          "FindingRiskLevelName": { "type": "string" },
+          "FindingsCount": { "type": "integer", "format": "int32" },
+          "FindingDetails": { "type": "string" }
+        },
+        "additionalProperties": false
       }
     }
   }
