@@ -1,0 +1,139 @@
+---
+title: "Authentication"
+description: "Learn how to authenticate with the CYRISMA Partner API"
+---
+
+This section covers API authentication and provisioning CYRISMA instances and users.
+
+## API Credentials
+
+Obtain your API Key and **temporary** Secret directly from CYRISMA Support.
+
+| Credential | Example Value |
+|------------|---------------|
+| API Key (Username) | `407cc078-46c7-11ed-8e42-000d3a3ba598` |
+| API Secret (Password) | `ZjNkMjg4MTdlOTA2Y2UyYzcyNDAzYzk5ZWNlMTFkOGQ` |
+
+<Warning>
+  Always connect to the API service using SSL only, as any other connection type will be ignored or rejected.
+</Warning>
+
+## Login and Obtain Access Token
+
+Using your API credentials, access the API to receive the initial access token.
+
+Since the interaction with the API is plaintext, use `x-www-form-urlencoded` data type when submitting data elements. API response will be plaintext formatted as JSON.
+
+<CodeGroup>
+```bash cURL
+curl --location 'https://api.cyrisma.com/app/partner/login/' \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'grant_type=password' \
+  --data-urlencode 'username=407cc078-46c7-11ed-8e42-000d3a3ba598' \
+  --data-urlencode 'password=ZjNkMjg4MTdlOTA2Y2UyYzcyNDAzYzk5ZWNlMTFkOGQ'
+```
+
+```python Python
+import requests
+
+url = "https://api.cyrisma.com/app/partner/login/"
+payload = {
+    "grant_type": "password",
+    "username": "407cc078-46c7-11ed-8e42-000d3a3ba598",
+    "password": "ZjNkMjg4MTdlOTA2Y2UyYzcyNDAzYzk5ZWNlMTFkOGQ"
+}
+headers = {
+    "Content-Type": "application/x-www-form-urlencoded"
+}
+
+response = requests.post(url, data=payload, headers=headers)
+print(response.json())
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.cyrisma.com/app/partner/login/', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  },
+  body: new URLSearchParams({
+    grant_type: 'password',
+    username: '407cc078-46c7-11ed-8e42-000d3a3ba598',
+    password: 'ZjNkMjg4MTdlOTA2Y2UyYzcyNDAzYzk5ZWNlMTFkOGQ'
+  })
+});
+
+const data = await response.json();
+console.log(data);
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "access_token": "YdxKmK3ZHG8220231101000426",
+  "token_type": "access",
+  "expires_in": 600,
+  "refresh_token": "vdqddetOPeAg20231101000426",
+  "client_id": ""
+}
+```
+
+<Note>
+  The `grant_type` key indicates this is a password request in compliance with OAuth 2.0 principles. The access token is important and is used to continue all future interaction with the API. The optional refresh token is used to refresh the expiration time remaining back to the original value. The expiration value is generally 600 seconds (10 minutes). Tokens can be renewed as often as needed by re-issuing the call to the login endpoint using valid credentials if your API is not set up to handle refresh tokens.
+</Note>
+
+## Reset Password
+
+First-time API use should always begin with password reset. Please reset the original temporary password so that only **your** authorized applications have access to the API.
+
+<CodeGroup>
+```bash cURL
+curl --location 'https://api.cyrisma.com/app/partner/login/regen-pass' \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'username=407cc078-46c7-11ed-8e42-000d3a3ba598' \
+  --data-urlencode 'password=ZjNkMjg4MTdlOTA2Y2UyYzcyNDAzYzk5ZWNlMTFkOGQ'
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "success": "1",
+  "message": "",
+  "newPass": "YTBjNzc3N2QtZmE0Ni00ZGY1LTlhYWYtZDE0YmI5NjI3Zjkw"
+}
+```
+
+<Warning>
+  This password is your API secret password and is only returned here **one time**. Cyrisma only stores an encrypted hash of this password for future login validation. The password itself **cannot be recovered**, so please keep a record of the secret string (or password) that corresponds to this API Key in a secure location protected from loss. This new value will now be used as a password along with the user name to generate new future session tokens as needed.
+</Warning>
+
+## Using the Access Token
+
+Once a token has been returned, this "session" token is used as authorization granting access to all of the API capabilities. Include the access token in subsequent requests using the `Authorization` header:
+
+```
+Authorization: access_token {your_access_token}
+```
+
+## Provisioning Endpoints
+
+The following endpoints access and manage the provisioning process through the primary URL `https://api.cyrisma.com/app`:
+
+| Function | Method | Endpoint |
+|----------|--------|----------|
+| Reset Password | POST | `/partner/login/regen-pass` |
+| Get All Structure | GET | `/partner/instances/info/` |
+| Get Single Partner | GET | `/partner/instances/info/{instanceId}` |
+| Provision New | POST | `/partner/instances/create` |
+| Create User | POST | `/partner/instances/users/create` |
+| Convert to Managed | PATCH | `/partner/instances/convert` |
+| Suspend Partner | PATCH | `/partner/instances/suspend` |
+| Reactivate Partner | PATCH | `/partner/instances/info` |
+| Get All Users | GET | `/partner/users/info` |
+| Get Specific User | GET | `/partner/users/info/{userRef}` |
+| Disable User | PATCH | `/partner/users/disable` |
+| Set MFA Method | PATCH | `/partner/instances/mfa` |

@@ -1,0 +1,74 @@
+---
+title: "Getting Started"
+description: "Get started with the CYRISMA Partner API"
+---
+
+CYRISMA's next-generation API assists organizations that use the CYRISMA risk management platform to further automate and enhance overall risk management.
+
+The API provides provisioning and reporting features, meaning that deployments can be automated and scan data can be retrieved for further aggregation and reporting. The API enables the setup of new partners and instances, review of partner and instance status and utilization, and management of partners through their lifecycle.
+
+Access to CYRISMA risk management is based on a foundation of secure API access token authentication and identity management.
+
+## Getting Started with the API
+
+<Steps>
+  <Step title="Obtain API Credentials">
+    Obtain the initial credentials from CYRISMA Support. Cyrisma will provide the API Key (aka "Username") and API Secret (aka "Password") used to begin communication with the API.
+  </Step>
+  <Step title="Change the API Secret">
+    Change the API secret so that only your authorized applications will have API access.
+  </Step>
+  <Step title="Request a Session Token">
+    Use the API credentials to request a session token. The CYRISMA risk management platform is a distributed, cloud-based platform. The initial session token can be distributed among the cloud servers that make up and support risk management across your collections of organizations and instances.
+  </Step>
+  <Step title="Use the Session Token">
+    Once the session token is established among the CYRISMA instances, each subsequent transaction relies on the presentation of the session token as evidence of authorization. Tokens generally last a few minutes and can be renewed again using the credentials as often as needed.
+  </Step>
+  <Step title="Provision Organizations">
+    Request to provision partner organization or an instance under a partner organization. Processing of provisioning requests is automated.
+  </Step>
+  <Step title="Assign Users">
+    For users to log in to the CYRISMA web platform, request to assign at least one user to the partner account. Users will be able to sign on once at the organization level and from there, access or inspect all organizations under management within the platform. The user will set up a password via the self-service password reset feature.
+  </Step>
+</Steps>
+
+## What You Can Do with the API
+
+<CardGroup cols={2}>
+  <Card title="Provision Organizations" icon="building">
+    Multiple organizations can be set up with multiple sets of users for each. Multi-Factor Authentication (via email code or authenticator apps) can be enabled as part of the initial organization provision request.
+  </Card>
+  <Card title="Manage Instances" icon="server">
+    The partner may log in to their organization and set up instances for their customer base.
+  </Card>
+  <Card title="Monitor Usage" icon="chart-line">
+    Use the API to retrieve usage and utilization details at any time.
+  </Card>
+  <Card title="Retrieve Scan Data" icon="radar">
+    Use the API to retrieve scan result data (Vulnerability, Baseline Configurations, or Data Scans).
+  </Card>
+  <Card title="Manage Partners" icon="users-gear">
+    Manage partners (convert, suspend, or reactivate) as needed.
+  </Card>
+  <Card title="Configure Webhooks" icon="webhook">
+    Set up webhooks to receive notifications about events in your CYRISMA instances.
+  </Card>
+</CardGroup>
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://api.cyrisma.com/app
+```
+
+<Note>
+  Always connect to the API service using SSL only, as any other connection type will be ignored or rejected.
+</Note>
+
+## Next Steps
+
+<Card title="Authentication" icon="key" href="/api-reference/authentication">
+  Learn how to authenticate with the CYRISMA API and obtain access tokens.
+</Card>
