@@ -38,6 +38,10 @@
             ]
           },
           {
+            "tab": "Cyrisma Partner API Reference",
+            "openapi": "openapi.json"
+          },
+          {
             "group": "AI tools",
             "pages": [
               "ai-tools/cursor",
