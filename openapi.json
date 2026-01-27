@@ -17,7 +17,10 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -54,7 +57,10 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -91,7 +97,10 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -128,7 +137,10 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -165,7 +177,10 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -199,47 +214,20 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "instance_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional instance ID to get information for a specific instance."
           }
         ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "instance_id": {
-                    "title": "Instance ID",
-                    "type": "string",
-                    "description": "Optional instance ID to get information for a specific instance."
-                  }
-                }
-              },
-              "encoding": {
-                "instance_id": {
-                  "style": "form"
-                }
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "instance_id": {
-                    "title": "Instance ID",
-                    "type": "string",
-                    "description": "Optional instance ID to get information for a specific instance."
-                  }
-                }
-              },
-              "encoding": {
-                "instance_id": {
-                  "style": "form"
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "OK",
@@ -297,31 +285,30 @@
         "operationId": "GetInstancesWithInstanceId",
         "parameters": [
           {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The instance id"
+          },
+          {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "instance_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional instance ID to get information for a specific instance."
           }
         ],
-        "requestBody": {
-          "content": {
-            "\"application/x-www-form-urlencoded\"": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "instance_id": {
-                    "title": "Instance ID",
-                    "type": "string",
-                    "description": "Optional instance ID to get information for a specific instance."
-                  }
-                }
-              },
-              "encoding": {
-                "instance_id": {
-                  "style": "form"
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "OK",
@@ -380,12 +367,15 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
-            "\"application/x-www-form-urlencoded\"": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "$ref": "#/components/schemas/CreateInstanceUserRequest"
               }
@@ -447,12 +437,15 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
-            "\"application/x-www-form-urlencoded\"": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "$ref": "#/components/schemas/CreateInstanceRequest"
               }
@@ -514,12 +507,15 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
-            "\"application/x-www-form-urlencoded\"": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -593,12 +589,15 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
-            "\"application/x-www-form-urlencoded\"": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -672,12 +671,15 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
-            "\"application/x-www-form-urlencoded\"": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -751,12 +753,15 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
-            "\"application/x-www-form-urlencoded\"": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "$ref": "#/components/schemas/UpdatePartnerMFARequest"
               }
@@ -818,7 +823,7 @@
         "operationId": "PartnerLogin",
         "requestBody": {
           "content": {
-            "\"application/x-www-form-urlencoded\"": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "$ref": "#/components/schemas/PartnerLoginWithGrantTypeRequest"
               }
@@ -856,7 +861,7 @@
         "operationId": "ResetPass",
         "requestBody": {
           "content": {
-            "\"application/x-www-form-urlencoded\"": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "$ref": "#/components/schemas/PartnerLoginRequest"
               }
@@ -908,7 +913,10 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -945,7 +953,10 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -982,7 +993,10 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1022,7 +1036,10 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1071,7 +1088,10 @@
           },
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1117,23 +1137,17 @@
               "title": "User Reference",
               "type": "string",
               "description": "User Reference of the user to obtain"
-            }
+            },
+            "required": true
           },
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
-        "requestBody": {
-          "content": {
-            "\"application/x-www-form-urlencoded\"": {
-              "schema": {
-                "type": "string"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
             "description": "OK",
@@ -1193,18 +1207,12 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "\"application/x-www-form-urlencoded\"": {
-              "schema": {
-                "$ref": "#/components/schemas/PaginatedRequest"
-              }
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1264,12 +1272,15 @@
         "parameters": [
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
-            "\"application/x-www-form-urlencoded\"": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -1356,7 +1367,10 @@
           },
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1407,7 +1421,10 @@
           },
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1456,7 +1473,10 @@
           },
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1507,7 +1527,10 @@
           },
           {
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
