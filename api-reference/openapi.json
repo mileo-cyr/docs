@@ -1,36 +1,1375 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.4",
   "info": {
     "title": "Cyrisma Partner API",
-    "description": "Cyrisma partner-facing API.",
+    "description": "Cyrisma's next-generation API will assist organizations that use the Cyrisma risk management platform to further automate and enhance overall risk management. The API provides provisioning and reporting features meaning that deployments can be automated and scan data can be retrieved for further aggregation and reporting. The API will enable the setup of new partners and instances, review of partner and instance status and utilization, and management of partners through their lifecycle.  Access to Cyrisma risk management is based on a foundation of secure API access token authentication and identity management.",
     "version": "v1"
   },
   "paths": {
-    "/partner/vulnerability/assets": {
+    "/partner/dashboards/overall": {
       "get": {
         "tags": [
-          "InstanceAPI"
+          "Dashboards"
         ],
-        "summary": "Assets with vulnerabilities",
-        "description": "PARTNER ENDPOINT\r\n\r\n- Authorization header is required\r\n- Header format: access_token {token}",
-        "operationId": "GetAssetsList",
-        "produces": [
-          "application/json"
-        ],
+        "summary": "Overall risk dashboard for instance",
+        "description": "Returns overall risk dashboard data for the instance associated with the access token.\r\n\r\nThe overall risk dashboard includes metrics such as total risk score, risk grade, and breakdown of risks by category.\r\n\r\nIn the output, the respective grades are represented by scan type. There is Current and Previous grades for each where the period duration is either monthly or quarterly depending on that instance’s system settings. The scan types are:\r\n- Or\t- Overall Risk\r\n- Ds\t- Data Scans\r\n- Vn\t- Vulnerability Scans\r\n- Sb\t- Secure Baseline Scans\r\n- Cmpl\t- Compliance Grade\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetOverallRiskScores",
         "parameters": [
           {
-            "in": "query",
-            "name": "assetType",
-            "type": "string"
+            "name": "Authorization",
+            "in": "header"
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardOverallRisk"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/dashboards/data": {
+      "get": {
+        "tags": [
+          "Dashboards"
+        ],
+        "summary": "Data scan dashboard for instance",
+        "description": "Returns data scan dashboard data for the instance associated with the access token.\r\n\r\nThe data scan dashboard includes metrics such as total data risk score, data risk grade, and breakdown of data risks by category.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetDataScanDashboard",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/dashboards/vulnerability": {
+      "get": {
+        "tags": [
+          "Dashboards"
+        ],
+        "summary": "Vulnerability scan dashboard for instance",
+        "description": "Returns vulnerability scan dashboard data for the instance associated with the access token.\r\n\r\nThe vulnerability scan dashboard includes metrics such as total vulnerability risk score, vulnerability risk grade, and breakdown of vulnerabilities by profile.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetVulnScanDashboard",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardVulnerability"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/dashboards/baseline": {
+      "get": {
+        "tags": [
+          "Dashboards"
+        ],
+        "summary": "Secure Baseline scan dashboard for instance",
+        "description": "Returns secure baseline scan dashboard data for the instance associated with the access token.\r\n\r\nThe secure baseline scan dashboard includes metrics such as total baseline risk score, baseline risk grade, and breakdown of baseline risks by profile.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetBaselineScanDashboard",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardBaseline"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/dashboards/vulnerability/cve": {
+      "get": {
+        "tags": [
+          "Dashboards"
+        ],
+        "summary": "CVE information for instance",
+        "description": "Returns CVE information for the instance associated with the access token.\r\n\r\nThe CVE information includes details such as CVE ID, description, severity, affected assets, and remediation steps.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetCveInfo",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CveList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/instances/info": {
+      "get": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Get Instances Endpoint",
+        "description": "This will retrieve the entire existing provisioned structure of organizations and instances within the CYRISMA platform.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetInstances",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instance_id": {
+                    "title": "Instance ID",
+                    "type": "string",
+                    "description": "Optional instance ID to get information for a specific instance."
+                  }
+                }
+              },
+              "encoding": {
+                "instance_id": {
+                  "style": "form"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instance_id": {
+                    "title": "Instance ID",
+                    "type": "string",
+                    "description": "Optional instance ID to get information for a specific instance."
+                  }
+                }
+              },
+              "encoding": {
+                "instance_id": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubordinateInstanceInfoWithTree"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/instances/info/{instance_id}": {
+      "get": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Get Instances Endpoint",
+        "description": "This will retrieve the entire existing provisioned structure of organizations and instances within the CYRISMA platform.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetInstancesWithInstanceId",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instance_id": {
+                    "title": "Instance ID",
+                    "type": "string",
+                    "description": "Optional instance ID to get information for a specific instance."
+                  }
+                }
+              },
+              "encoding": {
+                "instance_id": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubordinateInstanceInfoWithTree"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/instances/users/create": {
+      "post": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Create Instance User Endpoint",
+        "description": "This endpoint will create a new user under a specific subordinate instance within your partner account.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "CreateInstanceUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInstanceUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/instances/create": {
+      "post": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Create Instances Endpoint",
+        "description": "This endpoint will provision a new instance under your partner account.\r\n\r\nIt is important to understand the hierarchy of the organizations set up under the CYRISMA Web platform. \r\nInstances can be created under existing organizations or sub organizations, or new sub organizations can be created.\r\n\r\n**Notes:**\r\n- Generation of an instance generally takes less than 5 minutes to complete. \r\n- Check the completion of your order by using the provision-status API call along with the returned instance ID provided.\r\n- Parent_instance_id is the immediate parent where this new instance or sub-organization will appear in the hierarchy.\r\n- If setting up a new sub-organization, the is_consulting value must be false. You cannot create a sub-organization that is considered “Trial” or “Consulting”.\r\n- If setting up a new instance, then is_consulting may be set to true to indicate that this instance is in a temporary consulting mode and will eventually be converted to “standard”.\r\n- The short_name is the name value that appears at the top left of the browser window when logged into that instance. It is also the name of the browser tab, so it is recommended to keep this string relatively short to serve as a quick identifier when you have many tabs open.\r\n- Country value is very important as it will determine the geographic location where this specific instance will be located. Many organizations are subject to data sovereignty restrictions that mandate all data stay within a specific geography and this setting will assist.\r\n- Mfa_type defaults to 0 (none), but can be set to 1 (Email) or 2 (Authenticator) when submitting the new provisioning request.\r\n- Tenant_id is an optional string parameter to associate this provisioning with a pre-existing tenant of an MDR/XDR suite.\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "CreateInstance",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInstanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateInstanceJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/instances/suspend": {
+      "patch": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Suspend Instance Endpoint",
+        "description": "This endpoint will suspend an instance under your partner account.\r\n\r\n\r\n**Notes:**\r\n- Suspended instances are NOT visible within the MSP web interface. \r\n- Suspended instances are not shown in the API “Get All” request.\r\n- To restore a suspended instance or organization, the instanceID is required, so this should be documented so that a restore can later be performed.\r\n- Suspended Instances do not stop working, only ACCESS to the suspended instance is blocked.\r\n- If an organization is suspended, access to instances and sub organizations within that organization are also blocked.\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "SuspendInstance",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instance_id": {
+                    "title": "Instance Id",
+                    "type": "string",
+                    "description": "ID of the organization under suspension."
+                  }
+                }
+              },
+              "encoding": {
+                "instance_id": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuspendInstanceJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/instances/reactivate": {
+      "patch": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Reactivate Instance Endpoint",
+        "description": "This endpoint will reactivate a suspended instance under your partner account.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "ReactivateInstance",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instance_id": {
+                    "title": "Instance Id",
+                    "type": "string",
+                    "description": "ID of the organization under suspension."
+                  }
+                }
+              },
+              "encoding": {
+                "instance_id": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReactivateInstanceJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/instances/convert": {
+      "patch": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Convert Consulting To Standard Endpoint",
+        "description": "This endpoint will convert a consulting instance to a standard instance under your partner account.\r\n\r\n**Note:**\r\n- Conversion from Consulting to Managed is a one way operation. Managed instances cannot be converted back to consulting. \r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "ConvertConsultingToStandard",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "instance_id": {
+                    "title": "Instance Id",
+                    "type": "string",
+                    "description": "ID of the organization under conversion from Consulting to Standard instance."
+                  }
+                }
+              },
+              "encoding": {
+                "instance_id": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConvertInstanceJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/instances/mfa": {
+      "patch": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Convert Consulting To Standard Endpoint",
+        "description": "This endpoint will convert a consulting instance to a standard instance under your partner account.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "ConvertConsultingToStandard",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePartnerMFARequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/login": {
+      "post": {
+        "tags": [
+          "Login"
+        ],
+        "summary": "Partner Login Endpoint",
+        "description": "Endpoint for partners to login and receive an access token.\r\n\r\nThe 'grant_type' key indicates this is a password request in compliance with OAuth 2.0 principles. \r\n\r\nThe access token is important and is used to continue all future interaction with the API. \r\n\r\nThe optional refresh token is used to refresh the expiration time remaining back to the original value. The expiration value is generally 600 seconds (10 minutes). \r\n\r\nTokens can be renewed as often as needed by re-issuing the call to the 'login' endpoint using valid credentials if your API is not set up to handle refresh tokens.\r\n\r\nOnce a token has been returned, this 'session' token is used as authorization granting access to all of the API capabilities. The following endpoints access and manage the provisioning process through the primary URL: \r\nhttps://api.cyrisma.com/app",
+        "operationId": "PartnerLogin",
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "$ref": "#/components/schemas/PartnerLoginWithGrantTypeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/login/regen-pass": {
+      "post": {
+        "tags": [
+          "Login"
+        ],
+        "summary": "Reset Password Endpoint",
+        "description": "First-time API use should always begin with password reset. Please reset the original temporary password so that only YOUR authorized applications have access to the API.\r\n\r\n\r\n**NOTE:** This password is your API secret password and is only returned here **one time**. Cyrisma only stores an encrypted hash of this password for future login validation. The password itself **cannot be recovered**, so please keep a record of the secret string (or password) that corresponds to this API Key in a secure location protected from loss. This new value will now be used as a password along with the user name to generate new future session tokens as needed.",
+        "operationId": "ResetPass",
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "$ref": "#/components/schemas/PartnerLoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/scans/completed": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "summary": "Completed scans for instance",
+        "description": "Returns completed scans for the instance associated with the access token.\r\n\r\nEach completed scan returned by the API includes information such as scan ID, target name, scan status, start and end times, and summary of findings.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetCompletedScans",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCompletedScansJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/scans/data": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "summary": "Data scans for instance",
+        "description": "Returns data scans for the instance associated with the access token.\r\n\r\nEach data scan returned by the API includes information such as scan ID, target name, scan status, start and end times, and summary of findings.\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetDataScans",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCompletedDataScansJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/scans/vulnerability": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "summary": "Vulnerability scans for instance",
+        "description": "Returns vulnerability scans for the instance associated with the access token.\r\n\r\nEach vulnerability scan returned by the API includes information such as scan ID, target name, scan status, start and end times, and summary of findings.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetVulnerabilityScans",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCompletedVulnScansJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/scans/baseline": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "summary": "Secure Baseline scans for instance",
+        "description": "Returns secure baseline scans for the instance associated with the access token.\r\n\r\nEach secure baseline scan returned by the API includes information such as scan ID, target name, scan status, start and end times, and summary of findings.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetBaselineScans",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCompletedSbScansJson"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/scans/vulnerability/{scanId}": {
+      "get": {
+        "tags": [
+          "Scans"
+        ],
+        "summary": "Vulnerability for scan Id",
+        "description": "Returns asets with asset vulnerabilities.\r\n\r\nEach asset returned by the API may include three collections: **vulnerabilities**, **openPorts**, and **flaws**. These collections are populated based on the **scan type**, as follows:\r\n- Internal Authenticated (scan type 5), Internal Unauthenticated (scan type 10), and External IP scans (scan type 9) will include data for **vulnerabilities** and **openPorts**.\r\n- External Web Application scans (scan type 11) will include data for **flaws**.\r\n\r\n\r\nRequired headers:\r\n\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetScanVulnerabilities",
+        "parameters": [
+          {
+            "name": "scanId",
+            "in": "path",
+            "description": "Id of the vulnerability scan.",
+            "required": true,
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/AssetList"
+              "title": "Scan Id",
+              "type": "integer",
+              "description": "Id of the vulnerability scan.",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VulnerabilityScan"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/partner/users/info/{user_ref}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get User Endpoint",
+        "description": "This endpoint will retrieve information about a single user under your partner account.\r\n\r\n\r\n**Note:**\r\n- Users MUST be added to instance_ids that are organizations. You cannot add a user to an instance_id that is a standard, trial or consulting instance.\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetSingleUser",
+        "parameters": [
+          {
+            "name": "user_ref",
+            "in": "path",
+            "description": "User Reference of the user to obtain",
+            "schema": {
+              "title": "User Reference",
+              "type": "string",
+              "description": "User Reference of the user to obtain"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": { }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/users/info": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get Users Endpoint",
+        "description": "This endpoint will retrieve a list of users under your partner account.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetUsers",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "$ref": "#/components/schemas/PaginatedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": { }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/users/disable": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Disable User Endpoint",
+        "description": "This endpoint will disable a user under your partner account.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "DisableUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "\"application/x-www-form-urlencoded\"": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "title": "User Id",
+                    "type": "string",
+                    "description": "ID of the user to disable."
+                  }
+                }
+              },
+              "encoding": {
+                "user_id": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": { }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/vulnerability/assets": {
+      "get": {
+        "tags": [
+          "Vulnerability Assets"
+        ],
+        "summary": "Assets list with vulnerability counts",
+        "description": "Returns a list of assets and their vulnerability totals (critical/high/medium/low/info), along with basic asset metadata.\r\n\r\n\r\nRequired headers:\r\n\r\n\r\n- `Authorization: access_token {token}`",
+        "operationId": "GetAssetsList",
+        "parameters": [
+          {
+            "name": "assetType",
+            "in": "query",
+            "description": "    The **assetType** query parameter determines which asset types are returned by the API. \r\n\r\n    When:\r\n    - **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\r\n    - **assetType=external**, the response includes assets with **External – IP Addresses** and **External – Web Application URLs** vulnerabilities.",
+            "schema": {
+              "type": "string",
+              "description": "    The **assetType** query parameter determines which asset types are returned by the API. \r\n\r\n    When:\r\n    - **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\r\n    - **assetType=external**, the response includes assets with **External – IP Addresses** and **External – Web Application URLs** vulnerabilities."
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssetList"
+                  }
+                }
               }
             }
           },
@@ -49,31 +1388,39 @@
     "/partner/vulnerability/assets/authenticated": {
       "get": {
         "tags": [
-          "InstanceAPI"
+          "Vulnerability Assets"
         ],
-        "summary": "Internal Authenticated Vulnerability Asset Details",
-        "description": "PARTNER ENDPOINT\r\n\r\n- Authorization header is required\r\n- Header format: access_token {token}",
+        "summary": "Internal Authenticated scan details for an asset",
+        "description": "Returns **Internal Authenticated** vulnerability details for a single asset based on asset id.\r\n\r\nUse this endpoint when you already know the asset id and want detailed counts and list of **root cause**s, **CVE**s and **open ports** for the asset.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
         "operationId": "GetInternalAuthenticatedVulnerabilities",
-        "produces": [
-          "application/json"
-        ],
         "parameters": [
           {
-            "in": "query",
             "name": "assetId",
+            "in": "query",
             "description": "Asset Id of Internal Authenticated Vulnerability scan.",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "schema": {
+              "type": "integer",
+              "description": "Asset Id of Internal Authenticated Vulnerability scan.",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header"
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/InternalAuthAsset"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InternalAuthAsset"
+                  }
+                }
               }
             }
           },
@@ -92,27 +1439,35 @@
     "/partner/vulnerability/assets/ip": {
       "get": {
         "tags": [
-          "InstanceAPI"
+          "Vulnerability Assets"
         ],
-        "summary": "Internal Unauthenticated/External - IP Addresses Vulnerability Asset Details",
-        "description": "PARTNER ENDPOINT\r\n\r\n- Authorization header is required\r\n- Header format: access_token {token}",
+        "summary": "Internal Unauthenticated/External - IP Addresses scan details for an asset",
+        "description": "Returns **Internal Unauthenticated** or **External IP Address** vulnerability details for a device identified by IP address, based asset IP address.\r\n\r\nUse this endpoint when you already know the asset ip and want detailed counts and list of **CVE**s and **open ports** for the asset.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
         "operationId": "GetUnauthenticatedAndExternalVulnerabilities",
-        "produces": [
-          "application/json"
-        ],
         "parameters": [
           {
-            "in": "query",
             "name": "assetIp",
+            "in": "query",
             "description": "Asset Ip of Internal Unauthenticated/External - IP Addresses Vulnerability scan.",
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "description": "Asset Ip of Internal Unauthenticated/External - IP Addresses Vulnerability scan."
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header"
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/PartnerIpVuln"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerIpVuln"
+                }
+              }
             }
           },
           "400": {
@@ -133,29 +1488,37 @@
     "/partner/vulnerability/assets/webapp": {
       "get": {
         "tags": [
-          "InstanceAPI"
+          "Vulnerability Assets"
         ],
-        "summary": "External - Web Application URLs Vulnerability Asset Details",
-        "description": "PARTNER ENDPOINT\r\n\r\n- Authorization header is required\r\n- Header format: access_token {token}",
+        "summary": "Web Application scan findings for an asset",
+        "description": "Returns **web application** vulnerability findings (for example: URL-based issues) for a specific asset.\r\n\r\nUse this endpoint when you already know the asset id and want detailed counts and list of **findings** for the asset.\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
         "operationId": "GetWebAppFindings",
-        "produces": [
-          "application/json"
-        ],
         "parameters": [
           {
-            "in": "query",
             "name": "assetId",
+            "in": "query",
             "description": "Asset Id of Web Application Vulnerability scan.",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "schema": {
+              "type": "integer",
+              "description": "Asset Id of Web Application Vulnerability scan.",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header"
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/PartnerWebAppVuln"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerWebAppVuln"
+                }
+              }
             }
           },
           "400": {
@@ -174,465 +1537,2616 @@
       }
     }
   },
-  "definitions": {
-    "AssetList": {
-      "type": "object",
-      "properties": {
-        "TargetId": {
-          "type": "string"
-        },
-        "IP": {
-          "type": "string"
-        },
-        "Icon": {
-          "type": "string"
-        },
-        "ScanId": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "ScanType": {
-          "type": "string",
-          "readOnly": true
-        },
-        "agentIsOnline": {
-          "type": "boolean"
-        },
-        "AssetName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "AssetId": {
-          "type": "string",
-          "readOnly": true
-        },
-        "AssetIp": {
-          "type": "string",
-          "readOnly": true
-        },
-        "OSName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "TotalNumberOfVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "NumberOfCriticalVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "NumberOfHighVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "NumberOfMediumVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "NumberOfLowVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "NumberOfInformationalVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "AssetScore": {
-          "type": "string",
-          "readOnly": true
-        },
-        "HasAgentInstalled": {
-          "type": "boolean",
-          "readOnly": true
-        },
-        "AgentIsOnline": {
-          "type": "boolean",
-          "readOnly": true
-        },
-        "Tags": {
-          "type": "string",
-          "readOnly": true
-        },
-        "FingerPrint": {
-          "type": "string",
-          "readOnly": true
-        },
-        "FinishTime": {
-          "format": "date-time",
-          "type": "string",
-          "readOnly": true
-        }
-      },
-      "additionalProperties": false
-    },
-    "InternalAuthAsset": {
-      "type": "object",
-      "properties": {
-        "AssetScore": {
-          "type": "string",
-          "readOnly": true
-        },
-        "TotalNumberOfVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "NumberOfCriticalVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "NumberOfHighVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "NumberOfMediumVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "NumberOfLowVulnerabilities": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "AssetName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "AgentName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "LastChecked": {
-          "type": "string",
-          "readOnly": true
-        },
-        "LastScan": {
-          "type": "string",
-          "readOnly": true
-        },
-        "Tags": {
-          "type": "string",
-          "readOnly": true
-        },
-        "RootCauses": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/InternalAuthDetailsRootCause"
+  "components": {
+    "schemas": {
+      "Asset": {
+        "title": "Asset",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Asset Id",
+            "type": "integer",
+            "description": "Unique identifier for the asset.",
+            "format": "int32"
           },
-          "readOnly": true
-        },
-        "CVEs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/InternalAuthDetailsCVE"
-          }
-        },
-        "OpenPorts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/InternalAuthDetailsOpenPort"
+          "name": {
+            "title": "Asset Name",
+            "type": "string",
+            "description": "Name of the asset.",
+            "nullable": true
           },
-          "readOnly": true
-        }
-      },
-      "additionalProperties": false
-    },
-    "InternalAuthDetailsCVE": {
-      "type": "object",
-      "properties": {
-        "CveID": {
-          "type": "string",
-          "readOnly": true
-        },
-        "CveTitle": {
-          "type": "string",
-          "readOnly": true
-        },
-        "FirstSeen": {
-          "format": "date-time",
-          "type": "string",
-          "readOnly": true
-        },
-        "Exploitability": {
-          "type": "array",
-          "items": {
-            "type": "string"
+          "ipAddress": {
+            "title": "Ip Address",
+            "type": "string",
+            "description": "IP address of the asset.",
+            "nullable": true
           },
-          "readOnly": true
-        },
-        "Severity": {
-          "type": "string",
-          "readOnly": true
-        },
-        "CVSS": {
-          "format": "double",
-          "type": "number",
-          "readOnly": true
-        },
-        "EPSS": {
-          "format": "double",
-          "type": "number",
-          "readOnly": true
-        },
-        "ScanId": {
-          "format": "int32",
-          "type": "integer",
-          "readOnly": true
-        },
-        "Patchable": {
-          "type": "boolean",
-          "readOnly": true
-        }
-      },
-      "additionalProperties": false
-    },
-    "InternalAuthDetailsOpenPort": {
-      "type": "object",
-      "properties": {
-        "OpenPort": {
-          "type": "string"
-        },
-        "OpenPortName": {
-          "type": "string"
-        },
-        "Protocol": {
-          "type": "string"
-        },
-        "Severity": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
-    "InternalAuthDetailsRootCause": {
-      "type": "object",
-      "properties": {
-        "RootCause": {
-          "type": "string"
-        },
-        "FirstSeen": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "Exploitability": {
-          "type": "array",
-          "items": {
-            "type": "string"
+          "vulnerabilities": {
+            "title": "Vulnerabilities",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Cve"
+            },
+            "description": "List of vulnerabilities associated with the asset.",
+            "nullable": true
+          },
+          "openPorts": {
+            "title": "Open Ports",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Port"
+            },
+            "description": "List of open ports on the asset.",
+            "nullable": true
+          },
+          "flaws": {
+            "title": "Flaws",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Flaw"
+            },
+            "description": "List of flaws identified on the asset.",
+            "nullable": true
           }
         },
-        "HighestCVSS": {
-          "format": "double",
-          "type": "number"
-        },
-        "HighestEPSS": {
-          "format": "double",
-          "type": "number"
-        },
-        "TotalNumberOfVulnerabilities": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "Patchable": {
-          "type": "boolean"
-        },
-        "Id": {
-          "format": "int32",
-          "type": "integer"
-        }
+        "additionalProperties": false,
+        "description": "Represents an asset with its associated vulnerabilities, open ports, and flaws."
       },
-      "additionalProperties": false
-    },
-    "PartnerIpVuln": {
-      "type": "object",
-      "properties": {
-        "RiskGrade": {
-          "type": "string"
-        },
-        "TotalCVECount": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "CriticalCount": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "HighCount": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "MediumCount": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "LowCount": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "DeviceFingerprint": {
-          "type": "string"
-        },
-        "MACAddress": {
-          "type": "string"
-        },
-        "MACVendor": {
-          "type": "string"
-        },
-        "SNMPResult": {
-          "type": "string"
-        },
-        "FinishTime": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "CVEs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PartnerIpVulnCve"
+      "AssetList": {
+        "title": "Asset with vulnerability counts",
+        "type": "object",
+        "properties": {
+          "TargetId": {
+            "title": "Target Id",
+            "type": "string",
+            "description": "Unique identifier for the target asset.",
+            "nullable": true
+          },
+          "IP": {
+            "title": "IP Address",
+            "type": "string",
+            "description": "IP address of the asset.",
+            "nullable": true
+          },
+          "Icon": {
+            "title": "Icon",
+            "type": "string",
+            "description": "Icon representing the asset.",
+            "nullable": true
+          },
+          "ScanId": {
+            "title": "Scan Id",
+            "type": "integer",
+            "description": "Identifier of the scan in which the asset was included.",
+            "format": "int32"
+          },
+          "ScanType": {
+            "title": "Scan Type",
+            "type": "string",
+            "description": "Type of vulnerability scan performed on the asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "agentIsOnline": {
+            "title": "Agent Is Online",
+            "type": "boolean",
+            "description": "Indicates whether the agent on the asset is currently online."
+          },
+          "AssetName": {
+            "title": "Asset Name",
+            "type": "string",
+            "description": "Name of the asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "AssetId": {
+            "title": "Asset Id",
+            "type": "string",
+            "description": "Id of the asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "AssetIp": {
+            "title": "Asset Ip",
+            "type": "string",
+            "description": "IP address of the asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "OSName": {
+            "title": "OS",
+            "type": "string",
+            "description": "Operating System of the asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "TotalNumberOfVulnerabilities": {
+            "title": "Total Number Of Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of vulnerabilities identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfCriticalVulnerabilities": {
+            "title": "Number Of Critical Vulnerabilities",
+            "type": "integer",
+            "description": "Number of vulnerabilities with Critical severity identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfHighVulnerabilities": {
+            "title": "Number Of High Vulnerabilities",
+            "type": "integer",
+            "description": "Number of vulnerabilities with High severity identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfMediumVulnerabilities": {
+            "title": "Number Of Medium Vulnerabilities",
+            "type": "integer",
+            "description": "Number of vulnerabilities with Medium severity identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfLowVulnerabilities": {
+            "title": "Number Of Low Vulnerabilities",
+            "type": "integer",
+            "description": "Number of vulnerabilities with Low severity identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfInformationalVulnerabilities": {
+            "title": "Number Of Informational Vulnerabilities",
+            "type": "integer",
+            "description": "Number of vulnerabilities with Informational severity identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "AssetScore": {
+            "title": "",
+            "type": "string",
+            "description": "The asset score indicating the overall risk level of the asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "HasAgentInstalled": {
+            "title": "Has Agent Installed",
+            "type": "boolean",
+            "description": "Indicates whether an agent is currently installed on the asset.",
+            "readOnly": true
+          },
+          "AgentIsOnline": {
+            "title": "Agent Is Online",
+            "type": "boolean",
+            "description": "Indicates whether this asset is online.",
+            "readOnly": true
+          },
+          "Tags": {
+            "title": "Tags",
+            "type": "string",
+            "description": "Tags associated with this asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "FingerPrint": {
+            "title": "Asset Finger Print",
+            "type": "string",
+            "description": "The asset fingerprint for this asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "FinishTime": {
+            "title": "Last Scan Date",
+            "type": "string",
+            "description": "The date and time when the asset was last scanned.",
+            "format": "date-time",
+            "readOnly": true
           }
         },
-        "OpenPorts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PartnerIpVulnOpenPort"
+        "additionalProperties": false,
+        "description": "Provides asset vulnerability data including vulnerability counts by severity."
+      },
+      "AuthenticationJson": {
+        "title": "Baselines Top Five",
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string",
+            "description": "Access token for authentication.",
+            "nullable": true
+          },
+          "token_type": {
+            "title": "Token Type",
+            "type": "string",
+            "description": "Type of the token.",
+            "nullable": true
+          },
+          "expires_in": {
+            "title": "Expires In",
+            "type": "integer",
+            "description": "Expiration time of the token in seconds.",
+            "format": "int32"
+          },
+          "refresh_token": {
+            "title": "Refresh Token",
+            "type": "string",
+            "description": "Refresh token for obtaining new access tokens.",
+            "nullable": true
+          },
+          "client_id": {
+            "title": "Scope",
+            "type": "string",
+            "description": "Scope of the access token.",
+            "nullable": true
           }
-        }
+        },
+        "additionalProperties": false,
+        "description": "Represents a baseline target with its name and grade."
       },
-      "additionalProperties": false
-    },
-    "PartnerIpVulnCve": {
-      "type": "object",
-      "properties": {
-        "CveID": {
-          "type": "string"
-        },
-        "Title": {
-          "type": "string"
-        },
-        "FirstSeen": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "Exploitability": {
-          "type": "array",
-          "items": {
-            "type": "string"
+      "BaselinesLowestTen": {
+        "title": "Baselines Top Five",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Target Name",
+            "type": "string",
+            "description": "Name of the baseline target.",
+            "nullable": true
+          },
+          "ip": {
+            "title": "IP Address",
+            "type": "string",
+            "description": "IP address of the baseline target.",
+            "nullable": true
+          },
+          "scan_date": {
+            "title": "Scan Date",
+            "type": "string",
+            "description": "Date when the baseline scan was conducted.",
+            "nullable": true
+          },
+          "pass_rate": {
+            "title": "Pass Rate",
+            "type": "number",
+            "description": "Pass rate of the baseline target.",
+            "format": "double"
+          },
+          "grade": {
+            "title": "Grade",
+            "type": "string",
+            "description": "Grade of the baseline target.",
+            "nullable": true
+          },
+          "profile_name": {
+            "title": "Profile Name",
+            "type": "string",
+            "description": "Name of the profile associated with the baseline target.",
+            "nullable": true
+          },
+          "profile_type": {
+            "title": "Profile Type",
+            "type": "string",
+            "description": "Type of the profile associated with the baseline target.",
+            "nullable": true
           }
         },
-        "Severity": {
-          "type": "string"
-        },
-        "CVSS": {
-          "format": "double",
-          "type": "number"
-        },
-        "EPSS": {
-          "format": "double",
-          "type": "number"
-        },
-        "ScanId": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "Patchable": {
-          "type": "boolean"
-        }
+        "additionalProperties": false,
+        "description": "Represents a baseline target with its name and grade."
       },
-      "additionalProperties": false
-    },
-    "PartnerIpVulnOpenPort": {
-      "type": "object",
-      "properties": {
-        "ScanId": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "PortNumber": {
-          "type": "string"
-        },
-        "PortDescription": {
-          "type": "string"
-        },
-        "RiskLevel": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
-    "PartnerWebAppVuln": {
-      "type": "object",
-      "properties": {
-        "TotalNumberFindings": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "NumberOfHighVulnFindings": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "NumberOfMedVulnFindings": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "NumberOfLowVulnFindings": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "NumberOfInfoVulnFindings": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "RiskGrade": {
-          "type": "string"
-        },
-        "Findings": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PartnerWebAppVulnFinding"
+      "BaselinesTopFive": {
+        "title": "Baselines Top Five",
+        "type": "object",
+        "properties": {
+          "os_name": {
+            "title": "Profile Name",
+            "type": "string",
+            "description": "Name of the baseline profile.",
+            "nullable": true
+          },
+          "use_count": {
+            "title": "Usage Count",
+            "type": "integer",
+            "description": "Number of times the baseline profile has been used.",
+            "format": "int32"
+          },
+          "targets": {
+            "title": "Targets",
+            "type": "string",
+            "description": "List of targets associated with the baseline profile.",
+            "nullable": true
           }
-        }
+        },
+        "additionalProperties": false,
+        "description": "Represents a baseline target with its name and grade."
       },
-      "additionalProperties": false
-    },
-    "PartnerWebAppVulnFinding": {
-      "type": "object",
-      "properties": {
-        "FindingName": {
-          "type": "string"
+      "CompletedDataHeader": {
+        "title": "Completed Data Scan",
+        "type": "object",
+        "properties": {
+          "data_scan_items": {
+            "title": "Data Scan Items",
+            "type": "integer",
+            "description": "Total number of items scanned in data scans.",
+            "format": "int32"
+          },
+          "data_scan_folders": {
+            "title": "Data Scan Folders",
+            "type": "integer",
+            "description": "Total number of folders scanned in data scans.",
+            "format": "int32"
+          },
+          "data_scan_sensitive_items": {
+            "title": "Data Scan Sensitive Items",
+            "type": "integer",
+            "description": "Total number of sensitive items found in data scans.",
+            "format": "int32"
+          },
+          "average_data_scan_grade": {
+            "title": "Average Data Scan Grade",
+            "type": "number",
+            "description": "Average grade of all completed data scans.",
+            "format": "double"
+          },
+          "average_data_scan_grade_alpha": {
+            "title": "Average Data Scan Grade Alpha",
+            "type": "string",
+            "description": "Alphabetical representation of the average data scan grade.",
+            "nullable": true
+          }
         },
-        "FindingDescription": {
-          "type": "string"
-        },
-        "FindingSolution": {
-          "type": "string"
-        },
-        "FindingOther": {
-          "type": "string"
-        },
-        "FindingReferenceURLs": {
-          "type": "string"
-        },
-        "FindingRiskLevelName": {
-          "type": "string"
-        },
-        "FindingsCount": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "FindingDetails": {
-          "type": "string"
-        }
+        "additionalProperties": false,
+        "description": "Represents a completed data scan with its associated details."
       },
-      "additionalProperties": false
+      "CompletedDataScans": {
+        "title": "Completed Data Scan",
+        "type": "object",
+        "properties": {
+          "scan_id": {
+            "title": "Scan Id",
+            "type": "string",
+            "description": "Unique identifier for the scan.",
+            "nullable": true
+          },
+          "scan_name": {
+            "title": "Scan Name",
+            "type": "string",
+            "description": "Name of the scan.",
+            "nullable": true
+          },
+          "scan_type": {
+            "title": "Scan Type",
+            "type": "string",
+            "description": "Type of the scan.",
+            "nullable": true
+          },
+          "scanned_items": {
+            "title": "Scanned Items",
+            "type": "integer",
+            "description": "Total number of items scanned in the data scan.",
+            "format": "int32"
+          },
+          "scanned_folders": {
+            "title": "Scanned Folders",
+            "type": "integer",
+            "description": "Total number of folders scanned in the data scan.",
+            "format": "int32"
+          },
+          "total_sensitive_items": {
+            "title": "Total Sensitive Items",
+            "type": "integer",
+            "description": "Total number of sensitive items found in the data scan.",
+            "format": "int32"
+          },
+          "percent_sensitive_items": {
+            "title": "Percent Sensitive Items",
+            "type": "number",
+            "description": "Percentage of sensitive items found in the data scan.",
+            "format": "double"
+          },
+          "scan_started": {
+            "title": "Scan Start Time",
+            "type": "string",
+            "description": "Date and time when the scan started.",
+            "nullable": true
+          },
+          "scan_finished": {
+            "title": "Scan Finish Time",
+            "type": "string",
+            "description": "Date and time when the scan finished.",
+            "nullable": true
+          },
+          "grade": {
+            "title": "Grade",
+            "type": "number",
+            "description": "Overall grade of the scan.",
+            "format": "double"
+          },
+          "grade_alpha": {
+            "title": "Grade Alpha",
+            "type": "string",
+            "description": "Alphabetical representation of the scan grade.",
+            "nullable": true
+          },
+          "issuing_user": {
+            "title": "Issuing User",
+            "type": "string",
+            "description": "User who issued the scan.",
+            "nullable": true
+          },
+          "categories": {
+            "title": "Categories",
+            "type": "string",
+            "description": "Categories of data scanned.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a completed data scan with its associated details."
+      },
+      "CompletedSbHeader": {
+        "title": "Completed Secure Baseline Scan Header",
+        "type": "object",
+        "properties": {
+          "average_secure_baseline_grade": {
+            "title": "Average Secure Baseline Grade",
+            "type": "number",
+            "description": "Average grade of all completed secure baseline scans.",
+            "format": "double"
+          },
+          "average_secure_baseline_grade_alpha": {
+            "title": "Average Secure Baseline Grade Alpha",
+            "type": "string",
+            "description": "Alphabetical representation of the average secure baseline grade.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the header information for completed secure baseline scans."
+      },
+      "CompletedSbScans": {
+        "title": "Completed Secure Baseline Scan",
+        "type": "object",
+        "properties": {
+          "scan_id": {
+            "title": "Scan Id",
+            "type": "string",
+            "description": "Unique identifier for the scan.",
+            "nullable": true
+          },
+          "scan_name": {
+            "title": "Scan Name",
+            "type": "string",
+            "description": "Name of the scan.",
+            "nullable": true
+          },
+          "scan_type": {
+            "title": "Scan Type",
+            "type": "string",
+            "description": "Type of the scan.",
+            "nullable": true
+          },
+          "failed_tests": {
+            "title": "Passed Tests",
+            "type": "integer",
+            "description": "Number of tests that passed in the secure baseline scan.",
+            "format": "int32"
+          },
+          "score": {
+            "title": "Failed Tests",
+            "type": "number",
+            "description": "Number of tests that failed in the secure baseline scan.",
+            "format": "double"
+          },
+          "scan_started": {
+            "title": "Scan Start Time",
+            "type": "string",
+            "description": "Date and time when the scan started.",
+            "nullable": true
+          },
+          "scan_finished": {
+            "title": "Scan Finish Time",
+            "type": "string",
+            "description": "Date and time when the scan finished.",
+            "nullable": true
+          },
+          "grade": {
+            "title": "Grade",
+            "type": "number",
+            "description": "Overall grade of the scan.",
+            "format": "double"
+          },
+          "grade_alpha": {
+            "title": "Grade Alpha",
+            "type": "string",
+            "description": "Alphabetical representation of the scan grade.",
+            "nullable": true
+          },
+          "issuing_user": {
+            "title": "Issuing User",
+            "type": "string",
+            "description": "User who issued the scan.",
+            "nullable": true
+          },
+          "target_details": {
+            "title": "Target Details",
+            "type": "string",
+            "description": "Details about the target of the secure baseline scan.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a completed secure baseline scan with its associated details."
+      },
+      "CompletedVulnHeader": {
+        "title": "Completed Vulnerability Scan Header",
+        "type": "object",
+        "properties": {
+          "total_vulnerabilities": {
+            "title": "Total Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "total_critical_vulnerabilities": {
+            "title": "Total Critical Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of critical vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "total_high_vulnerabilities": {
+            "title": "Total High Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of high severity vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "total_medium_vulnerabilities": {
+            "title": "Total Medium Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of medium severity vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "total_low_vulnerabilities": {
+            "title": "Total Low Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of low severity vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "average_vulnerability_grade": {
+            "title": "Average Vulnerability Grade",
+            "type": "number",
+            "description": "Average grade of all completed vulnerability scans.",
+            "format": "double"
+          },
+          "average_vulnerability_grade_alpha": {
+            "title": "Average Vulnerability Grade Alpha",
+            "type": "string",
+            "description": "Alphabetical representation of the average vulnerability grade.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the header information for completed vulnerability scans."
+      },
+      "CompletedVulnScans": {
+        "title": "Completed Vulnerability Scan",
+        "type": "object",
+        "properties": {
+          "scan_id": {
+            "title": "Scan Id",
+            "type": "string",
+            "description": "Unique identifier for the scan.",
+            "nullable": true
+          },
+          "scan_name": {
+            "title": "Scan Name",
+            "type": "string",
+            "description": "Name of the scan.",
+            "nullable": true
+          },
+          "scan_type": {
+            "title": "Scan Type",
+            "type": "string",
+            "description": "Type of the scan.",
+            "nullable": true
+          },
+          "vulnerabilities": {
+            "title": "Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of vulnerabilities identified in the scan.",
+            "format": "int32"
+          },
+          "critical_vulnerabilities": {
+            "title": "Number of critical vulnerabilities",
+            "type": "integer",
+            "description": "Number of critical vulnerabilities identified in the scan.",
+            "format": "int32"
+          },
+          "high_vulnerabilities": {
+            "title": "Number of high severity vulnerabilities",
+            "type": "integer",
+            "description": "Number of high severity vulnerabilities identified in the scan.",
+            "format": "int32"
+          },
+          "medium_vulnerabilities": {
+            "title": "Number of medium severity vulnerabilities",
+            "type": "integer",
+            "description": "Number of medium severity vulnerabilities identified in the scan.",
+            "format": "int32"
+          },
+          "low_vulnerabilities": {
+            "title": "Number of low severity vulnerabilities",
+            "type": "integer",
+            "description": "Number of low severity vulnerabilities identified in the scan.",
+            "format": "int32"
+          },
+          "scan_started": {
+            "title": "Scan Start Time",
+            "type": "string",
+            "description": "Date and time when the scan started.",
+            "nullable": true
+          },
+          "scan_finished": {
+            "title": "Scan Finish Time",
+            "type": "string",
+            "description": "Date and time when the scan finished.",
+            "nullable": true
+          },
+          "grade": {
+            "title": "Grade",
+            "type": "number",
+            "description": "Overall grade of the scan.",
+            "format": "double"
+          },
+          "grade_alpha": {
+            "title": "Grade Alpha",
+            "type": "string",
+            "description": "Alphabetical representation of the scan grade.",
+            "nullable": true
+          },
+          "issuing_user": {
+            "title": "Issuing User",
+            "type": "string",
+            "description": "User who issued the scan.",
+            "nullable": true
+          },
+          "scan_type_name": {
+            "title": "Scan Type Name",
+            "type": "string",
+            "description": "Name of the scan type.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a completed vulnerability scan with its associated details."
+      },
+      "ConvertInstanceJson": {
+        "title": "Convert Instance JSON",
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "title": "Instance ID",
+            "type": "string",
+            "description": "The unique identifier for the instance.",
+            "nullable": true
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "The name of the instance.",
+            "nullable": true
+          },
+          "consulting_status": {
+            "title": "Consulting Status",
+            "type": "string",
+            "description": "The consulting status of the instance.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the JSON structure for converting an instance."
+      },
+      "CreateInstanceJson": {
+        "title": "Create Instance JSON",
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "title": "Instance ID",
+            "type": "string",
+            "description": "The unique identifier for the created instance.",
+            "nullable": true
+          },
+          "agent_key": {
+            "title": "Agent Key",
+            "type": "string",
+            "description": "The agent key associated with the created instance.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the JSON structure for creating a new instance."
+      },
+      "CreateInstanceRequest": {
+        "title": "Create Instance Request",
+        "required": [
+          "country",
+          "email",
+          "instance_type",
+          "is_consulting",
+          "name",
+          "parent_instance_id",
+          "short_name"
+        ],
+        "type": "object",
+        "properties": {
+          "instance_type": {
+            "title": "Instance Type",
+            "minLength": 1,
+            "type": "string",
+            "description": "Type of the instance to be created."
+          },
+          "is_consulting": {
+            "title": "Is Consulting",
+            "minLength": 1,
+            "type": "string",
+            "description": "Indicates if the instance is for consulting."
+          },
+          "parent_instance_id": {
+            "title": "Parent Instance ID",
+            "minLength": 1,
+            "type": "string",
+            "description": "ID of the parent instance."
+          },
+          "name": {
+            "title": "Name",
+            "minLength": 1,
+            "type": "string",
+            "description": "Name of the instance."
+          },
+          "short_name": {
+            "title": "Short Name",
+            "minLength": 1,
+            "type": "string",
+            "description": "Short name of the instance."
+          },
+          "country": {
+            "title": "Country",
+            "minLength": 1,
+            "type": "string",
+            "description": "Country of the instance."
+          },
+          "email": {
+            "title": "Email",
+            "minLength": 1,
+            "type": "string",
+            "description": "Email associated with the instance."
+          },
+          "mfa_type": {
+            "title": "MFA Type",
+            "type": "string",
+            "description": "Type of multi-factor authentication.",
+            "nullable": true
+          },
+          "tenant_id": {
+            "title": "Tenant ID",
+            "type": "string",
+            "description": "Tenant ID of the instance.",
+            "nullable": true
+          },
+          "state": {
+            "title": "Phone",
+            "type": "string",
+            "description": "Phone number associated with the instance.",
+            "nullable": true
+          },
+          "city": {
+            "title": "City",
+            "type": "string",
+            "description": "City of the instance.",
+            "nullable": true
+          },
+          "postal": {
+            "title": "Postal Code",
+            "type": "string",
+            "description": "Postal code of the instance.",
+            "nullable": true
+          },
+          "street": {
+            "title": "Street",
+            "type": "string",
+            "description": "Street address of the instance.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request data for creating a new instance."
+      },
+      "CreateInstanceUserRequest": {
+        "title": "Create Instance User Request",
+        "required": [
+          "first_name",
+          "instance_id",
+          "last_name",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "title": "Instance ID",
+            "minLength": 1,
+            "type": "string",
+            "description": "ID of the instance where the user will be created."
+          },
+          "username": {
+            "title": "Username",
+            "minLength": 1,
+            "type": "string",
+            "description": "Username for the new user."
+          },
+          "first_name": {
+            "title": "Password",
+            "minLength": 1,
+            "type": "string",
+            "description": "Password for the new user."
+          },
+          "last_name": {
+            "title": "Password",
+            "minLength": 1,
+            "type": "string",
+            "description": "Password for the new user."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request data for creating a new user in an instance."
+      },
+      "CreateUserJson": {
+        "title": "Create User JSON",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "User ID",
+            "type": "string",
+            "description": "The unique identifier for the user.",
+            "nullable": true
+          },
+          "username": {
+            "title": "Username",
+            "type": "string",
+            "description": "The username of the user.",
+            "nullable": true
+          },
+          "first_name": {
+            "title": "First Name",
+            "type": "string",
+            "description": "The first name of the user.",
+            "nullable": true
+          },
+          "last_name": {
+            "title": "Last Name",
+            "type": "string",
+            "description": "The last name of the user.",
+            "nullable": true
+          },
+          "enabled": {
+            "title": "Enabled Status",
+            "type": "string",
+            "description": "The enabled status of the user.",
+            "nullable": true
+          },
+          "instance_id": {
+            "title": "Instance ID",
+            "type": "string",
+            "description": "The unique identifier for the instance the user belongs to.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the JSON structure for creating a new user."
+      },
+      "Cve": {
+        "title": "CVE",
+        "type": "object",
+        "properties": {
+          "cve": {
+            "title": "CVE",
+            "type": "string",
+            "description": "CVE identifier",
+            "nullable": true
+          },
+          "title": {
+            "title": "CVE Title",
+            "type": "string",
+            "description": "Title or brief description of the CVE.",
+            "nullable": true
+          },
+          "score": {
+            "title": "CVSS score",
+            "type": "number",
+            "description": "CVSS score of the vulnerability.",
+            "format": "double"
+          },
+          "epssScore": {
+            "title": "EPSS score",
+            "type": "number",
+            "description": "EPSS score of the vulnerability.",
+            "format": "double"
+          },
+          "riskLevel": {
+            "title": "Risk level",
+            "type": "string",
+            "description": "Risk level of the vulnerability.",
+            "nullable": true
+          },
+          "exploitability": {
+            "title": "Exploitability",
+            "type": "string",
+            "description": "Exploitability details of the vulnerability.",
+            "nullable": true
+          },
+          "scanId": {
+            "title": "Scan Id",
+            "type": "integer",
+            "description": "Identifier of the scan in which the CVE was found.",
+            "format": "int32"
+          },
+          "cveId": {
+            "title": "CVE Id",
+            "type": "integer",
+            "description": "Unique numeric ID for the CVE.",
+            "format": "int32"
+          },
+          "firstSeen": {
+            "title": "First Seen",
+            "type": "string",
+            "description": "Date and time when the CVE was first seen.",
+            "format": "date-time"
+          },
+          "targetIp": {
+            "title": "Target Ip",
+            "type": "string",
+            "description": "Target IP address associated with the CVE.",
+            "nullable": true
+          },
+          "targetHostName": {
+            "title": "Target Host Name",
+            "type": "string",
+            "description": "Target host name associated with the CVE.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a CVE (Common Vulnerabilities and Exposures) entry with its details."
+      },
+      "CveItem": {
+        "title": "CVE Item",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "CVE ID",
+            "type": "string",
+            "description": "Unique identifier for the CVE.",
+            "nullable": true
+          },
+          "title": {
+            "title": "CVE Title",
+            "type": "string",
+            "description": "Title or brief description of the CVE.",
+            "nullable": true
+          },
+          "cve_score": {
+            "title": "CVSS Score",
+            "type": "number",
+            "description": "CVSS score of the vulnerability.",
+            "format": "double"
+          },
+          "cve_risk": {
+            "title": "EPSS Score",
+            "type": "string",
+            "description": "EPSS score of the vulnerability.",
+            "nullable": true
+          },
+          "published_date": {
+            "title": "Risk Level",
+            "type": "string",
+            "description": "Risk level of the vulnerability.",
+            "nullable": true
+          },
+          "affected_targets": {
+            "title": "Exploitability",
+            "type": "string",
+            "description": "Exploitability details of the vulnerability.",
+            "nullable": true
+          },
+          "num_affected_targets": {
+            "title": "Scan ID",
+            "type": "integer",
+            "description": "Identifier of the scan in which the CVE was found.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a Common Vulnerabilities and Exposures (CVE) item with its details."
+      },
+      "CveList": {
+        "title": "CVE List",
+        "type": "object",
+        "properties": {
+          "cve_items": {
+            "title": "CVE Items",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CveItem"
+            },
+            "description": "List of CVE items.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a list of Common Vulnerabilities and Exposures (CVE) items."
+      },
+      "DashboardBaseline": {
+        "title": "Dashboard Baseline",
+        "type": "object",
+        "properties": {
+          "current_grade": {
+            "title": "Current Grade",
+            "type": "string",
+            "description": "Current baseline grade.",
+            "nullable": true
+          },
+          "previous_grade": {
+            "title": "Previous Grade",
+            "type": "string",
+            "description": "Previous baseline grade.",
+            "nullable": true
+          },
+          "top_5_baselines": {
+            "title": "Top 5 Baselines",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaselinesTopFive"
+            },
+            "description": "List of top 5 baseline targets.",
+            "nullable": true
+          },
+          "lowest_pass_targets_domain": {
+            "title": "Lowest Pass Targets Domain",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaselinesLowestTen"
+            },
+            "description": "List of lowest pass targets for domain profiles.",
+            "nullable": true
+          },
+          "lowest_pass_targets_nondomain": {
+            "title": "Lowest Pass Targets Non-Domain",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaselinesLowestTen"
+            },
+            "description": "List of lowest pass targets for non-domain profiles.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents dashboard baseline data including grades and baseline targets."
+      },
+      "DashboardData": {
+        "title": "Dashboard Data",
+        "type": "object",
+        "properties": {
+          "current_grade": {
+            "title": "Current Grade",
+            "type": "string",
+            "description": "Current overall grade.",
+            "nullable": true
+          },
+          "previous_grade": {
+            "title": "Previous Grade",
+            "type": "string",
+            "description": "Previous overall grade.",
+            "nullable": true
+          },
+          "top_5_categories": {
+            "title": "Top 5 Categories",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SensitiveDataCategory"
+            },
+            "description": "List of top 5 sensitive data categories.",
+            "nullable": true
+          },
+          "top_10_most_sensitive": {
+            "title": "Top 10 Most Sensitive",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SensitiveDataTarget"
+            },
+            "description": "List of top 10 most sensitive data targets.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents dashboard data including grades and sensitive data information."
+      },
+      "DashboardOverallRisk": {
+        "title": "Dashboard Overall Risk",
+        "type": "object",
+        "properties": {
+          "previous_or_grade": {
+            "title": "Previous OR Grade",
+            "type": "string",
+            "description": "Overall risk grade from the previous assessment.",
+            "nullable": true
+          },
+          "current_or_grade": {
+            "title": "Current OR Grade",
+            "type": "string",
+            "description": "Overall risk grade from the current assessment.",
+            "nullable": true
+          },
+          "previous_ds_grade": {
+            "title": "Previous DS Grade",
+            "type": "string",
+            "description": "Data security grade from the previous assessment.",
+            "nullable": true
+          },
+          "current_ds_grade": {
+            "title": "Current DS Grade",
+            "type": "string",
+            "description": "Data security grade from the current assessment.",
+            "nullable": true
+          },
+          "previous_vn_grade": {
+            "title": "Previous VL Grade",
+            "type": "string",
+            "description": "Vulnerability level grade from the previous assessment.",
+            "nullable": true
+          },
+          "current_vn_grade": {
+            "title": "Current VL Grade",
+            "type": "string",
+            "description": "Vulnerability level grade from the current assessment.",
+            "nullable": true
+          },
+          "previous_sb_grade": {
+            "title": "Previous SB Grade",
+            "type": "string",
+            "description": "Secure baseline grade from the previous assessment.",
+            "nullable": true
+          },
+          "current_sb_grade": {
+            "title": "Current SB Grade",
+            "type": "string",
+            "description": "Secure baseline grade from the current assessment.",
+            "nullable": true
+          },
+          "previous_cmpl_grade": {
+            "title": "Previous CMPL Grade",
+            "type": "string",
+            "description": "Compliance grade from the previous assessment.",
+            "nullable": true
+          },
+          "current_cmpl_grade": {
+            "title": "Current CMPL Grade",
+            "type": "string",
+            "description": "Compliance grade from the current assessment.",
+            "nullable": true
+          },
+          "FinancialData": {
+            "$ref": "#/components/schemas/FinancialData"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the overall risk dashboard with various grades and financial data."
+      },
+      "DashboardVulnerability": {
+        "title": "Dashboard Vulnerability",
+        "type": "object",
+        "properties": {
+          "current_grade": {
+            "title": "Current Grade",
+            "type": "string",
+            "description": "Current vulnerability grade.",
+            "nullable": true
+          },
+          "previous_grade": {
+            "title": "Previous Grade",
+            "type": "string",
+            "description": "Previous vulnerability grade.",
+            "nullable": true
+          },
+          "top_5_profiles": {
+            "title": "Top 5 Profiles",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VulnerabilityProfile"
+            },
+            "description": "List of top 5 vulnerability profiles.",
+            "nullable": true
+          },
+          "target_results": {
+            "title": "Target Results",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SensitiveVulnTarget"
+            },
+            "description": "List of sensitive vulnerability targets.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents dashboard vulnerability data including grades, top profiles, and target results."
+      },
+      "ErrorJson": {
+        "title": "Error Response",
+        "type": "object",
+        "properties": {
+          "error": {
+            "title": "Error Code",
+            "type": "string",
+            "description": "The error code representing the type of error.",
+            "nullable": true
+          },
+          "error_description": {
+            "title": "Error Description",
+            "type": "string",
+            "description": "A detailed description of the error.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents an error response with error code and description."
+      },
+      "FinancialData": {
+        "title": "Financial Data",
+        "type": "object",
+        "properties": {
+          "num_targets": {
+            "title": "Number of Targets",
+            "type": "integer",
+            "description": "Total number of targets assessed.",
+            "format": "int32"
+          },
+          "num_employees": {
+            "title": "Number of Employees",
+            "type": "integer",
+            "description": "Total number of employees in the organization.",
+            "format": "int32"
+          },
+          "dt_cost": {
+            "title": "Revenue",
+            "type": "number",
+            "description": "Total revenue of the organization.",
+            "format": "double"
+          },
+          "breach_cost": {
+            "title": "Breach Cost",
+            "type": "number",
+            "description": "Estimated cost of a potential data breach.",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents financial data related to the overall risk assessment."
+      },
+      "Flaw": {
+        "title": "Flaw (alert)",
+        "type": "object",
+        "properties": {
+          "alertId": {
+            "title": "Alert Id",
+            "type": "integer",
+            "description": "Unique identifier for the alert.",
+            "format": "int32"
+          },
+          "port": {
+            "title": "Port Number",
+            "type": "integer",
+            "description": "Port number associated with the alert.",
+            "format": "int32"
+          },
+          "alertRef": {
+            "title": "Alert Reference",
+            "type": "string",
+            "description": "Reference code for the alert.",
+            "nullable": true
+          },
+          "alertName": {
+            "title": "Alert Name",
+            "type": "string",
+            "description": "Name of the alert.",
+            "nullable": true
+          },
+          "riskLevel": {
+            "title": "Risk Level",
+            "type": "string",
+            "description": "Risk level of the alert.",
+            "nullable": true
+          },
+          "alertCount": {
+            "title": "Alert Count",
+            "type": "integer",
+            "description": "Count of occurrences for the alert.",
+            "format": "int32"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string",
+            "description": "Target associated with the alert.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a flaw identified on an asset with its details."
+      },
+      "GetCompletedDataScansJson": {
+        "title": "Get Completed Data Scans JSON",
+        "type": "object",
+        "properties": {
+          "header": {
+            "$ref": "#/components/schemas/CompletedDataHeader"
+          },
+          "data_scans": {
+            "title": "Data Scans",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedDataScans"
+            },
+            "description": "List of completed data scans.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the JSON structure for retrieving completed data scans."
+      },
+      "GetCompletedSbScansJson": {
+        "title": "Get Completed Secure Baseline Scans JSON",
+        "type": "object",
+        "properties": {
+          "header": {
+            "$ref": "#/components/schemas/CompletedSbHeader"
+          },
+          "secure_baseline_scans": {
+            "title": "Secure Baseline Scans",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedSbScans"
+            },
+            "description": "List of completed secure baseline scans.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the JSON structure for retrieving completed secure baseline scans."
+      },
+      "GetCompletedScansHeaderJson": {
+        "title": "Completed Scans Header",
+        "type": "object",
+        "properties": {
+          "data_scan_items": {
+            "title": "Data Scan Items",
+            "type": "integer",
+            "description": "Total number of items scanned in data scans.",
+            "format": "int32"
+          },
+          "data_scan_folders": {
+            "title": "Data Scan Folders",
+            "type": "integer",
+            "description": "Total number of folders scanned in data scans.",
+            "format": "int32"
+          },
+          "data_scan_sensitive_items": {
+            "title": "Data Scan Sensitive Items",
+            "type": "integer",
+            "description": "Total number of sensitive items found in data scans.",
+            "format": "int32"
+          },
+          "average_data_scan_grade": {
+            "title": "Average Data Scan Grade",
+            "type": "number",
+            "description": "Average grade of all completed data scans.",
+            "format": "double"
+          },
+          "average_data_scan_grade_alpha": {
+            "title": "Average Data Scan Grade Alpha",
+            "type": "string",
+            "description": "Alphabetical representation of the average data scan grade.",
+            "nullable": true
+          },
+          "times_data_category_scanned": {
+            "title": "Times Data Category Scanned",
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Dictionary mapping data categories to the number of times they were scanned.",
+            "nullable": true
+          },
+          "total_vulnerabilities": {
+            "title": "Total Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "total_critical_vulnerabilities": {
+            "title": "Total Critical Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of critical vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "total_high_vulnerabilities": {
+            "title": "Total High Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of high severity vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "total_medium_vulnerabilities": {
+            "title": "Total Medium Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of medium severity vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "total_low_vulnerabilities": {
+            "title": "Total Low Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of low severity vulnerabilities found across all completed vulnerability scans.",
+            "format": "int32"
+          },
+          "average_vulnerability_grade": {
+            "title": "Average Vulnerability Grade",
+            "type": "number",
+            "description": "Average grade of all completed vulnerability scans.",
+            "format": "double"
+          },
+          "average_vulnerability_grade_alpha": {
+            "title": "Average Vulnerability Grade Alpha",
+            "type": "string",
+            "description": "Alphabetical representation of the average vulnerability grade.",
+            "nullable": true
+          },
+          "average_secure_baseline_grade": {
+            "title": "Average Secure Baseline Grade",
+            "type": "number",
+            "description": "Average grade of all completed secure baseline scans.",
+            "format": "double"
+          },
+          "average_secure_baseline_grade_alpha": {
+            "title": "Average Secure Baseline Grade Alpha",
+            "type": "string",
+            "description": "Alphabetical representation of the average secure baseline grade.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the header information for completed scans including data scans, vulnerability scans, and secure baseline scans."
+      },
+      "GetCompletedScansJson": {
+        "title": "Get Completed Scans JSON",
+        "type": "object",
+        "properties": {
+          "header": {
+            "$ref": "#/components/schemas/GetCompletedScansHeaderJson"
+          },
+          "data_scans": {
+            "title": "Data Scans",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedDataScans"
+            },
+            "description": "List of completed data scans.",
+            "nullable": true
+          },
+          "vulnerability_scans": {
+            "title": "Vulnerability Scans",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedVulnScans"
+            },
+            "description": "List of completed vulnerability scans.",
+            "nullable": true
+          },
+          "secure_baseline_scans": {
+            "title": "Secure Baseline Scans",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedSbScans"
+            },
+            "description": "List of completed secure baseline scans.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the JSON structure for retrieving completed scans including data scans, vulnerability scans, and secure baseline scans."
+      },
+      "GetCompletedVulnScansJson": {
+        "title": "Get Completed Vulnerability Scans JSON",
+        "type": "object",
+        "properties": {
+          "header": {
+            "$ref": "#/components/schemas/CompletedVulnHeader"
+          },
+          "vulnerability_scans": {
+            "title": "Vulnerability Scans",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedVulnScans"
+            },
+            "description": "List of completed vulnerability scans.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the JSON structure for retrieving completed vulnerability scans."
+      },
+      "InternalAuthAsset": {
+        "title": "Internal Authenticate Asset",
+        "type": "object",
+        "properties": {
+          "AssetScore": {
+            "title": "Asset Score",
+            "type": "string",
+            "description": "The asset score indicating the overall risk level of the asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "TotalNumberOfVulnerabilities": {
+            "title": "Total Number Of Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of vulnerabilities identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfCriticalVulnerabilities": {
+            "title": "Number Of Critical Vulnerabilities",
+            "type": "integer",
+            "description": "Number of critical vulnerabilities identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfHighVulnerabilities": {
+            "title": "Number Of High Vulnerabilities",
+            "type": "integer",
+            "description": "Number of high severity vulnerabilities identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfMediumVulnerabilities": {
+            "title": "Number Of Medium Vulnerabilities",
+            "type": "integer",
+            "description": "Number of medium severity vulnerabilities identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "NumberOfLowVulnerabilities": {
+            "title": "Number Of Low Vulnerabilities",
+            "type": "integer",
+            "description": "Number of low severity vulnerabilities identified for this asset.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "AssetName": {
+            "title": "Asset Name",
+            "type": "string",
+            "description": "Name of the asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "AgentName": {
+            "title": "Agent Name",
+            "type": "string",
+            "description": "Name of the agent associated with this asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "LastChecked": {
+            "title": "Last Time Asset Checked",
+            "type": "string",
+            "description": "The date and time when the asset was last checked.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "LastScan": {
+            "title": "Last Scan Date",
+            "type": "string",
+            "description": "The date and time when the asset was last scanned.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "Tags": {
+            "title": "Tags",
+            "type": "string",
+            "description": "Tags associated with the asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "RootCauses": {
+            "title": "Root Causes",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalAuthDetailsRootCause"
+            },
+            "description": "Root causes identified for vulnerabilities on this asset.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "CVEs": {
+            "title": "CVEs",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalAuthDetailsCVE"
+            },
+            "description": "List of CVEs associated with this asset.",
+            "nullable": true
+          },
+          "OpenPorts": {
+            "title": "Open Ports",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalAuthDetailsOpenPort"
+            },
+            "description": "List of open ports identified on this asset.",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents an internal authenticated asset and its associated vulnerability and scan details."
+      },
+      "InternalAuthDetailsCVE": {
+        "title": "Internal Authenticated Details CVE",
+        "type": "object",
+        "properties": {
+          "CveID": {
+            "title": "CVE",
+            "type": "string",
+            "description": "The Common Vulnerabilities and Exposures (CVE) identifier.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "CveTitle": {
+            "title": "CVE Title",
+            "type": "string",
+            "description": "The title or brief description of the CVE.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "FirstSeen": {
+            "title": "First Seen On",
+            "type": "string",
+            "description": "The date and time when the CVE was first observed.",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "Exploitability": {
+            "title": "Exploitability",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of exploitability details associated with the CVE.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "Severity": {
+            "title": "Severity",
+            "type": "string",
+            "description": "The severity level of the CVE.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "CVSS": {
+            "title": "CVSS",
+            "type": "number",
+            "description": "The Common Vulnerability Scoring System (CVSS) score for the CVE.",
+            "format": "double",
+            "readOnly": true
+          },
+          "EPSS": {
+            "title": "EPSS",
+            "type": "number",
+            "description": "The Exploit Prediction Scoring System (EPSS) score for the CVE.",
+            "format": "double",
+            "readOnly": true
+          },
+          "ScanId": {
+            "title": "Last Scan Id",
+            "type": "integer",
+            "description": "The identifier of the last scan that detected this CVE.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "Patchable": {
+            "title": "Patchable",
+            "type": "boolean",
+            "description": "Indicates whether the CVE is patchable.",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the details of a Common Vulnerabilities and Exposures (CVE) entry."
+      },
+      "InternalAuthDetailsOpenPort": {
+        "title": "Internal Authenticated Details Open Port",
+        "type": "object",
+        "properties": {
+          "OpenPort": {
+            "title": "Scan Id",
+            "type": "string",
+            "description": "The ID of the scan that identified this open port.",
+            "nullable": true
+          },
+          "OpenPortName": {
+            "title": "Port Name",
+            "type": "string",
+            "description": "The name or service associated with the open port.",
+            "nullable": true
+          },
+          "Protocol": {
+            "title": "Protocol Type",
+            "type": "string",
+            "description": "The type of the open port (e.g., TCP, UDP).",
+            "nullable": true
+          },
+          "Severity": {
+            "title": "Severity",
+            "type": "string",
+            "description": "The severity level of vulnerabilities associated with this open port.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents details about an open network port on an asset, including its number, associated service, protocol type, and vulnerability severity."
+      },
+      "InternalAuthDetailsRootCause": {
+        "title": "Internal Authenticated Details Root Cause",
+        "type": "object",
+        "properties": {
+          "RootCause": {
+            "title": "Root Cause",
+            "type": "string",
+            "description": "The description of the root cause for vulnerabilities on the asset.",
+            "nullable": true
+          },
+          "FirstSeen": {
+            "title": "First Seen",
+            "type": "string",
+            "description": "The date and time when the root cause was first observed.",
+            "format": "date-time"
+          },
+          "Exploitability": {
+            "title": "Exploitability",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The list of exploitability types associated with the root cause.",
+            "nullable": true
+          },
+          "HighestCVSS": {
+            "title": "Severity",
+            "type": "number",
+            "description": "The highest severity level among the vulnerabilities linked to this root cause.",
+            "format": "double"
+          },
+          "HighestEPSS": {
+            "title": "EPSS",
+            "type": "number",
+            "description": "The highest EPSS score among the vulnerabilities linked to this root cause.",
+            "format": "double"
+          },
+          "TotalNumberOfVulnerabilities": {
+            "title": "Total Number Of Vulnerabilities",
+            "type": "integer",
+            "description": "The total number of vulnerabilities associated with this root cause.",
+            "format": "int32"
+          },
+          "Patchable": {
+            "title": "Patchable",
+            "type": "boolean",
+            "description": "Indicates whether the vulnerabilities related to this root cause are patchable."
+          },
+          "Id": {
+            "title": "Id",
+            "type": "integer",
+            "description": "The unique identifier for the root cause.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the root cause details for vulnerabilities identified on an asset."
+      },
+      "PaginatedRequest": {
+        "title": "Paginated Request",
+        "type": "object",
+        "properties": {
+          "limit": {
+            "title": "Limit",
+            "type": "string",
+            "description": "The maximum number of items to return. Default value is 1000.",
+            "nullable": true
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "string",
+            "description": "The number of items to skip before starting to collect the result set. Default value is 0.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a paginated request with limit and offset parameters."
+      },
+      "PartnerIpVuln": {
+        "title": "IpVulnerabilities",
+        "type": "object",
+        "properties": {
+          "RiskGrade": {
+            "title": "Asset Score",
+            "type": "string",
+            "description": "The asset score indicating the overall risk level of the asset.",
+            "nullable": true
+          },
+          "TotalCVECount": {
+            "title": "Total Number Of Vulnerabilities",
+            "type": "integer",
+            "description": "Total number of vulnerabilities identified for this asset.",
+            "format": "int32"
+          },
+          "CriticalCount": {
+            "title": "Number Of Critical Vulnerabilities",
+            "type": "integer",
+            "description": "Number of critical vulnerabilities identified for this asset.",
+            "format": "int32"
+          },
+          "HighCount": {
+            "title": "Number Of High Vulnerabilities",
+            "type": "integer",
+            "description": "Number of high severity vulnerabilities identified for this asset.",
+            "format": "int32"
+          },
+          "MediumCount": {
+            "title": "Number Of Medium Vulnerabilities",
+            "type": "integer",
+            "description": "Number of medium severity vulnerabilities identified for this asset.",
+            "format": "int32"
+          },
+          "LowCount": {
+            "title": "Number Of Low Vulnerabilities",
+            "type": "integer",
+            "description": "Number of low severity vulnerabilities identified for this asset.",
+            "format": "int32"
+          },
+          "DeviceFingerprint": {
+            "title": "Device Fingerprint",
+            "type": "string",
+            "description": "The device fingerprint for this asset.",
+            "nullable": true
+          },
+          "MACAddress": {
+            "title": "MAC Address",
+            "type": "string",
+            "description": "The MAC address for this asset.",
+            "nullable": true
+          },
+          "MACVendor": {
+            "title": "MAC Vendor",
+            "type": "string",
+            "description": "The MAC vendor for this asset.",
+            "nullable": true
+          },
+          "SNMPResult": {
+            "title": "SNMP Result",
+            "type": "string",
+            "description": "The SNMP result for this asset.",
+            "nullable": true
+          },
+          "FinishTime": {
+            "title": "Finish Time",
+            "type": "string",
+            "description": "The finish time of the last scan for this asset.",
+            "format": "date-time"
+          },
+          "CVEs": {
+            "title": "CVEs",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerIpVulnCve"
+            },
+            "description": "List of CVEs identified for this asset.",
+            "nullable": true
+          },
+          "OpenPorts": {
+            "title": "Open ports",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerIpVulnOpenPort"
+            },
+            "description": "List of open ports identified for this asset.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents an IP asset with its associated vulnerability and scan details."
+      },
+      "PartnerIpVulnCve": {
+        "title": "IpVulnerabilityCVE",
+        "type": "object",
+        "properties": {
+          "CveID": {
+            "title": "CVE",
+            "type": "string",
+            "description": "The Common Vulnerabilities and Exposures (CVE) identifier.",
+            "nullable": true
+          },
+          "Title": {
+            "title": "CVE Title",
+            "type": "string",
+            "description": "The title or description of the CVE.",
+            "nullable": true
+          },
+          "FirstSeen": {
+            "title": "First Seen",
+            "type": "string",
+            "description": "The date and time when the CVE was first seen.",
+            "format": "date-time"
+          },
+          "Exploitability": {
+            "title": "Exploitability",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of exploitability types associated with this CVE.",
+            "nullable": true
+          },
+          "Severity": {
+            "title": "Severity",
+            "type": "string",
+            "description": "The severity level of the CVE.",
+            "nullable": true
+          },
+          "CVSS": {
+            "title": "CVSS",
+            "type": "number",
+            "description": "The Common Vulnerability Scoring System (CVSS) score for the CVE.",
+            "format": "double"
+          },
+          "EPSS": {
+            "title": "EPSS",
+            "type": "number",
+            "description": "The Exploit Prediction Scoring System (EPSS) score for the CVE.",
+            "format": "double"
+          },
+          "ScanId": {
+            "title": "Last Scan Id",
+            "type": "integer",
+            "description": "The ID of the last scan that identified this CVE.",
+            "format": "int32"
+          },
+          "Patchable": {
+            "title": "Patchable",
+            "type": "boolean",
+            "description": "Indicates whether the CVE is patchable."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the details of a Common Vulnerabilities and Exposures (CVE) entry."
+      },
+      "PartnerIpVulnOpenPort": {
+        "title": "IpVulnerabilityOpenPort",
+        "type": "object",
+        "properties": {
+          "ScanId": {
+            "title": "Scan Id",
+            "type": "integer",
+            "description": "The ID of the scan that identified this open port.",
+            "format": "int32"
+          },
+          "PortNumber": {
+            "title": "Port Numer",
+            "type": "string",
+            "description": "The port number that is open.",
+            "nullable": true
+          },
+          "PortDescription": {
+            "title": "Port Name",
+            "type": "string",
+            "description": "The name of the open port.",
+            "nullable": true
+          },
+          "RiskLevel": {
+            "title": "Severity",
+            "type": "string",
+            "description": "The severity level associated with the open port.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents details about an open network port on an asset, including its number, associated service, protocol type, and vulnerability severity."
+      },
+      "PartnerLoginRequest": {
+        "title": "Partner Login Form",
+        "required": [
+          "Password",
+          "Username"
+        ],
+        "type": "object",
+        "properties": {
+          "Username": {
+            "title": "Username",
+            "minLength": 1,
+            "type": "string",
+            "description": "The username for partner login."
+          },
+          "Password": {
+            "title": "Password",
+            "minLength": 1,
+            "type": "string",
+            "description": "The password for partner login."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Form data for partner login."
+      },
+      "PartnerLoginWithGrantTypeRequest": {
+        "title": "Partner Login Form",
+        "required": [
+          "GrantType",
+          "Password",
+          "Username"
+        ],
+        "type": "object",
+        "properties": {
+          "Username": {
+            "title": "Username",
+            "minLength": 1,
+            "type": "string",
+            "description": "The username for partner login."
+          },
+          "Password": {
+            "title": "Password",
+            "minLength": 1,
+            "type": "string",
+            "description": "The password for partner login."
+          },
+          "GrantType": {
+            "title": "Grant Type",
+            "minLength": 1,
+            "type": "string",
+            "description": "The grant type for partner login."
+          },
+          "Scope": {
+            "title": "Grant Type",
+            "type": "string",
+            "description": "The grant type for partner login.",
+            "nullable": true
+          },
+          "SecondsUntilExpire": {
+            "title": "Seconds Until Expire",
+            "type": "string",
+            "description": "The number of seconds until the token expires.",
+            "nullable": true
+          },
+          "ClientId": {
+            "title": "Client ID",
+            "type": "string",
+            "description": "The client ID for partner login.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Form data for partner login."
+      },
+      "PartnerWebAppVuln": {
+        "title": "Web App Vulnerabilities",
+        "type": "object",
+        "properties": {
+          "TotalNumberFindings": {
+            "title": "Total Number Of Findings",
+            "type": "integer",
+            "description": "Total number of findings identified in the web application.",
+            "format": "int32"
+          },
+          "NumberOfHighVulnFindings": {
+            "title": "Number Of High Vulnerability Findings",
+            "type": "integer",
+            "description": "Number of high severity vulnerability findings.",
+            "format": "int32"
+          },
+          "NumberOfMedVulnFindings": {
+            "title": "Number Of Medium Vulnerability Findings",
+            "type": "integer",
+            "description": "Number of medium severity vulnerability findings.",
+            "format": "int32"
+          },
+          "NumberOfLowVulnFindings": {
+            "title": "Number Of Low Vulnerability Findings",
+            "type": "integer",
+            "description": "Number of low severity vulnerability findings.",
+            "format": "int32"
+          },
+          "NumberOfInfoVulnFindings": {
+            "title": "Number Of Informational Vulnerability Findings",
+            "type": "integer",
+            "description": "Number of informational severity vulnerability findings.",
+            "format": "int32"
+          },
+          "RiskGrade": {
+            "title": "Risk Grade",
+            "type": "string",
+            "description": "The risk grade assigned to the web application based on the findings.",
+            "nullable": true
+          },
+          "Findings": {
+            "title": "Findings",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerWebAppVulnFinding"
+            },
+            "description": "List of detailed vulnerability findings for the web application.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a web application vulnerability report from a partner API."
+      },
+      "PartnerWebAppVulnFinding": {
+        "title": "Web App Vulnerability Finding",
+        "type": "object",
+        "properties": {
+          "FindingName": {
+            "title": "Finding Name",
+            "type": "string",
+            "description": "Name of the vulnerability finding.",
+            "nullable": true
+          },
+          "FindingDescription": {
+            "title": "Finding Description",
+            "type": "string",
+            "description": "Description of the vulnerability finding.",
+            "nullable": true
+          },
+          "FindingSolution": {
+            "title": "Finding Solution",
+            "type": "string",
+            "description": "Recommended solution for the vulnerability finding.",
+            "nullable": true
+          },
+          "FindingOther": {
+            "title": "Finding Other",
+            "type": "string",
+            "description": "Other relevant information about the vulnerability finding.",
+            "nullable": true
+          },
+          "FindingReferenceURLs": {
+            "title": "Finding Reference URLs",
+            "type": "string",
+            "description": "Reference URLs for the vulnerability finding.",
+            "nullable": true
+          },
+          "FindingRiskLevelName": {
+            "title": "Severity",
+            "type": "string",
+            "description": "Risk level name associated with the vulnerability finding.",
+            "nullable": true
+          },
+          "FindingsCount": {
+            "title": "Findings Count",
+            "type": "integer",
+            "description": "Count of occurrences of this vulnerability finding.",
+            "format": "int32"
+          },
+          "FindingDetails": {
+            "title": "Finding Details",
+            "type": "string",
+            "description": "Detailed information about the vulnerability finding.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a single vulnerability finding in a web application."
+      },
+      "Port": {
+        "title": "Port",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Port Id",
+            "type": "integer",
+            "description": "Unique identifier for the port.",
+            "format": "int32"
+          },
+          "targetIp": {
+            "title": "Target Ip",
+            "type": "string",
+            "description": "Target IP address associated with the port.",
+            "nullable": true
+          },
+          "targetName": {
+            "title": "Target Name",
+            "type": "string",
+            "description": "Target name associated with the port.",
+            "nullable": true
+          },
+          "portNumber": {
+            "title": "Port Number",
+            "type": "string",
+            "description": "Port number (e.g., \"80\", \"443\").",
+            "nullable": true
+          },
+          "portProtocol": {
+            "title": "Port Protocol",
+            "type": "string",
+            "description": "Protocol used by the port (e.g., \"TCP\", \"UDP\").",
+            "nullable": true
+          },
+          "portDescription": {
+            "title": "Port Description",
+            "type": "string",
+            "description": "Description of the port service.",
+            "nullable": true
+          },
+          "riskLevel": {
+            "title": "Risk Level",
+            "type": "string",
+            "description": "Risk level associated with the port.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents an open network port on an asset with its details."
+      },
+      "ReactivateInstanceJson": {
+        "title": "Reactivate Instance JSON",
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "title": "Instance ID",
+            "type": "string",
+            "description": "The unique identifier for the instance.",
+            "nullable": true
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "The name of the instance.",
+            "nullable": true
+          },
+          "enabled": {
+            "title": "Enabled Status",
+            "type": "integer",
+            "description": "The enabled status of the instance.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the JSON structure for reactivating an instance."
+      },
+      "SensitiveDataCategory": {
+        "title": "Sensitive Data Category",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Category Name",
+            "type": "string",
+            "description": "Name of the sensitive data category.",
+            "nullable": true
+          },
+          "times_searched": {
+            "title": "Times Searched",
+            "type": "integer",
+            "description": "Number of times the category has been searched.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a sensitive data category with its name and search frequency."
+      },
+      "SensitiveDataTarget": {
+        "title": "Sensitive Data Target",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Target Name",
+            "type": "string",
+            "description": "Name of the sensitive data target.",
+            "nullable": true
+          },
+          "ip_address": {
+            "title": "IP Address",
+            "type": "string",
+            "description": "IP address of the sensitive data target.",
+            "nullable": true
+          },
+          "last_scanned": {
+            "title": "Last Scanned",
+            "type": "string",
+            "description": "Date and time when the target was last scanned.",
+            "nullable": true
+          },
+          "total_scans": {
+            "title": "Total Scans",
+            "type": "integer",
+            "description": "Total number of scans conducted on the target.",
+            "format": "int32"
+          },
+          "total_sensitive_items": {
+            "title": "Total Sensitive Items",
+            "type": "integer",
+            "description": "Total number of sensitive items found on the target.",
+            "format": "int32"
+          },
+          "percent_sensitive": {
+            "title": "Percent Sensitive",
+            "type": "number",
+            "description": "Percentage of sensitive items found on the target.",
+            "format": "double"
+          },
+          "risk_grade": {
+            "title": "Risk Grade",
+            "type": "string",
+            "description": "Risk grade associated with the target.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a sensitive data target with its details."
+      },
+      "SensitiveVulnTarget": {
+        "title": "Sensitive Vulnerability Target",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Target Name",
+            "type": "string",
+            "description": "Name of the sensitive vulnerability target.",
+            "nullable": true
+          },
+          "ip_address": {
+            "title": "IP Address",
+            "type": "string",
+            "description": "IP address of the sensitive vulnerability target.",
+            "nullable": true
+          },
+          "os": {
+            "title": "Operating System",
+            "type": "string",
+            "description": "Operating system of the target.",
+            "nullable": true
+          },
+          "last_scanned": {
+            "title": "Last Scanned",
+            "type": "string",
+            "description": "Date and time when the target was last scanned.",
+            "nullable": true
+          },
+          "vuln_count_critical": {
+            "title": "Total Scans",
+            "type": "integer",
+            "description": "Total number of scans conducted on the target.",
+            "format": "int32"
+          },
+          "vuln_count_high": {
+            "title": "High Vulnerabilities",
+            "type": "integer",
+            "description": "Number of high severity vulnerabilities found on the target.",
+            "format": "int32"
+          },
+          "vuln_count_medium": {
+            "title": "Medium Vulnerabilities",
+            "type": "integer",
+            "description": "Number of medium severity vulnerabilities found on the target.",
+            "format": "int32"
+          },
+          "vuln_count_low": {
+            "title": "Low Vulnerabilities",
+            "type": "integer",
+            "description": "Number of low severity vulnerabilities found on the target.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a sensitive vulnerability target with its details."
+      },
+      "SubordinateInstanceInfoWithTree": {
+        "title": "Subordinate Instance Info",
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "title": "Instance ID",
+            "type": "string",
+            "description": "The unique identifier for the instance.",
+            "nullable": true
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "The name of the instance.",
+            "nullable": true
+          },
+          "short_name": {
+            "title": "Short Name",
+            "type": "string",
+            "description": "The short name of the instance.",
+            "nullable": true
+          },
+          "parent_id": {
+            "title": "Parent ID",
+            "type": "string",
+            "description": "The unique identifier for the parent instance.",
+            "nullable": true
+          },
+          "hierarchy": {
+            "title": "Hierarchy",
+            "type": "string",
+            "description": "The hierarchical tree structure of the instance.",
+            "nullable": true
+          },
+          "instance_type": {
+            "title": "Instance Type",
+            "type": "string",
+            "description": "The type of the instance and indicates if this is an organization (usually an MSP, or MSSP) or an end instance (indicated as 'standard').",
+            "nullable": true
+          },
+          "is_consulting": {
+            "title": "Is Consulting",
+            "type": "boolean",
+            "description": "Indicates whether the instance is a trial (generally used during a consulting engagement) or a month-to-month instance."
+          },
+          "number_of_endpoints": {
+            "title": "Number of Endpoints",
+            "type": "integer",
+            "description": "The number of endpoints associated with the instance.",
+            "format": "int32"
+          },
+          "url": {
+            "title": "Number of Users",
+            "type": "string",
+            "description": "The number of users associated with the instance.",
+            "nullable": true
+          },
+          "tenant_id": {
+            "title": "Tenant ID",
+            "type": "string",
+            "description": "The tenant identifier associated with the instance.",
+            "nullable": true
+          },
+          "agent_key": {
+            "title": "Agent Key",
+            "type": "string",
+            "description": "The agent key associated with the instance.",
+            "nullable": true
+          },
+          "mfa": {
+            "title": "MFA",
+            "type": "string",
+            "description": "The MFA settings associated with the instance.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents information about a subordinate instance."
+      },
+      "SuspendInstanceJson": {
+        "title": "Suspend Instance JSON",
+        "type": "object",
+        "properties": {
+          "instanceID": {
+            "title": "Instance ID",
+            "type": "string",
+            "description": "The unique identifier for the instance.",
+            "nullable": true
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "The name of the instance.",
+            "nullable": true
+          },
+          "enabled": {
+            "title": "Enabled Status",
+            "type": "integer",
+            "description": "The enabled status of the instance.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the JSON structure for suspending an instance."
+      },
+      "UpdatePartnerMFARequest": {
+        "title": "Update Partner MFA Request",
+        "type": "object",
+        "properties": {
+          "mfa_type": {
+            "title": "MFA Type",
+            "type": "string",
+            "description": "The type of MFA to be set for the partner. Type switch: 0 = none, 1 = email, 2 = authenticator (TOTP)",
+            "nullable": true
+          },
+          "instance_id": {
+            "title": "Instance ID",
+            "type": "string",
+            "description": "ID of the instance being modified",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a request to update the MFA settings for a partner."
+      },
+      "VulnerabilityProfile": {
+        "title": "Vulnerability Profile",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Profile Name",
+            "type": "string",
+            "description": "Name of the vulnerability profile.",
+            "nullable": true
+          },
+          "times_used": {
+            "title": "Times Used",
+            "type": "integer",
+            "description": "Number of times the profile has been used.",
+            "format": "int32"
+          },
+          "machines": {
+            "title": "Machines",
+            "type": "integer",
+            "description": "Number of machines associated with the profile.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a vulnerability profile with its name, usage frequency, and associated machines."
+      },
+      "VulnerabilityScan": {
+        "title": "Vulnerability Scan",
+        "type": "object",
+        "properties": {
+          "scanId": {
+            "title": "Scan Id",
+            "type": "integer",
+            "description": "Unique identifier for the scan.",
+            "format": "int32"
+          },
+          "scanName": {
+            "title": "Scan Name",
+            "type": "string",
+            "description": "Name of the scan.",
+            "nullable": true
+          },
+          "scanType": {
+            "title": "Scan Type",
+            "type": "string",
+            "description": "Type of the scan",
+            "nullable": true
+          },
+          "scanStart": {
+            "title": "Scan Start",
+            "type": "string",
+            "description": "Start and end times of the scan.",
+            "format": "date-time"
+          },
+          "scanEnd": {
+            "title": "Scan End",
+            "type": "string",
+            "description": "End time of the scan.",
+            "format": "date-time"
+          },
+          "assets": {
+            "title": "Assets",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Asset"
+            },
+            "description": "List of assets included in the scan.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a vulnerability scan with its associated assets and their vulnerabilities."
+      }
     }
   }
 }
