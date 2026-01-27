@@ -12,7 +12,7 @@
           "Dashboards"
         ],
         "summary": "Overall risk dashboard for instance",
-        "description": "Returns overall risk dashboard data for the instance associated with the access token.\r\n\r\nThe overall risk dashboard includes metrics such as total risk score, risk grade, and breakdown of risks by category.\r\n\r\nIn the output, the respective grades are represented by scan type. There is Current and Previous grades for each where the period duration is either monthly or quarterly depending on that instance’s system settings. The scan types are:\r\n- Or\t- Overall Risk\r\n- Ds\t- Data Scans\r\n- Vn\t- Vulnerability Scans\r\n- Sb\t- Secure Baseline Scans\r\n- Cmpl\t- Compliance Grade\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "description": "Returns overall risk dashboard data for the instance associated with the access token.\r\n\r\nThe overall risk dashboard includes metrics such as total risk score, risk grade, and breakdown of risks by category.\r\n\r\nIn the output, the respective grades are represented by scan type. There is Current and Previous grades for each where the period duration is either monthly or quarterly depending on that instance\u2019s system settings. The scan types are:\r\n- Or\t- Overall Risk\r\n- Ds\t- Data Scans\r\n- Vn\t- Vulnerability Scans\r\n- Sb\t- Secure Baseline Scans\r\n- Cmpl\t- Compliance Grade\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
         "operationId": "GetOverallRiskScores",
         "parameters": [
           {
@@ -442,7 +442,7 @@
           "Instances"
         ],
         "summary": "Create Instances Endpoint",
-        "description": "This endpoint will provision a new instance under your partner account.\r\n\r\nIt is important to understand the hierarchy of the organizations set up under the CYRISMA Web platform. \r\nInstances can be created under existing organizations or sub organizations, or new sub organizations can be created.\r\n\r\n**Notes:**\r\n- Generation of an instance generally takes less than 5 minutes to complete. \r\n- Check the completion of your order by using the provision-status API call along with the returned instance ID provided.\r\n- Parent_instance_id is the immediate parent where this new instance or sub-organization will appear in the hierarchy.\r\n- If setting up a new sub-organization, the is_consulting value must be false. You cannot create a sub-organization that is considered “Trial” or “Consulting”.\r\n- If setting up a new instance, then is_consulting may be set to true to indicate that this instance is in a temporary consulting mode and will eventually be converted to “standard”.\r\n- The short_name is the name value that appears at the top left of the browser window when logged into that instance. It is also the name of the browser tab, so it is recommended to keep this string relatively short to serve as a quick identifier when you have many tabs open.\r\n- Country value is very important as it will determine the geographic location where this specific instance will be located. Many organizations are subject to data sovereignty restrictions that mandate all data stay within a specific geography and this setting will assist.\r\n- Mfa_type defaults to 0 (none), but can be set to 1 (Email) or 2 (Authenticator) when submitting the new provisioning request.\r\n- Tenant_id is an optional string parameter to associate this provisioning with a pre-existing tenant of an MDR/XDR suite.\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "description": "This endpoint will provision a new instance under your partner account.\r\n\r\nIt is important to understand the hierarchy of the organizations set up under the CYRISMA Web platform. \r\nInstances can be created under existing organizations or sub organizations, or new sub organizations can be created.\r\n\r\n**Notes:**\r\n- Generation of an instance generally takes less than 5 minutes to complete. \r\n- Check the completion of your order by using the provision-status API call along with the returned instance ID provided.\r\n- Parent_instance_id is the immediate parent where this new instance or sub-organization will appear in the hierarchy.\r\n- If setting up a new sub-organization, the is_consulting value must be false. You cannot create a sub-organization that is considered \u201cTrial\u201d or \u201cConsulting\u201d.\r\n- If setting up a new instance, then is_consulting may be set to true to indicate that this instance is in a temporary consulting mode and will eventually be converted to \u201cstandard\u201d.\r\n- The short_name is the name value that appears at the top left of the browser window when logged into that instance. It is also the name of the browser tab, so it is recommended to keep this string relatively short to serve as a quick identifier when you have many tabs open.\r\n- Country value is very important as it will determine the geographic location where this specific instance will be located. Many organizations are subject to data sovereignty restrictions that mandate all data stay within a specific geography and this setting will assist.\r\n- Mfa_type defaults to 0 (none), but can be set to 1 (Email) or 2 (Authenticator) when submitting the new provisioning request.\r\n- Tenant_id is an optional string parameter to associate this provisioning with a pre-existing tenant of an MDR/XDR suite.\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
         "operationId": "CreateInstance",
         "parameters": [
           {
@@ -509,7 +509,7 @@
           "Instances"
         ],
         "summary": "Suspend Instance Endpoint",
-        "description": "This endpoint will suspend an instance under your partner account.\r\n\r\n\r\n**Notes:**\r\n- Suspended instances are NOT visible within the MSP web interface. \r\n- Suspended instances are not shown in the API “Get All” request.\r\n- To restore a suspended instance or organization, the instanceID is required, so this should be documented so that a restore can later be performed.\r\n- Suspended Instances do not stop working, only ACCESS to the suspended instance is blocked.\r\n- If an organization is suspended, access to instances and sub organizations within that organization are also blocked.\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
+        "description": "This endpoint will suspend an instance under your partner account.\r\n\r\n\r\n**Notes:**\r\n- Suspended instances are NOT visible within the MSP web interface. \r\n- Suspended instances are not shown in the API \u201cGet All\u201d request.\r\n- To restore a suspended instance or organization, the instanceID is required, so this should be documented so that a restore can later be performed.\r\n- Suspended Instances do not stop working, only ACCESS to the suspended instance is blocked.\r\n- If an organization is suspended, access to instances and sub organizations within that organization are also blocked.\r\n\r\n\r\nRequired headers:\r\n\r\n- `Authorization: access_token {token}`",
         "operationId": "SuspendInstance",
         "parameters": [
           {
@@ -770,7 +770,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             }
@@ -1143,7 +1143,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "additionalProperties": { }
+                    "additionalProperties": {}
                   }
                 }
               }
@@ -1214,7 +1214,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "additionalProperties": { }
+                    "additionalProperties": {}
                   }
                 }
               }
@@ -1297,7 +1297,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "additionalProperties": { }
+                    "additionalProperties": {}
                   }
                 }
               }
@@ -1348,10 +1348,10 @@
           {
             "name": "assetType",
             "in": "query",
-            "description": "    The **assetType** query parameter determines which asset types are returned by the API. \r\n\r\n    When:\r\n    - **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\r\n    - **assetType=external**, the response includes assets with **External – IP Addresses** and **External – Web Application URLs** vulnerabilities.",
+            "description": "    The **assetType** query parameter determines which asset types are returned by the API. \r\n\r\n    When:\r\n    - **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\r\n    - **assetType=external**, the response includes assets with **External \u2013 IP Addresses** and **External \u2013 Web Application URLs** vulnerabilities.",
             "schema": {
               "type": "string",
-              "description": "    The **assetType** query parameter determines which asset types are returned by the API. \r\n\r\n    When:\r\n    - **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\r\n    - **assetType=external**, the response includes assets with **External – IP Addresses** and **External – Web Application URLs** vulnerabilities."
+              "description": "    The **assetType** query parameter determines which asset types are returned by the API. \r\n\r\n    When:\r\n    - **assetType=internal**, the response includes assets with **Internal Authenticated** and **Internal Unauthenticated** vulnerabilities.\r\n    - **assetType=external**, the response includes assets with **External \u2013 IP Addresses** and **External \u2013 Web Application URLs** vulnerabilities."
             }
           },
           {
@@ -1551,42 +1551,52 @@
           },
           "name": {
             "title": "Asset Name",
-            "type": "string",
-            "description": "Name of the asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the asset."
           },
           "ipAddress": {
             "title": "Ip Address",
-            "type": "string",
-            "description": "IP address of the asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IP address of the asset."
           },
           "vulnerabilities": {
             "title": "Vulnerabilities",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/Cve"
             },
-            "description": "List of vulnerabilities associated with the asset.",
-            "nullable": true
+            "description": "List of vulnerabilities associated with the asset."
           },
           "openPorts": {
             "title": "Open Ports",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/Port"
             },
-            "description": "List of open ports on the asset.",
-            "nullable": true
+            "description": "List of open ports on the asset."
           },
           "flaws": {
             "title": "Flaws",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/Flaw"
             },
-            "description": "List of flaws identified on the asset.",
-            "nullable": true
+            "description": "List of flaws identified on the asset."
           }
         },
         "additionalProperties": false,
@@ -1598,21 +1608,27 @@
         "properties": {
           "TargetId": {
             "title": "Target Id",
-            "type": "string",
-            "description": "Unique identifier for the target asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Unique identifier for the target asset."
           },
           "IP": {
             "title": "IP Address",
-            "type": "string",
-            "description": "IP address of the asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IP address of the asset."
           },
           "Icon": {
             "title": "Icon",
-            "type": "string",
-            "description": "Icon representing the asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Icon representing the asset."
           },
           "ScanId": {
             "title": "Scan Id",
@@ -1622,9 +1638,11 @@
           },
           "ScanType": {
             "title": "Scan Type",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Type of vulnerability scan performed on the asset.",
-            "nullable": true,
             "readOnly": true
           },
           "agentIsOnline": {
@@ -1634,30 +1652,38 @@
           },
           "AssetName": {
             "title": "Asset Name",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Name of the asset.",
-            "nullable": true,
             "readOnly": true
           },
           "AssetId": {
             "title": "Asset Id",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Id of the asset.",
-            "nullable": true,
             "readOnly": true
           },
           "AssetIp": {
             "title": "Asset Ip",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "IP address of the asset.",
-            "nullable": true,
             "readOnly": true
           },
           "OSName": {
             "title": "OS",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Operating System of the asset.",
-            "nullable": true,
             "readOnly": true
           },
           "TotalNumberOfVulnerabilities": {
@@ -1704,9 +1730,11 @@
           },
           "AssetScore": {
             "title": "",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The asset score indicating the overall risk level of the asset.",
-            "nullable": true,
             "readOnly": true
           },
           "HasAgentInstalled": {
@@ -1723,16 +1751,20 @@
           },
           "Tags": {
             "title": "Tags",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Tags associated with this asset.",
-            "nullable": true,
             "readOnly": true
           },
           "FingerPrint": {
             "title": "Asset Finger Print",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The asset fingerprint for this asset.",
-            "nullable": true,
             "readOnly": true
           },
           "FinishTime": {
@@ -1752,15 +1784,19 @@
         "properties": {
           "access_token": {
             "title": "Access Token",
-            "type": "string",
-            "description": "Access token for authentication.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Access token for authentication."
           },
           "token_type": {
             "title": "Token Type",
-            "type": "string",
-            "description": "Type of the token.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Type of the token."
           },
           "expires_in": {
             "title": "Expires In",
@@ -1770,15 +1806,19 @@
           },
           "refresh_token": {
             "title": "Refresh Token",
-            "type": "string",
-            "description": "Refresh token for obtaining new access tokens.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Refresh token for obtaining new access tokens."
           },
           "client_id": {
             "title": "Scope",
-            "type": "string",
-            "description": "Scope of the access token.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Scope of the access token."
           }
         },
         "additionalProperties": false,
@@ -1790,21 +1830,27 @@
         "properties": {
           "name": {
             "title": "Target Name",
-            "type": "string",
-            "description": "Name of the baseline target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the baseline target."
           },
           "ip": {
             "title": "IP Address",
-            "type": "string",
-            "description": "IP address of the baseline target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IP address of the baseline target."
           },
           "scan_date": {
             "title": "Scan Date",
-            "type": "string",
-            "description": "Date when the baseline scan was conducted.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date when the baseline scan was conducted."
           },
           "pass_rate": {
             "title": "Pass Rate",
@@ -1814,21 +1860,27 @@
           },
           "grade": {
             "title": "Grade",
-            "type": "string",
-            "description": "Grade of the baseline target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Grade of the baseline target."
           },
           "profile_name": {
             "title": "Profile Name",
-            "type": "string",
-            "description": "Name of the profile associated with the baseline target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the profile associated with the baseline target."
           },
           "profile_type": {
             "title": "Profile Type",
-            "type": "string",
-            "description": "Type of the profile associated with the baseline target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Type of the profile associated with the baseline target."
           }
         },
         "additionalProperties": false,
@@ -1840,9 +1892,11 @@
         "properties": {
           "os_name": {
             "title": "Profile Name",
-            "type": "string",
-            "description": "Name of the baseline profile.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the baseline profile."
           },
           "use_count": {
             "title": "Usage Count",
@@ -1852,9 +1906,11 @@
           },
           "targets": {
             "title": "Targets",
-            "type": "string",
-            "description": "List of targets associated with the baseline profile.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "List of targets associated with the baseline profile."
           }
         },
         "additionalProperties": false,
@@ -1890,9 +1946,11 @@
           },
           "average_data_scan_grade_alpha": {
             "title": "Average Data Scan Grade Alpha",
-            "type": "string",
-            "description": "Alphabetical representation of the average data scan grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alphabetical representation of the average data scan grade."
           }
         },
         "additionalProperties": false,
@@ -1904,21 +1962,27 @@
         "properties": {
           "scan_id": {
             "title": "Scan Id",
-            "type": "string",
-            "description": "Unique identifier for the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Unique identifier for the scan."
           },
           "scan_name": {
             "title": "Scan Name",
-            "type": "string",
-            "description": "Name of the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the scan."
           },
           "scan_type": {
             "title": "Scan Type",
-            "type": "string",
-            "description": "Type of the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Type of the scan."
           },
           "scanned_items": {
             "title": "Scanned Items",
@@ -1946,15 +2010,19 @@
           },
           "scan_started": {
             "title": "Scan Start Time",
-            "type": "string",
-            "description": "Date and time when the scan started.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date and time when the scan started."
           },
           "scan_finished": {
             "title": "Scan Finish Time",
-            "type": "string",
-            "description": "Date and time when the scan finished.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date and time when the scan finished."
           },
           "grade": {
             "title": "Grade",
@@ -1964,21 +2032,27 @@
           },
           "grade_alpha": {
             "title": "Grade Alpha",
-            "type": "string",
-            "description": "Alphabetical representation of the scan grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alphabetical representation of the scan grade."
           },
           "issuing_user": {
             "title": "Issuing User",
-            "type": "string",
-            "description": "User who issued the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "User who issued the scan."
           },
           "categories": {
             "title": "Categories",
-            "type": "string",
-            "description": "Categories of data scanned.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Categories of data scanned."
           }
         },
         "additionalProperties": false,
@@ -1996,9 +2070,11 @@
           },
           "average_secure_baseline_grade_alpha": {
             "title": "Average Secure Baseline Grade Alpha",
-            "type": "string",
-            "description": "Alphabetical representation of the average secure baseline grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alphabetical representation of the average secure baseline grade."
           }
         },
         "additionalProperties": false,
@@ -2010,21 +2086,27 @@
         "properties": {
           "scan_id": {
             "title": "Scan Id",
-            "type": "string",
-            "description": "Unique identifier for the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Unique identifier for the scan."
           },
           "scan_name": {
             "title": "Scan Name",
-            "type": "string",
-            "description": "Name of the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the scan."
           },
           "scan_type": {
             "title": "Scan Type",
-            "type": "string",
-            "description": "Type of the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Type of the scan."
           },
           "failed_tests": {
             "title": "Passed Tests",
@@ -2040,15 +2122,19 @@
           },
           "scan_started": {
             "title": "Scan Start Time",
-            "type": "string",
-            "description": "Date and time when the scan started.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date and time when the scan started."
           },
           "scan_finished": {
             "title": "Scan Finish Time",
-            "type": "string",
-            "description": "Date and time when the scan finished.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date and time when the scan finished."
           },
           "grade": {
             "title": "Grade",
@@ -2058,21 +2144,27 @@
           },
           "grade_alpha": {
             "title": "Grade Alpha",
-            "type": "string",
-            "description": "Alphabetical representation of the scan grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alphabetical representation of the scan grade."
           },
           "issuing_user": {
             "title": "Issuing User",
-            "type": "string",
-            "description": "User who issued the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "User who issued the scan."
           },
           "target_details": {
             "title": "Target Details",
-            "type": "string",
-            "description": "Details about the target of the secure baseline scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Details about the target of the secure baseline scan."
           }
         },
         "additionalProperties": false,
@@ -2120,9 +2212,11 @@
           },
           "average_vulnerability_grade_alpha": {
             "title": "Average Vulnerability Grade Alpha",
-            "type": "string",
-            "description": "Alphabetical representation of the average vulnerability grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alphabetical representation of the average vulnerability grade."
           }
         },
         "additionalProperties": false,
@@ -2134,21 +2228,27 @@
         "properties": {
           "scan_id": {
             "title": "Scan Id",
-            "type": "string",
-            "description": "Unique identifier for the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Unique identifier for the scan."
           },
           "scan_name": {
             "title": "Scan Name",
-            "type": "string",
-            "description": "Name of the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the scan."
           },
           "scan_type": {
             "title": "Scan Type",
-            "type": "string",
-            "description": "Type of the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Type of the scan."
           },
           "vulnerabilities": {
             "title": "Vulnerabilities",
@@ -2182,15 +2282,19 @@
           },
           "scan_started": {
             "title": "Scan Start Time",
-            "type": "string",
-            "description": "Date and time when the scan started.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date and time when the scan started."
           },
           "scan_finished": {
             "title": "Scan Finish Time",
-            "type": "string",
-            "description": "Date and time when the scan finished.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date and time when the scan finished."
           },
           "grade": {
             "title": "Grade",
@@ -2200,21 +2304,27 @@
           },
           "grade_alpha": {
             "title": "Grade Alpha",
-            "type": "string",
-            "description": "Alphabetical representation of the scan grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alphabetical representation of the scan grade."
           },
           "issuing_user": {
             "title": "Issuing User",
-            "type": "string",
-            "description": "User who issued the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "User who issued the scan."
           },
           "scan_type_name": {
             "title": "Scan Type Name",
-            "type": "string",
-            "description": "Name of the scan type.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the scan type."
           }
         },
         "additionalProperties": false,
@@ -2226,21 +2336,27 @@
         "properties": {
           "instance_id": {
             "title": "Instance ID",
-            "type": "string",
-            "description": "The unique identifier for the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The unique identifier for the instance."
           },
           "name": {
             "title": "Name",
-            "type": "string",
-            "description": "The name of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The name of the instance."
           },
           "consulting_status": {
             "title": "Consulting Status",
-            "type": "string",
-            "description": "The consulting status of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The consulting status of the instance."
           }
         },
         "additionalProperties": false,
@@ -2252,15 +2368,19 @@
         "properties": {
           "instance_id": {
             "title": "Instance ID",
-            "type": "string",
-            "description": "The unique identifier for the created instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The unique identifier for the created instance."
           },
           "agent_key": {
             "title": "Agent Key",
-            "type": "string",
-            "description": "The agent key associated with the created instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The agent key associated with the created instance."
           }
         },
         "additionalProperties": false,
@@ -2323,39 +2443,51 @@
           },
           "mfa_type": {
             "title": "MFA Type",
-            "type": "string",
-            "description": "Type of multi-factor authentication.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Type of multi-factor authentication."
           },
           "tenant_id": {
             "title": "Tenant ID",
-            "type": "string",
-            "description": "Tenant ID of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Tenant ID of the instance."
           },
           "state": {
             "title": "Phone",
-            "type": "string",
-            "description": "Phone number associated with the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Phone number associated with the instance."
           },
           "city": {
             "title": "City",
-            "type": "string",
-            "description": "City of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "City of the instance."
           },
           "postal": {
             "title": "Postal Code",
-            "type": "string",
-            "description": "Postal code of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Postal code of the instance."
           },
           "street": {
             "title": "Street",
-            "type": "string",
-            "description": "Street address of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Street address of the instance."
           }
         },
         "additionalProperties": false,
@@ -2405,39 +2537,51 @@
         "properties": {
           "id": {
             "title": "User ID",
-            "type": "string",
-            "description": "The unique identifier for the user.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The unique identifier for the user."
           },
           "username": {
             "title": "Username",
-            "type": "string",
-            "description": "The username of the user.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The username of the user."
           },
           "first_name": {
             "title": "First Name",
-            "type": "string",
-            "description": "The first name of the user.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The first name of the user."
           },
           "last_name": {
             "title": "Last Name",
-            "type": "string",
-            "description": "The last name of the user.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The last name of the user."
           },
           "enabled": {
             "title": "Enabled Status",
-            "type": "string",
-            "description": "The enabled status of the user.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The enabled status of the user."
           },
           "instance_id": {
             "title": "Instance ID",
-            "type": "string",
-            "description": "The unique identifier for the instance the user belongs to.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The unique identifier for the instance the user belongs to."
           }
         },
         "additionalProperties": false,
@@ -2449,15 +2593,19 @@
         "properties": {
           "cve": {
             "title": "CVE",
-            "type": "string",
-            "description": "CVE identifier",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "CVE identifier"
           },
           "title": {
             "title": "CVE Title",
-            "type": "string",
-            "description": "Title or brief description of the CVE.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Title or brief description of the CVE."
           },
           "score": {
             "title": "CVSS score",
@@ -2473,15 +2621,19 @@
           },
           "riskLevel": {
             "title": "Risk level",
-            "type": "string",
-            "description": "Risk level of the vulnerability.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Risk level of the vulnerability."
           },
           "exploitability": {
             "title": "Exploitability",
-            "type": "string",
-            "description": "Exploitability details of the vulnerability.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Exploitability details of the vulnerability."
           },
           "scanId": {
             "title": "Scan Id",
@@ -2503,15 +2655,19 @@
           },
           "targetIp": {
             "title": "Target Ip",
-            "type": "string",
-            "description": "Target IP address associated with the CVE.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Target IP address associated with the CVE."
           },
           "targetHostName": {
             "title": "Target Host Name",
-            "type": "string",
-            "description": "Target host name associated with the CVE.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Target host name associated with the CVE."
           }
         },
         "additionalProperties": false,
@@ -2523,15 +2679,19 @@
         "properties": {
           "id": {
             "title": "CVE ID",
-            "type": "string",
-            "description": "Unique identifier for the CVE.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Unique identifier for the CVE."
           },
           "title": {
             "title": "CVE Title",
-            "type": "string",
-            "description": "Title or brief description of the CVE.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Title or brief description of the CVE."
           },
           "cve_score": {
             "title": "CVSS Score",
@@ -2541,21 +2701,27 @@
           },
           "cve_risk": {
             "title": "EPSS Score",
-            "type": "string",
-            "description": "EPSS score of the vulnerability.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "EPSS score of the vulnerability."
           },
           "published_date": {
             "title": "Risk Level",
-            "type": "string",
-            "description": "Risk level of the vulnerability.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Risk level of the vulnerability."
           },
           "affected_targets": {
             "title": "Exploitability",
-            "type": "string",
-            "description": "Exploitability details of the vulnerability.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Exploitability details of the vulnerability."
           },
           "num_affected_targets": {
             "title": "Scan ID",
@@ -2573,12 +2739,14 @@
         "properties": {
           "cve_items": {
             "title": "CVE Items",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/CveItem"
             },
-            "description": "List of CVE items.",
-            "nullable": true
+            "description": "List of CVE items."
           }
         },
         "additionalProperties": false,
@@ -2590,42 +2758,52 @@
         "properties": {
           "current_grade": {
             "title": "Current Grade",
-            "type": "string",
-            "description": "Current baseline grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Current baseline grade."
           },
           "previous_grade": {
             "title": "Previous Grade",
-            "type": "string",
-            "description": "Previous baseline grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Previous baseline grade."
           },
           "top_5_baselines": {
             "title": "Top 5 Baselines",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/BaselinesTopFive"
             },
-            "description": "List of top 5 baseline targets.",
-            "nullable": true
+            "description": "List of top 5 baseline targets."
           },
           "lowest_pass_targets_domain": {
             "title": "Lowest Pass Targets Domain",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/BaselinesLowestTen"
             },
-            "description": "List of lowest pass targets for domain profiles.",
-            "nullable": true
+            "description": "List of lowest pass targets for domain profiles."
           },
           "lowest_pass_targets_nondomain": {
             "title": "Lowest Pass Targets Non-Domain",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/BaselinesLowestTen"
             },
-            "description": "List of lowest pass targets for non-domain profiles.",
-            "nullable": true
+            "description": "List of lowest pass targets for non-domain profiles."
           }
         },
         "additionalProperties": false,
@@ -2637,33 +2815,41 @@
         "properties": {
           "current_grade": {
             "title": "Current Grade",
-            "type": "string",
-            "description": "Current overall grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Current overall grade."
           },
           "previous_grade": {
             "title": "Previous Grade",
-            "type": "string",
-            "description": "Previous overall grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Previous overall grade."
           },
           "top_5_categories": {
             "title": "Top 5 Categories",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/SensitiveDataCategory"
             },
-            "description": "List of top 5 sensitive data categories.",
-            "nullable": true
+            "description": "List of top 5 sensitive data categories."
           },
           "top_10_most_sensitive": {
             "title": "Top 10 Most Sensitive",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/SensitiveDataTarget"
             },
-            "description": "List of top 10 most sensitive data targets.",
-            "nullable": true
+            "description": "List of top 10 most sensitive data targets."
           }
         },
         "additionalProperties": false,
@@ -2675,63 +2861,83 @@
         "properties": {
           "previous_or_grade": {
             "title": "Previous OR Grade",
-            "type": "string",
-            "description": "Overall risk grade from the previous assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Overall risk grade from the previous assessment."
           },
           "current_or_grade": {
             "title": "Current OR Grade",
-            "type": "string",
-            "description": "Overall risk grade from the current assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Overall risk grade from the current assessment."
           },
           "previous_ds_grade": {
             "title": "Previous DS Grade",
-            "type": "string",
-            "description": "Data security grade from the previous assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Data security grade from the previous assessment."
           },
           "current_ds_grade": {
             "title": "Current DS Grade",
-            "type": "string",
-            "description": "Data security grade from the current assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Data security grade from the current assessment."
           },
           "previous_vn_grade": {
             "title": "Previous VL Grade",
-            "type": "string",
-            "description": "Vulnerability level grade from the previous assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Vulnerability level grade from the previous assessment."
           },
           "current_vn_grade": {
             "title": "Current VL Grade",
-            "type": "string",
-            "description": "Vulnerability level grade from the current assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Vulnerability level grade from the current assessment."
           },
           "previous_sb_grade": {
             "title": "Previous SB Grade",
-            "type": "string",
-            "description": "Secure baseline grade from the previous assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Secure baseline grade from the previous assessment."
           },
           "current_sb_grade": {
             "title": "Current SB Grade",
-            "type": "string",
-            "description": "Secure baseline grade from the current assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Secure baseline grade from the current assessment."
           },
           "previous_cmpl_grade": {
             "title": "Previous CMPL Grade",
-            "type": "string",
-            "description": "Compliance grade from the previous assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Compliance grade from the previous assessment."
           },
           "current_cmpl_grade": {
             "title": "Current CMPL Grade",
-            "type": "string",
-            "description": "Compliance grade from the current assessment.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Compliance grade from the current assessment."
           },
           "FinancialData": {
             "$ref": "#/components/schemas/FinancialData"
@@ -2746,33 +2952,41 @@
         "properties": {
           "current_grade": {
             "title": "Current Grade",
-            "type": "string",
-            "description": "Current vulnerability grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Current vulnerability grade."
           },
           "previous_grade": {
             "title": "Previous Grade",
-            "type": "string",
-            "description": "Previous vulnerability grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Previous vulnerability grade."
           },
           "top_5_profiles": {
             "title": "Top 5 Profiles",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/VulnerabilityProfile"
             },
-            "description": "List of top 5 vulnerability profiles.",
-            "nullable": true
+            "description": "List of top 5 vulnerability profiles."
           },
           "target_results": {
             "title": "Target Results",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/SensitiveVulnTarget"
             },
-            "description": "List of sensitive vulnerability targets.",
-            "nullable": true
+            "description": "List of sensitive vulnerability targets."
           }
         },
         "additionalProperties": false,
@@ -2784,15 +2998,19 @@
         "properties": {
           "error": {
             "title": "Error Code",
-            "type": "string",
-            "description": "The error code representing the type of error.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The error code representing the type of error."
           },
           "error_description": {
             "title": "Error Description",
-            "type": "string",
-            "description": "A detailed description of the error.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A detailed description of the error."
           }
         },
         "additionalProperties": false,
@@ -2848,21 +3066,27 @@
           },
           "alertRef": {
             "title": "Alert Reference",
-            "type": "string",
-            "description": "Reference code for the alert.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Reference code for the alert."
           },
           "alertName": {
             "title": "Alert Name",
-            "type": "string",
-            "description": "Name of the alert.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the alert."
           },
           "riskLevel": {
             "title": "Risk Level",
-            "type": "string",
-            "description": "Risk level of the alert.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Risk level of the alert."
           },
           "alertCount": {
             "title": "Alert Count",
@@ -2872,9 +3096,11 @@
           },
           "target": {
             "title": "Target",
-            "type": "string",
-            "description": "Target associated with the alert.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Target associated with the alert."
           }
         },
         "additionalProperties": false,
@@ -2889,12 +3115,14 @@
           },
           "data_scans": {
             "title": "Data Scans",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/CompletedDataScans"
             },
-            "description": "List of completed data scans.",
-            "nullable": true
+            "description": "List of completed data scans."
           }
         },
         "additionalProperties": false,
@@ -2909,12 +3137,14 @@
           },
           "secure_baseline_scans": {
             "title": "Secure Baseline Scans",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/CompletedSbScans"
             },
-            "description": "List of completed secure baseline scans.",
-            "nullable": true
+            "description": "List of completed secure baseline scans."
           }
         },
         "additionalProperties": false,
@@ -2950,19 +3180,23 @@
           },
           "average_data_scan_grade_alpha": {
             "title": "Average Data Scan Grade Alpha",
-            "type": "string",
-            "description": "Alphabetical representation of the average data scan grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alphabetical representation of the average data scan grade."
           },
           "times_data_category_scanned": {
             "title": "Times Data Category Scanned",
-            "type": "object",
+            "type": [
+              "object",
+              "null"
+            ],
             "additionalProperties": {
               "type": "integer",
               "format": "int32"
             },
-            "description": "Dictionary mapping data categories to the number of times they were scanned.",
-            "nullable": true
+            "description": "Dictionary mapping data categories to the number of times they were scanned."
           },
           "total_vulnerabilities": {
             "title": "Total Vulnerabilities",
@@ -3002,9 +3236,11 @@
           },
           "average_vulnerability_grade_alpha": {
             "title": "Average Vulnerability Grade Alpha",
-            "type": "string",
-            "description": "Alphabetical representation of the average vulnerability grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alphabetical representation of the average vulnerability grade."
           },
           "average_secure_baseline_grade": {
             "title": "Average Secure Baseline Grade",
@@ -3014,9 +3250,11 @@
           },
           "average_secure_baseline_grade_alpha": {
             "title": "Average Secure Baseline Grade Alpha",
-            "type": "string",
-            "description": "Alphabetical representation of the average secure baseline grade.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alphabetical representation of the average secure baseline grade."
           }
         },
         "additionalProperties": false,
@@ -3031,30 +3269,36 @@
           },
           "data_scans": {
             "title": "Data Scans",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/CompletedDataScans"
             },
-            "description": "List of completed data scans.",
-            "nullable": true
+            "description": "List of completed data scans."
           },
           "vulnerability_scans": {
             "title": "Vulnerability Scans",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/CompletedVulnScans"
             },
-            "description": "List of completed vulnerability scans.",
-            "nullable": true
+            "description": "List of completed vulnerability scans."
           },
           "secure_baseline_scans": {
             "title": "Secure Baseline Scans",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/CompletedSbScans"
             },
-            "description": "List of completed secure baseline scans.",
-            "nullable": true
+            "description": "List of completed secure baseline scans."
           }
         },
         "additionalProperties": false,
@@ -3069,12 +3313,14 @@
           },
           "vulnerability_scans": {
             "title": "Vulnerability Scans",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/CompletedVulnScans"
             },
-            "description": "List of completed vulnerability scans.",
-            "nullable": true
+            "description": "List of completed vulnerability scans."
           }
         },
         "additionalProperties": false,
@@ -3086,9 +3332,11 @@
         "properties": {
           "AssetScore": {
             "title": "Asset Score",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The asset score indicating the overall risk level of the asset.",
-            "nullable": true,
             "readOnly": true
           },
           "TotalNumberOfVulnerabilities": {
@@ -3128,66 +3376,82 @@
           },
           "AssetName": {
             "title": "Asset Name",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Name of the asset.",
-            "nullable": true,
             "readOnly": true
           },
           "AgentName": {
             "title": "Agent Name",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Name of the agent associated with this asset.",
-            "nullable": true,
             "readOnly": true
           },
           "LastChecked": {
             "title": "Last Time Asset Checked",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The date and time when the asset was last checked.",
-            "nullable": true,
             "readOnly": true
           },
           "LastScan": {
             "title": "Last Scan Date",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The date and time when the asset was last scanned.",
-            "nullable": true,
             "readOnly": true
           },
           "Tags": {
             "title": "Tags",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Tags associated with the asset.",
-            "nullable": true,
             "readOnly": true
           },
           "RootCauses": {
             "title": "Root Causes",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/InternalAuthDetailsRootCause"
             },
             "description": "Root causes identified for vulnerabilities on this asset.",
-            "nullable": true,
             "readOnly": true
           },
           "CVEs": {
             "title": "CVEs",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/InternalAuthDetailsCVE"
             },
-            "description": "List of CVEs associated with this asset.",
-            "nullable": true
+            "description": "List of CVEs associated with this asset."
           },
           "OpenPorts": {
             "title": "Open Ports",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/InternalAuthDetailsOpenPort"
             },
             "description": "List of open ports identified on this asset.",
-            "nullable": true,
             "readOnly": true
           }
         },
@@ -3200,16 +3464,20 @@
         "properties": {
           "CveID": {
             "title": "CVE",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The Common Vulnerabilities and Exposures (CVE) identifier.",
-            "nullable": true,
             "readOnly": true
           },
           "CveTitle": {
             "title": "CVE Title",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The title or brief description of the CVE.",
-            "nullable": true,
             "readOnly": true
           },
           "FirstSeen": {
@@ -3221,19 +3489,23 @@
           },
           "Exploitability": {
             "title": "Exploitability",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "type": "string"
             },
             "description": "List of exploitability details associated with the CVE.",
-            "nullable": true,
             "readOnly": true
           },
           "Severity": {
             "title": "Severity",
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The severity level of the CVE.",
-            "nullable": true,
             "readOnly": true
           },
           "CVSS": {
@@ -3273,27 +3545,35 @@
         "properties": {
           "OpenPort": {
             "title": "Scan Id",
-            "type": "string",
-            "description": "The ID of the scan that identified this open port.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The ID of the scan that identified this open port."
           },
           "OpenPortName": {
             "title": "Port Name",
-            "type": "string",
-            "description": "The name or service associated with the open port.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The name or service associated with the open port."
           },
           "Protocol": {
             "title": "Protocol Type",
-            "type": "string",
-            "description": "The type of the open port (e.g., TCP, UDP).",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The type of the open port (e.g., TCP, UDP)."
           },
           "Severity": {
             "title": "Severity",
-            "type": "string",
-            "description": "The severity level of vulnerabilities associated with this open port.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The severity level of vulnerabilities associated with this open port."
           }
         },
         "additionalProperties": false,
@@ -3305,9 +3585,11 @@
         "properties": {
           "RootCause": {
             "title": "Root Cause",
-            "type": "string",
-            "description": "The description of the root cause for vulnerabilities on the asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The description of the root cause for vulnerabilities on the asset."
           },
           "FirstSeen": {
             "title": "First Seen",
@@ -3317,12 +3599,14 @@
           },
           "Exploitability": {
             "title": "Exploitability",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "type": "string"
             },
-            "description": "The list of exploitability types associated with the root cause.",
-            "nullable": true
+            "description": "The list of exploitability types associated with the root cause."
           },
           "HighestCVSS": {
             "title": "Severity",
@@ -3363,15 +3647,19 @@
         "properties": {
           "limit": {
             "title": "Limit",
-            "type": "string",
-            "description": "The maximum number of items to return. Default value is 1000.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The maximum number of items to return. Default value is 1000."
           },
           "offset": {
             "title": "Offset",
-            "type": "string",
-            "description": "The number of items to skip before starting to collect the result set. Default value is 0.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The number of items to skip before starting to collect the result set. Default value is 0."
           }
         },
         "additionalProperties": false,
@@ -3383,9 +3671,11 @@
         "properties": {
           "RiskGrade": {
             "title": "Asset Score",
-            "type": "string",
-            "description": "The asset score indicating the overall risk level of the asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The asset score indicating the overall risk level of the asset."
           },
           "TotalCVECount": {
             "title": "Total Number Of Vulnerabilities",
@@ -3419,27 +3709,35 @@
           },
           "DeviceFingerprint": {
             "title": "Device Fingerprint",
-            "type": "string",
-            "description": "The device fingerprint for this asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The device fingerprint for this asset."
           },
           "MACAddress": {
             "title": "MAC Address",
-            "type": "string",
-            "description": "The MAC address for this asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The MAC address for this asset."
           },
           "MACVendor": {
             "title": "MAC Vendor",
-            "type": "string",
-            "description": "The MAC vendor for this asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The MAC vendor for this asset."
           },
           "SNMPResult": {
             "title": "SNMP Result",
-            "type": "string",
-            "description": "The SNMP result for this asset.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The SNMP result for this asset."
           },
           "FinishTime": {
             "title": "Finish Time",
@@ -3449,21 +3747,25 @@
           },
           "CVEs": {
             "title": "CVEs",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/PartnerIpVulnCve"
             },
-            "description": "List of CVEs identified for this asset.",
-            "nullable": true
+            "description": "List of CVEs identified for this asset."
           },
           "OpenPorts": {
             "title": "Open ports",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/PartnerIpVulnOpenPort"
             },
-            "description": "List of open ports identified for this asset.",
-            "nullable": true
+            "description": "List of open ports identified for this asset."
           }
         },
         "additionalProperties": false,
@@ -3475,15 +3777,19 @@
         "properties": {
           "CveID": {
             "title": "CVE",
-            "type": "string",
-            "description": "The Common Vulnerabilities and Exposures (CVE) identifier.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The Common Vulnerabilities and Exposures (CVE) identifier."
           },
           "Title": {
             "title": "CVE Title",
-            "type": "string",
-            "description": "The title or description of the CVE.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The title or description of the CVE."
           },
           "FirstSeen": {
             "title": "First Seen",
@@ -3493,18 +3799,22 @@
           },
           "Exploitability": {
             "title": "Exploitability",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "type": "string"
             },
-            "description": "List of exploitability types associated with this CVE.",
-            "nullable": true
+            "description": "List of exploitability types associated with this CVE."
           },
           "Severity": {
             "title": "Severity",
-            "type": "string",
-            "description": "The severity level of the CVE.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The severity level of the CVE."
           },
           "CVSS": {
             "title": "CVSS",
@@ -3545,21 +3855,27 @@
           },
           "PortNumber": {
             "title": "Port Numer",
-            "type": "string",
-            "description": "The port number that is open.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The port number that is open."
           },
           "PortDescription": {
             "title": "Port Name",
-            "type": "string",
-            "description": "The name of the open port.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The name of the open port."
           },
           "RiskLevel": {
             "title": "Severity",
-            "type": "string",
-            "description": "The severity level associated with the open port.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The severity level associated with the open port."
           }
         },
         "additionalProperties": false,
@@ -3618,21 +3934,27 @@
           },
           "Scope": {
             "title": "Grant Type",
-            "type": "string",
-            "description": "The grant type for partner login.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The grant type for partner login."
           },
           "SecondsUntilExpire": {
             "title": "Seconds Until Expire",
-            "type": "string",
-            "description": "The number of seconds until the token expires.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The number of seconds until the token expires."
           },
           "ClientId": {
             "title": "Client ID",
-            "type": "string",
-            "description": "The client ID for partner login.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The client ID for partner login."
           }
         },
         "additionalProperties": false,
@@ -3674,18 +3996,22 @@
           },
           "RiskGrade": {
             "title": "Risk Grade",
-            "type": "string",
-            "description": "The risk grade assigned to the web application based on the findings.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The risk grade assigned to the web application based on the findings."
           },
           "Findings": {
             "title": "Findings",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/PartnerWebAppVulnFinding"
             },
-            "description": "List of detailed vulnerability findings for the web application.",
-            "nullable": true
+            "description": "List of detailed vulnerability findings for the web application."
           }
         },
         "additionalProperties": false,
@@ -3697,39 +4023,51 @@
         "properties": {
           "FindingName": {
             "title": "Finding Name",
-            "type": "string",
-            "description": "Name of the vulnerability finding.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the vulnerability finding."
           },
           "FindingDescription": {
             "title": "Finding Description",
-            "type": "string",
-            "description": "Description of the vulnerability finding.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Description of the vulnerability finding."
           },
           "FindingSolution": {
             "title": "Finding Solution",
-            "type": "string",
-            "description": "Recommended solution for the vulnerability finding.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Recommended solution for the vulnerability finding."
           },
           "FindingOther": {
             "title": "Finding Other",
-            "type": "string",
-            "description": "Other relevant information about the vulnerability finding.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Other relevant information about the vulnerability finding."
           },
           "FindingReferenceURLs": {
             "title": "Finding Reference URLs",
-            "type": "string",
-            "description": "Reference URLs for the vulnerability finding.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Reference URLs for the vulnerability finding."
           },
           "FindingRiskLevelName": {
             "title": "Severity",
-            "type": "string",
-            "description": "Risk level name associated with the vulnerability finding.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Risk level name associated with the vulnerability finding."
           },
           "FindingsCount": {
             "title": "Findings Count",
@@ -3739,9 +4077,11 @@
           },
           "FindingDetails": {
             "title": "Finding Details",
-            "type": "string",
-            "description": "Detailed information about the vulnerability finding.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Detailed information about the vulnerability finding."
           }
         },
         "additionalProperties": false,
@@ -3759,39 +4099,51 @@
           },
           "targetIp": {
             "title": "Target Ip",
-            "type": "string",
-            "description": "Target IP address associated with the port.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Target IP address associated with the port."
           },
           "targetName": {
             "title": "Target Name",
-            "type": "string",
-            "description": "Target name associated with the port.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Target name associated with the port."
           },
           "portNumber": {
             "title": "Port Number",
-            "type": "string",
-            "description": "Port number (e.g., \"80\", \"443\").",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Port number (e.g., \"80\", \"443\")."
           },
           "portProtocol": {
             "title": "Port Protocol",
-            "type": "string",
-            "description": "Protocol used by the port (e.g., \"TCP\", \"UDP\").",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Protocol used by the port (e.g., \"TCP\", \"UDP\")."
           },
           "portDescription": {
             "title": "Port Description",
-            "type": "string",
-            "description": "Description of the port service.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Description of the port service."
           },
           "riskLevel": {
             "title": "Risk Level",
-            "type": "string",
-            "description": "Risk level associated with the port.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Risk level associated with the port."
           }
         },
         "additionalProperties": false,
@@ -3803,15 +4155,19 @@
         "properties": {
           "instance_id": {
             "title": "Instance ID",
-            "type": "string",
-            "description": "The unique identifier for the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The unique identifier for the instance."
           },
           "name": {
             "title": "Name",
-            "type": "string",
-            "description": "The name of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The name of the instance."
           },
           "enabled": {
             "title": "Enabled Status",
@@ -3829,9 +4185,11 @@
         "properties": {
           "name": {
             "title": "Category Name",
-            "type": "string",
-            "description": "Name of the sensitive data category.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the sensitive data category."
           },
           "times_searched": {
             "title": "Times Searched",
@@ -3849,21 +4207,27 @@
         "properties": {
           "name": {
             "title": "Target Name",
-            "type": "string",
-            "description": "Name of the sensitive data target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the sensitive data target."
           },
           "ip_address": {
             "title": "IP Address",
-            "type": "string",
-            "description": "IP address of the sensitive data target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IP address of the sensitive data target."
           },
           "last_scanned": {
             "title": "Last Scanned",
-            "type": "string",
-            "description": "Date and time when the target was last scanned.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date and time when the target was last scanned."
           },
           "total_scans": {
             "title": "Total Scans",
@@ -3885,9 +4249,11 @@
           },
           "risk_grade": {
             "title": "Risk Grade",
-            "type": "string",
-            "description": "Risk grade associated with the target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Risk grade associated with the target."
           }
         },
         "additionalProperties": false,
@@ -3899,27 +4265,35 @@
         "properties": {
           "name": {
             "title": "Target Name",
-            "type": "string",
-            "description": "Name of the sensitive vulnerability target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the sensitive vulnerability target."
           },
           "ip_address": {
             "title": "IP Address",
-            "type": "string",
-            "description": "IP address of the sensitive vulnerability target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IP address of the sensitive vulnerability target."
           },
           "os": {
             "title": "Operating System",
-            "type": "string",
-            "description": "Operating system of the target.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Operating system of the target."
           },
           "last_scanned": {
             "title": "Last Scanned",
-            "type": "string",
-            "description": "Date and time when the target was last scanned.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date and time when the target was last scanned."
           },
           "vuln_count_critical": {
             "title": "Total Scans",
@@ -3955,39 +4329,51 @@
         "properties": {
           "instance_id": {
             "title": "Instance ID",
-            "type": "string",
-            "description": "The unique identifier for the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The unique identifier for the instance."
           },
           "name": {
             "title": "Name",
-            "type": "string",
-            "description": "The name of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The name of the instance."
           },
           "short_name": {
             "title": "Short Name",
-            "type": "string",
-            "description": "The short name of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The short name of the instance."
           },
           "parent_id": {
             "title": "Parent ID",
-            "type": "string",
-            "description": "The unique identifier for the parent instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The unique identifier for the parent instance."
           },
           "hierarchy": {
             "title": "Hierarchy",
-            "type": "string",
-            "description": "The hierarchical tree structure of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The hierarchical tree structure of the instance."
           },
           "instance_type": {
             "title": "Instance Type",
-            "type": "string",
-            "description": "The type of the instance and indicates if this is an organization (usually an MSP, or MSSP) or an end instance (indicated as 'standard').",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The type of the instance and indicates if this is an organization (usually an MSP, or MSSP) or an end instance (indicated as 'standard')."
           },
           "is_consulting": {
             "title": "Is Consulting",
@@ -4002,27 +4388,35 @@
           },
           "url": {
             "title": "Number of Users",
-            "type": "string",
-            "description": "The number of users associated with the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The number of users associated with the instance."
           },
           "tenant_id": {
             "title": "Tenant ID",
-            "type": "string",
-            "description": "The tenant identifier associated with the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The tenant identifier associated with the instance."
           },
           "agent_key": {
             "title": "Agent Key",
-            "type": "string",
-            "description": "The agent key associated with the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The agent key associated with the instance."
           },
           "mfa": {
             "title": "MFA",
-            "type": "string",
-            "description": "The MFA settings associated with the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The MFA settings associated with the instance."
           }
         },
         "additionalProperties": false,
@@ -4034,15 +4428,19 @@
         "properties": {
           "instanceID": {
             "title": "Instance ID",
-            "type": "string",
-            "description": "The unique identifier for the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The unique identifier for the instance."
           },
           "name": {
             "title": "Name",
-            "type": "string",
-            "description": "The name of the instance.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The name of the instance."
           },
           "enabled": {
             "title": "Enabled Status",
@@ -4060,15 +4458,19 @@
         "properties": {
           "mfa_type": {
             "title": "MFA Type",
-            "type": "string",
-            "description": "The type of MFA to be set for the partner. Type switch: 0 = none, 1 = email, 2 = authenticator (TOTP)",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The type of MFA to be set for the partner. Type switch: 0 = none, 1 = email, 2 = authenticator (TOTP)"
           },
           "instance_id": {
             "title": "Instance ID",
-            "type": "string",
-            "description": "ID of the instance being modified",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ID of the instance being modified"
           }
         },
         "additionalProperties": false,
@@ -4080,9 +4482,11 @@
         "properties": {
           "name": {
             "title": "Profile Name",
-            "type": "string",
-            "description": "Name of the vulnerability profile.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the vulnerability profile."
           },
           "times_used": {
             "title": "Times Used",
@@ -4112,15 +4516,19 @@
           },
           "scanName": {
             "title": "Scan Name",
-            "type": "string",
-            "description": "Name of the scan.",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the scan."
           },
           "scanType": {
             "title": "Scan Type",
-            "type": "string",
-            "description": "Type of the scan",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Type of the scan"
           },
           "scanStart": {
             "title": "Scan Start",
@@ -4136,12 +4544,14 @@
           },
           "assets": {
             "title": "Assets",
-            "type": "array",
+            "type": [
+              "array",
+              "null"
+            ],
             "items": {
               "$ref": "#/components/schemas/Asset"
             },
-            "description": "List of assets included in the scan.",
-            "nullable": true
+            "description": "List of assets included in the scan."
           }
         },
         "additionalProperties": false,
