@@ -68,5 +68,10 @@
       "source": "/index",
       "destination": "/api-reference/getting-started"
     }
-  ]
+  ],
+  "api": {
+    "playground": {
+      "display": "simple"
+    }
+  }
 }
