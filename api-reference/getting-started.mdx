@@ -32,24 +32,33 @@ Access to Cyrisma risk management is based on a foundation of secure API access 
   </Step>
 </Steps>
 
+<Card title="Note on API URLs" type="note">
+  The central API URL **https://api.cyrisma.com/app** is used for login, token generation, provisioning, and partner/instance management. Scan and reporting endpoints require an additional instance authentication step and are called against an instance-specific URL in the format [**https://ccnnnnnn.cyrisma.com/app**](https://ccnnnnnn.cyrisma.com/app) (e.g. **https://ccnnnnnn.cyrisma.com/app/partner/scans/data**).
+</Card>
+
 ## What You Can Do with the API
 
 <CardGroup cols={2}>
   <Card title="Provision Organizations" icon="building">
     Multiple organizations can be set up with multiple sets of users for each. Multi-Factor Authentication (via email code or authenticator apps) can be enabled as part of the initial organization provision request.
   </Card>
+
   <Card title="Manage Instances" icon="server">
     The partner may log in to their organization and set up instances for their customer base.
   </Card>
+
   <Card title="Monitor Usage" icon="chart-line">
     Use the API to retrieve usage and utilization details at any time.
   </Card>
+
   <Card title="Retrieve Scan Data" icon="radar">
     Use the API to retrieve scan result data (Vulnerability, Baseline Configurations, or Data Scans).
   </Card>
+
   <Card title="Manage Partners" icon="users-gear">
     Manage partners (convert, suspend, or reactivate) as needed.
   </Card>
+
   <Card title="Configure Webhooks" icon="webhook">
     Set up webhooks to receive notifications about events in your Cyrisma instances.
   </Card>
@@ -59,7 +68,7 @@ Access to Cyrisma risk management is based on a foundation of secure API access 
 
 All API requests should be made to:
 
-```
+```text
 https://api.cyrisma.com/app
 ```
 
