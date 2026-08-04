@@ -14,7 +14,7 @@ Obtain your API Key and **temporary** Secret directly from Cyrisma Support.
 </Info>
 
 | Credential | Example Value |
-|------------|---------------|
+| --- | --- |
 | API Key (Username) | `407cc078-46c7-11ed-8e42-000d3a3ba598` |
 | API Secret (Password) | `ZjNkMjg4MTdlOTA2Y2UyYzcyNDAzYzk5ZWNlMTFkOGQ` |
 
@@ -29,6 +29,7 @@ Using your API credentials, access the API to receive the initial access token.
 Since the interaction with the API is plaintext, use `x-www-form-urlencoded` data type when submitting data elements. API response will be plaintext formatted as JSON.
 
 <CodeGroup>
+
 ```bash cURL
 curl --location 'https://api.cyrisma.com/app/partner/login/' \
   --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -70,6 +71,7 @@ const response = await fetch('https://api.cyrisma.com/app/partner/login/', {
 const data = await response.json();
 console.log(data);
 ```
+
 </CodeGroup>
 
 ### Response
@@ -93,12 +95,14 @@ console.log(data);
 First-time API use should always begin with password reset. Please reset the original temporary password so that only **your** authorized applications have access to the API.
 
 <CodeGroup>
+
 ```bash cURL
 curl --location 'https://api.cyrisma.com/app/partner/login/regen-pass' \
   --header 'Content-Type: application/x-www-form-urlencoded' \
   --data-urlencode 'username=407cc078-46c7-11ed-8e42-000d3a3ba598' \
   --data-urlencode 'password=ZjNkMjg4MTdlOTA2Y2UyYzcyNDAzYzk5ZWNlMTFkOGQ'
 ```
+
 </CodeGroup>
 
 ### Response
@@ -119,7 +123,7 @@ curl --location 'https://api.cyrisma.com/app/partner/login/regen-pass' \
 
 Once a token has been returned, this "session" token is used as authorization granting access to all of the API capabilities. Include the access token in subsequent requests using the `Authorization` header:
 
-```
+```text
 Authorization: access_token {your_access_token}
 ```
 
@@ -128,7 +132,7 @@ Authorization: access_token {your_access_token}
 The following endpoints access and manage the provisioning process through the primary URL `https://api.cyrisma.com/app`:
 
 | Function | Method | Endpoint |
-|----------|--------|----------|
+| --- | --- | --- |
 | Reset Password | POST | `/partner/login/regen-pass` |
 | Get All Structure | GET | `/partner/instances/info/` |
 | Get Single Partner | GET | `/partner/instances/info/{instanceId}` |
@@ -141,3 +145,21 @@ The following endpoints access and manage the provisioning process through the p
 | Get Specific User | GET | `/partner/users/info/{userRef}` |
 | Disable User | PATCH | `/partner/users/disable` |
 | Set MFA Method | PATCH | `/partner/instances/mfa` |
+
+## **Instance Authentication for Reporting Endpoints**
+
+Before scan, dashboard, or reporting data can be retrieved from any CYRISMA instance, the instance must be authenticated separately. This is an additional step required after obtaining an access token, and must be repeated whenever a new access token is generated or regenerated
+
+> **Endpoint:** POST `https://api.cyrisma.com/app/partner/instances/login/{optional_instance_id}`
+
+If instance\_id is not provided, all available CYRISMA instances are authenticated at once. The response returns an instance\_url value for each authenticated instance. This instance\_url is then used to build all reporting endpoint URLs using the format:
+
+> `https://{instance_url}/app + endpoint path`
+
+Example: `https://ccnnnnnn.cyrisma.com/app/partner/scans/data`
+
+The complete reporting endpoint flow is:
+
+- Login and obtain an access token via POST` https://api.cyrisma.com/app/partner/login/`
+- Authenticate the instance via POST `https://api.cyrisma.com/app/partner/instances/login/{optional_instance_id}` 
+- Use the returned `instance_url `to call scan and reporting endpoints against `https://{instance_url}/app`
