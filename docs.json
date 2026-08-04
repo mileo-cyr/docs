@@ -72,6 +72,9 @@
   "api": {
     "playground": {
       "display": "simple"
+    },
+    "mdx": {
+      "server": "https://ccnnnnnn.cyrisma.com"
     }
   }
 }
