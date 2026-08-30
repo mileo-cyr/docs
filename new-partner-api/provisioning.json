@@ -22,6 +22,7 @@
         "tags": [
           "Auth"
         ],
+        "summary": "Exchange a machine client credential for an access token",
         "operationId": "CreateMachineClientTokenV1",
         "requestBody": {
           "content": {
@@ -55,6 +56,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Get a tenant",
         "operationId": "GetMspAdminTenantV1",
         "parameters": [
           {
@@ -104,6 +106,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Update a tenant's details",
         "operationId": "UpdateMspAdminTenantV1",
         "parameters": [
           {
@@ -165,6 +168,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Get a tenant's authentication policy",
         "operationId": "GetMspAdminTenantAuthPolicyV1",
         "parameters": [
           {
@@ -214,6 +218,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Set a tenant's authentication policy",
         "operationId": "UpdateMspAdminTenantAuthPolicyV1",
         "parameters": [
           {
@@ -285,6 +290,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "List countries",
         "operationId": "ListMspAdminCountriesV1",
         "responses": {
           "401": {
@@ -318,6 +324,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "List industries",
         "operationId": "ListMspAdminIndustriesV1",
         "responses": {
           "401": {
@@ -351,6 +358,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "List tenant kinds",
         "operationId": "ListMspAdminTenantKindsV1",
         "responses": {
           "401": {
@@ -384,6 +392,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Provision a tenant",
         "operationId": "CreateMspTenantProvisioningV1",
         "requestBody": {
           "content": {
@@ -434,6 +443,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Get a provisioning job's status",
         "operationId": "GetMspTenantProvisioningJobV1",
         "parameters": [
           {
@@ -485,6 +495,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Decommission a tenant",
         "operationId": "DecommissionMspTenantV1",
         "parameters": [
           {
@@ -546,6 +557,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "List technicians who can be assigned to a tenant",
         "operationId": "ListEligibleTechniciansV1",
         "parameters": [
           {
@@ -596,6 +608,7 @@
         "tags": [
           "Partner Management"
         ],
+        "summary": "List machine clients",
         "operationId": "ListPartnerMachineClientsV1",
         "responses": {
           "200": {
@@ -634,6 +647,7 @@
         "tags": [
           "Partner Management"
         ],
+        "summary": "Create a machine client",
         "operationId": "CreatePartnerMachineClientV1",
         "requestBody": {
           "content": {
@@ -694,6 +708,7 @@
         "tags": [
           "Partner Management"
         ],
+        "summary": "Revoke a machine client",
         "operationId": "RevokePartnerMachineClientV1",
         "parameters": [
           {
@@ -740,6 +755,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "List tenants",
         "operationId": "ListMspAdminTenantsV1",
         "parameters": [
           {
@@ -845,6 +861,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "List technicians",
         "operationId": "ListMspAdminTechniciansV1",
         "parameters": [
           {
@@ -937,6 +954,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "List users",
         "operationId": "ListMspAdminUsersV1",
         "parameters": [
           {
@@ -1013,6 +1031,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Create a user",
         "operationId": "CreateMspAdminUserV1",
         "requestBody": {
           "content": {
@@ -1053,6 +1072,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Get a user",
         "operationId": "GetMspAdminUserV1",
         "parameters": [
           {
@@ -1093,6 +1113,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Update a user",
         "operationId": "UpdateMspAdminUserV1",
         "parameters": [
           {
@@ -1142,6 +1163,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Disable a user",
         "operationId": "DisableMspAdminUserV1",
         "parameters": [
           {
@@ -1166,6 +1188,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "Reset a user's multi-factor enrollment",
         "operationId": "ResetMspAdminUserMfaV1",
         "parameters": [
           {
@@ -1200,6 +1223,7 @@
         "tags": [
           "MSP Administration"
         ],
+        "summary": "List assignable user roles",
         "operationId": "ListMspAdminUserRolesV1",
         "responses": {
           "200": {
