@@ -22,7 +22,7 @@
         "tags": [
           "Auth"
         ],
-        "summary": "Exchange a machine client credential for an access token",
+        "summary": "Exchange an API key for an access token",
         "operationId": "CreateMachineClientTokenV1",
         "requestBody": {
           "content": {
