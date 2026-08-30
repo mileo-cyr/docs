@@ -2106,6 +2106,30 @@
               "null",
               "boolean"
             ]
+          },
+          "mac_address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "mac_vendor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "device_fingerprint": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "snmp_summary": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
