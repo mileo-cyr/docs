@@ -1,0 +1,80 @@
+---
+title: "Introduction"
+description: "Overview of the Cyrisma New Partner API"
+---
+
+The New Partner API is the successor to the Cyrisma Legacy Partner API. It covers the same two areas
+— provisioning and reporting — against the current Cyrisma platform.
+
+The Legacy Partner API remains available and is unchanged. Existing integrations continue to work.
+
+## Base URLs
+
+All requests are made against your own Cyrisma instance host. There is no separate central API host.
+
+| Area | Base URL |
+| --- | --- |
+| Provisioning, users, credentials | `https://ccnnnnnn.cyrisma.com/ta` |
+| Reporting | `https://ccnnnnnn.cyrisma.com/app` |
+
+Replace `ccnnnnnn` with your instance identifier. Both paths are served by your instance host, so a
+single hostname covers the whole API.
+
+<Note>
+  Always connect using SSL only. Any other connection type will be ignored or rejected.
+</Note>
+
+## Differences from the Legacy Partner API
+
+| | Legacy Partner API | New Partner API |
+| --- | --- | --- |
+| Request format | `x-www-form-urlencoded` | JSON |
+| Hosts | `api.cyrisma.com` plus the instance host | Instance host only |
+| Credentials | API Key and Secret from Cyrisma Support | Self-managed machine clients |
+| List responses | Full result sets | Cursor-paginated |
+| Vulnerability model | Scan runs | Continuous state, reported by CVE and by root cause |
+
+## Reporting model
+
+The Legacy Partner API reports discrete scan runs. The New Partner API reports the current state of
+each tenant, updated continuously as endpoints report in. Reads are therefore expressed as the
+present state of a tenant rather than the result of a particular scan.
+
+Vulnerabilities are available two ways:
+
+- **By CVE** — one row per CVE, with the assets and tenants it affects.
+- **By root cause** — one row per underlying cause, such as an out-of-date product. A single root
+  cause commonly accounts for many CVEs, and remediating it closes all of them.
+
+## Sequence
+
+<Steps>
+  <Step title="Create a machine client">
+    Call `POST /ta/v1/partners/machine-clients` to create a credential. The response contains the
+    `client_id` and the `client_secret`. The secret is returned once and cannot be retrieved again.
+  </Step>
+  <Step title="Request an access token">
+    Exchange the credential at `POST /ta/v1/auth/client-token` for a bearer token. Tokens are valid
+    for 60 minutes and may be requested again as often as needed.
+  </Step>
+  <Step title="Provision tenants and users">
+    Create tenants with `POST /ta/v1/msp/provisioning/tenants` and poll
+    `GET /ta/v1/msp/provisioning/jobs/{jobId}` for completion. Add users with
+    `POST /ta/v1/msp/admin/users`.
+  </Step>
+  <Step title="Read reporting data">
+    Call the reporting endpoints under `/app/pulse/v1/partner` for vulnerability state, CVEs, root
+    causes, assets, dashboards, and usage.
+  </Step>
+</Steps>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/new-partner-api/authentication">
+    Create credentials and obtain access tokens.
+  </Card>
+  <Card title="Conventions" icon="list" href="/new-partner-api/conventions">
+    Pagination, filters, expansions, and error handling.
+  </Card>
+</CardGroup>

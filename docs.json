@@ -11,7 +11,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "API Reference",
+        "tab": "Legacy Partner API",
         "groups": [
           {
             "group": "Overview",
@@ -22,6 +22,27 @@
           }
         ],
         "openapi": "openapi.json"
+      },
+      {
+        "tab": "New Partner API",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "new-partner-api/introduction",
+              "new-partner-api/authentication",
+              "new-partner-api/conventions"
+            ]
+          },
+          {
+            "group": "Provisioning",
+            "openapi": "new-partner-api/provisioning.json"
+          },
+          {
+            "group": "Reporting",
+            "openapi": "new-partner-api/reporting.json"
+          }
+        ]
       }
     ]
   },
@@ -44,15 +65,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {

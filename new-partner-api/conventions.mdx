@@ -1,0 +1,94 @@
+---
+title: "Conventions"
+description: "Pagination, filters, expansions, time windows, and errors in the Cyrisma New Partner API"
+---
+
+These conventions apply across the reporting endpoints under `/app/pulse/v1/partner`.
+
+## Response envelope
+
+List endpoints return a fixed envelope.
+
+```json
+{
+  "root_tenant_id": "6f1b0f2e-9a44-4a1e-9d0c-2b7c1f5d4e33",
+  "page_size": 100,
+  "next_cursor": "eyJrZXkiOiJDVkUtMjAyNi01MjcyIn0",
+  "coverage": [
+    { "tenant_id": "c1d9...", "tenant_host": "cc2080fe.cyrisma.com" }
+  ],
+  "items": []
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `root_tenant_id` | The root of the caller's authorized scope. |
+| `page_size` | Number of items requested for this page. |
+| `next_cursor` | Cursor for the next page, or `null` on the last page. |
+| `coverage` | The tenants this response covers. |
+| `items` | The rows. |
+
+## Pagination
+
+Use `page_size` and `cursor`. The default page size is `100` and the maximum is `500`.
+
+Read the first page, then pass the returned `next_cursor` back unchanged until it is `null`.
+
+```bash
+curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "https://ccnnnnnn.cyrisma.com/app/pulse/v1/partner/vulnerabilities/cves?page_size=100"
+
+curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "https://ccnnnnnn.cyrisma.com/app/pulse/v1/partner/vulnerabilities/cves?page_size=100&cursor=$NEXT_CURSOR"
+```
+
+Cursors are opaque. Do not construct or modify them. Ordering is deterministic, so a full walk
+returns every row exactly once.
+
+## Filters
+
+| Parameter | Values |
+| --- | --- |
+| `tenant_ids` | Comma-separated tenant identifiers. |
+| `include_descendants` | `true` to widen each `tenant_ids` entry to its sub-tenants. |
+| `severity` | Comma-separated: `critical`, `high`, `medium`, `low`, `info`. |
+| `source_type` | `endpoint`, `network`, or `external`. |
+| `root_cause_type` | `product`, `package`, `library`, `os`, `service`, `configuration`, `software`, `unknown`. |
+| `patchability` | `patch_available`, `manual_only`, or `unknown`. |
+
+## Expansions
+
+Two endpoints accept `expand`. Expansions perform additional work, so request them only when the
+extra detail is required.
+
+| Endpoint | Value | Effect |
+| --- | --- | --- |
+| `/vulnerabilities/cves`, `/vulnerabilities/root-causes` | `tenants` | Adds a `tenants` breakdown to each row: one entry per affected tenant, with its name, host, posture grade, endpoint count, affected asset count, and sample asset names. |
+| `/assets` | `cves` | Restricts the list to assets with at least one open finding, and attaches the full CVE detail for each. |
+
+```bash
+curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "https://ccnnnnnn.cyrisma.com/app/pulse/v1/partner/vulnerabilities/cves?expand=tenants"
+```
+
+## Time windows
+
+Event and export endpoints accept `from` and `to` as RFC 3339 timestamps. Treat `as_of`, `from`, and
+`to` values in responses as UTC instants.
+
+```bash
+curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "https://ccnnnnnn.cyrisma.com/app/pulse/v1/partner/vulnerabilities/events?from=2026-07-01T00:00:00Z&to=2026-07-02T00:00:00Z"
+```
+
+## Errors
+
+Errors use RFC 7807 `application/problem+json`.
+
+| Status | Meaning | Action |
+| --- | --- | --- |
+| `400` | Invalid filter, window, or cursor. | Correct the request. Do not retry unchanged. |
+| `401` | Missing, expired, or invalid token. | Request a new access token. |
+| `403` | Wrong credential type, or a tenant outside the authorized scope. | Do not retry unchanged. |
+| `503` | An upstream read is temporarily unavailable. | Retry with bounded backoff. |

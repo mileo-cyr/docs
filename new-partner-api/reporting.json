@@ -1,0 +1,3773 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Cyrisma New Partner API \u2014 Reporting",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://{instance}.cyrisma.com/app",
+      "description": "The partner\u0027s CYRISMA instance host.",
+      "variables": {
+        "instance": {
+          "default": "ccnnnnnn",
+          "description": "The instance label of the tenant host issued to the partner."
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/pulse/v1/partner/vulnerabilities/state": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Get vulnerability state for authorized partner tenants.",
+        "description": "This endpoint returns an aggregated vulnerability posture snapshot -- open finding counts by\nseverity, affected asset/tenant counts, KEV and exploitable finding counts, patchable root\ncause count, and a lifecycle series -- across the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the snapshot to specific tenants; omit\n  it to include every tenant the caller is authorized for.\n- Only tenants within the caller\u0027s authorized scope are included; requesting a tenant\n  outside that scope returns 403.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "GetPartnerVulnerabilityStateV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerVulnerabilityStateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/vulnerabilities/events": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "List vulnerability events for authorized partner tenants.",
+        "description": "This endpoint returns a cursor-paginated list of live vulnerability detection events across\nthe authorized partner\u0027s tenant scope, within a bounded time window.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (optional, ISO-8601 timestamps) bound the detection window; defaults to the\n  last 24 hours. \u0060from\u0060 must not be later than \u0060to\u0060.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "ListPartnerVulnerabilityEventsV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include_descendants",
+            "in": "query",
+            "description": "When true, widens each id in \u0060tenant_ids\u0060 to that tenant and every tenant beneath it in the hierarchy. Ignored when \u0060tenant_ids\u0060 is omitted, since the default is already the caller\u0027s whole scope.",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start of the window, RFC 3339. Treated as UTC.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End of the window, RFC 3339. Treated as UTC.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Maximum number of items per page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerVulnerabilityEventsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/vulnerabilities/cves": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "List CVEs for authorized partner tenants.",
+        "description": "This endpoint returns a cursor-paginated list of CVEs observed across the authorized\npartner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "ListPartnerCvesV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include_descendants",
+            "in": "query",
+            "description": "When true, widens each id in \u0060tenant_ids\u0060 to that tenant and every tenant beneath it in the hierarchy. Ignored when \u0060tenant_ids\u0060 is omitted, since the default is already the caller\u0027s whole scope.",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Maximum number of items per page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "description": "Filter by severity. Comma-separated; any of: critical, high, medium, low, info.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source_type",
+            "in": "query",
+            "description": "Filter by asset source.",
+            "schema": {
+              "enum": [
+                "endpoint",
+                "network",
+                "external"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "root_cause_type",
+            "in": "query",
+            "description": "Filter by root-cause type.",
+            "schema": {
+              "enum": [
+                "product",
+                "package",
+                "library",
+                "os",
+                "service",
+                "configuration",
+                "software",
+                "unknown"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "patchability",
+            "in": "query",
+            "description": "Filter by patch availability.",
+            "schema": {
+              "enum": [
+                "patch_available",
+                "manual_only",
+                "unknown"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerPagedResponseOfGlobalCveRow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/vulnerabilities/cves/{cveId}": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Get a single CVE for authorized partner tenants.",
+        "description": "This endpoint returns the details of a single CVE, scoped to the authorized partner\u0027s\ntenants.\n\n**Notes:**\n- \u0060cveId\u0060 is the CVE identifier (e.g. \u0060CVE-2024-12345\u0060).\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the lookup to specific tenants.\n- Cursor pagination is not supported on this endpoint; a \u0060cursor\u0060 query parameter returns\n  400.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "GetPartnerCveV1",
+        "parameters": [
+          {
+            "name": "cveId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerCveDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/vulnerabilities/cves/{cveId}/assets": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "List assets affected by a CVE for authorized partner tenants.",
+        "description": "This endpoint returns a cursor-paginated list of assets affected by a specific CVE, scoped\nto the authorized partner\u0027s tenants.\n\n**Notes:**\n- \u0060cveId\u0060 is the CVE identifier (e.g. \u0060CVE-2024-12345\u0060).\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "ListPartnerCveAssetsV1",
+        "parameters": [
+          {
+            "name": "cveId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Maximum number of items per page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerPagedResponseOfGlobalAffectedAssetRow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/vulnerabilities/root-causes": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "List vulnerability root causes for authorized partner tenants.",
+        "description": "This endpoint returns a cursor-paginated list of vulnerability root causes observed across\nthe authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "ListPartnerRootCausesV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include_descendants",
+            "in": "query",
+            "description": "When true, widens each id in \u0060tenant_ids\u0060 to that tenant and every tenant beneath it in the hierarchy. Ignored when \u0060tenant_ids\u0060 is omitted, since the default is already the caller\u0027s whole scope.",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Maximum number of items per page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "description": "Filter by severity. Comma-separated; any of: critical, high, medium, low, info.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source_type",
+            "in": "query",
+            "description": "Filter by asset source.",
+            "schema": {
+              "enum": [
+                "endpoint",
+                "network",
+                "external"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "root_cause_type",
+            "in": "query",
+            "description": "Filter by root-cause type.",
+            "schema": {
+              "enum": [
+                "product",
+                "package",
+                "library",
+                "os",
+                "service",
+                "configuration",
+                "software",
+                "unknown"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "patchability",
+            "in": "query",
+            "description": "Filter by patch availability.",
+            "schema": {
+              "enum": [
+                "patch_available",
+                "manual_only",
+                "unknown"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerPagedResponseOfGlobalRootCauseRow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/vulnerabilities/root-causes/{rootCauseKey}": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Get a single vulnerability root cause for authorized partner tenants.",
+        "description": "This endpoint returns the details of a single vulnerability root cause, scoped to the\nauthorized partner\u0027s tenants.\n\n**Notes:**\n- \u0060rootCauseKey\u0060 is the unique identifier for the root cause.\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the lookup to specific tenants.\n- Cursor pagination is not supported on this endpoint; a \u0060cursor\u0060 query parameter returns\n  400.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "GetPartnerRootCauseV1",
+        "parameters": [
+          {
+            "name": "rootCauseKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerRootCauseDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/vulnerabilities/root-causes/{rootCauseKey}/assets": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "List assets affected by a vulnerability root cause for authorized partner tenants.",
+        "description": "This endpoint returns a cursor-paginated list of assets affected by a specific vulnerability\nroot cause, scoped to the authorized partner\u0027s tenants.\n\n**Notes:**\n- \u0060rootCauseKey\u0060 is the unique identifier for the root cause.\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "ListPartnerRootCauseAssetsV1",
+        "parameters": [
+          {
+            "name": "rootCauseKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Maximum number of items per page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerPagedResponseOfGlobalAffectedAssetRow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/assets": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "List assets for authorized partner tenants.",
+        "description": "This endpoint returns a cursor-paginated list of assets across the authorized partner\u0027s\ntenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "ListPartnerAssetsV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include_descendants",
+            "in": "query",
+            "description": "When true, widens each id in \u0060tenant_ids\u0060 to that tenant and every tenant beneath it in the hierarchy. Ignored when \u0060tenant_ids\u0060 is omitted, since the default is already the caller\u0027s whole scope.",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Maximum number of items per page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerAssetsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/dashboards/vulnerability-series": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Get vulnerability trend series for authorized partner tenants.",
+        "description": "This endpoint returns a per-tenant vulnerability trend series -- one data point per day over\nthe requested range -- for the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060range\u0060 (optional, one of \u006030\u0060, \u006060\u0060, \u006090\u0060; default \u006030\u0060) is the number of days of history\n  to return.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "GetPartnerVulnerabilitySeriesV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "range",
+            "in": "query",
+            "description": "Relative window for the series, e.g. 30d.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerVulnerabilitySeriesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/dashboards/vulnerability-rollups": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Get vulnerability rollups for authorized partner tenants.",
+        "description": "This endpoint returns per-tenant vulnerability rollups, grouped and ranked by the requested\ndimension, over a bounded date range for the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (required, \u0060yyyy-MM-dd\u0060) bound the rollup date range. \u0060from\u0060 must not be\n  later than \u0060to\u0060.\n- \u0060group_by\u0060 (optional, one of \u0060cve\u0060, \u0060root_cause\u0060, \u0060severity\u0060, \u0060asset_type\u0060; default \u0060cve\u0060)\n  selects the rollup dimension.\n- \u0060limit\u0060 (optional, 1-100, default 25) caps the number of rollup rows returned per tenant.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "GetPartnerVulnerabilityRollupsV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start of the window, RFC 3339. Treated as UTC.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End of the window, RFC 3339. Treated as UTC.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "description": "Rollup grouping key.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of rollup groups to return.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerVulnerabilityRollupsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/usage": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Get endpoint usage history for authorized partner tenants.",
+        "description": "This endpoint returns endpoint usage history, bucketed by day or month, over a bounded date\nrange for the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (required, \u0060yyyy-MM-dd\u0060) bound the usage date range. \u0060from\u0060 must not be\n  later than \u0060to\u0060.\n- \u0060grain\u0060 (optional, one of \u0060day\u0060, \u0060month\u0060; default \u0060day\u0060) controls the bucketing interval.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "GetPartnerUsageV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start of the window, RFC 3339. Treated as UTC.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End of the window, RFC 3339. Treated as UTC.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "grain",
+            "in": "query",
+            "description": "Usage reporting grain.",
+            "schema": {
+              "enum": [
+                "day",
+                "month"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerUsageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/exports/vulnerability-events": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Export vulnerability events for authorized partner tenants.",
+        "description": "This endpoint returns a single-page export of live vulnerability detection events, within a\nbounded time window, for the authorized partner\u0027s tenant scope. The response is returned\nwith a \u0060Content-Disposition: attachment\u0060 header naming a timestamped export file.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the export to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (optional, ISO-8601 timestamps) bound the detection window; defaults to the\n  last 24 hours. \u0060from\u0060 must not be later than \u0060to\u0060.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060format\u0060 (optional, default \u0060json\u0060) selects the export format; only \u0060json\u0060 is currently\n  supported -- any other value returns 400.\n- The export is capped at the maximum page size (500 events) and is not cursor-paginated.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "ExportPartnerVulnerabilityEventsV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start of the window, RFC 3339. Treated as UTC.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End of the window, RFC 3339. Treated as UTC.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Export encoding.",
+            "schema": {
+              "enum": [
+                "json",
+                "csv"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerVulnerabilityEventExportResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/tenants": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "List the tenants in the authorized partner scope.",
+        "description": "Returns every tenant the calling machine client is authorized for, as a flat list\nordered by position in the hierarchy.\n\n**Notes:**\n- \u0060parent_tenant_id\u0060 and \u0060depth\u0060 describe each tenant\u0027s place in the hierarchy;\n  the roots of the caller\u0027s scope have a \u0060parent_tenant_id\u0060 outside it.\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "ListPartnerTenantsV1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerTenantListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/tenants/{tenantId}": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Get one tenant and its sub-tenants from the authorized partner scope.",
+        "description": "Returns \u0060tenantId\u0060 plus every tenant beneath it in the hierarchy, narrowed from the\ncaller\u0027s full authorized scope.\n\n**Notes:**\n- \u0060tenantId\u0060 must be inside the caller\u0027s authorized scope; anything else returns 403,\n  whether or not the tenant exists.\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "GetPartnerTenantV1",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerTenantListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DashboardReconciliationState": {
+        "enum": [
+          "matched",
+          "mismatched",
+          "source_grade"
+        ]
+      },
+      "DashboardVulnerabilitySeriesPoint": {
+        "required": [
+          "day",
+          "score",
+          "grade",
+          "open_critical_count",
+          "open_high_count",
+          "open_medium_count",
+          "open_low_count",
+          "open_total_count",
+          "unique_critical_count",
+          "unique_high_count",
+          "unique_medium_count",
+          "unique_low_count",
+          "unique_total_count",
+          "new_total_count",
+          "resolved_total_count",
+          "remediated_total_count",
+          "suppressed_total_count",
+          "affected_asset_count",
+          "evaluated_asset_count",
+          "source_watermark_at",
+          "reconciliation_state"
+        ],
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date"
+          },
+          "score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "grade": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "open_critical_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_high_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_medium_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_low_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_total_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "unique_critical_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "unique_high_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "unique_medium_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "unique_low_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "unique_total_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "new_total_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "resolved_total_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "remediated_total_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "suppressed_total_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "affected_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "evaluated_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "source_watermark_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "reconciliation_state": {
+            "$ref": "#/components/schemas/DashboardReconciliationState"
+          },
+          "scores_as_of": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "score_policy_version": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "GlobalAffectedAssetRow": {
+        "required": [
+          "tenant_id",
+          "tenant_host",
+          "asset_id",
+          "asset_type",
+          "source_type",
+          "display_name",
+          "hostname",
+          "address",
+          "severity",
+          "cvr_score",
+          "cvss_score",
+          "epss_probability",
+          "patch_available",
+          "first_seen_at",
+          "last_seen_at"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string"
+          },
+          "asset_id": {
+            "type": "string"
+          },
+          "asset_type": {
+            "$ref": "#/components/schemas/GlobalAssetType"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/GlobalSourceType"
+          },
+          "display_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hostname": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "severity": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GlobalSeverity"
+              }
+            ]
+          },
+          "cvr_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "cvss_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "epss_probability": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "patch_available": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "first_seen_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "last_seen_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "fixed_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "platform": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "os_family": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "os_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "os_version": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "open_finding_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "fixed_finding_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "finding_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "vulnerability_grade": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tenant_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fixed_version": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "detected_while_offline": {
+            "type": "boolean",
+            "default": false
+          },
+          "patch_target": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GlobalPatchTarget"
+              }
+            ]
+          },
+          "agent_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "GlobalAssetRow": {
+        "required": [
+          "tenant_id",
+          "tenant_host",
+          "asset_id",
+          "asset_type",
+          "source_type",
+          "display_name",
+          "hostname",
+          "fqdn",
+          "address",
+          "platform",
+          "os_family",
+          "os_name",
+          "os_version",
+          "agent_status",
+          "agent_last_check_in_at",
+          "last_seen_at",
+          "open_finding_count",
+          "open_critical_count",
+          "open_high_count",
+          "open_medium_count",
+          "open_low_count",
+          "open_info_count",
+          "highest_cvr_score",
+          "vulnerability_grade",
+          "password_manager_status",
+          "disk_encryption_status",
+          "lock_status",
+          "security_software_status",
+          "eol_status",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string"
+          },
+          "asset_id": {
+            "type": "string"
+          },
+          "asset_type": {
+            "$ref": "#/components/schemas/GlobalAssetType"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/GlobalSourceType"
+          },
+          "display_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hostname": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fqdn": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "platform": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "os_family": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "os_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "os_version": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "agent_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "agent_last_check_in_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "last_seen_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "open_finding_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_critical_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_high_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_medium_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_low_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_info_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "highest_cvr_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "vulnerability_grade": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "password_manager_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "disk_encryption_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "lock_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "security_software_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "eol_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ports": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "port_observation": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GlobalPortObservation"
+              }
+            ]
+          },
+          "secure_baseline_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "secure_baseline_profile_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "secure_baseline_profile_label": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fips_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tenant_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "authenticated": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      },
+      "GlobalAssetType": {
+        "enum": [
+          "endpoint",
+          "host",
+          "server",
+          "workstation",
+          "network_device",
+          "printer",
+          "router",
+          "switch",
+          "firewall",
+          "service",
+          "external",
+          "domain",
+          "unknown"
+        ]
+      },
+      "GlobalCveRow": {
+        "required": [
+          "cve_id",
+          "description",
+          "severity",
+          "cvss_score",
+          "cvr_score",
+          "epss_probability",
+          "kev",
+          "impact",
+          "affected_asset_count",
+          "affected_tenant_count",
+          "source_counts",
+          "root_cause_count",
+          "top_root_causes",
+          "first_seen_at",
+          "last_seen_at"
+        ],
+        "type": "object",
+        "properties": {
+          "cve_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "severity": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GlobalSeverity"
+              }
+            ]
+          },
+          "cvss_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "cvr_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "epss_probability": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "kev": {
+            "type": "boolean"
+          },
+          "impact": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "affected_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "affected_tenant_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "source_counts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalSourceCount"
+            }
+          },
+          "root_cause_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "top_root_causes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "first_seen_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "last_seen_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "asset_display_names": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "tenant_names": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "online_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "offline_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "detected_while_offline": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "GlobalDetectionRow": {
+        "required": [
+          "finding_event_id",
+          "tenant_id",
+          "tenant_host",
+          "event_type",
+          "occurred_at",
+          "cve_id",
+          "description",
+          "severity",
+          "cvr_score",
+          "epss_probability",
+          "exploitability_label",
+          "root_cause_key",
+          "root_cause_label",
+          "source_type",
+          "asset_id",
+          "asset_display_name",
+          "asset_type",
+          "os_family",
+          "os_name",
+          "agent_status"
+        ],
+        "type": "object",
+        "properties": {
+          "finding_event_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/GlobalFindingEventType"
+          },
+          "occurred_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "cve_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "severity": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GlobalSeverity"
+              }
+            ]
+          },
+          "cvr_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "epss_probability": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "exploitability_label": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "root_cause_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "root_cause_label": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source_type": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GlobalSourceType"
+              }
+            ]
+          },
+          "asset_id": {
+            "type": "string"
+          },
+          "asset_display_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "asset_type": {
+            "$ref": "#/components/schemas/GlobalAssetType"
+          },
+          "os_family": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "os_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "agent_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tenant_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "detected_while_offline": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "GlobalFindingEventType": {
+        "enum": [
+          "opened",
+          "evidence_changed",
+          "fixed",
+          "reopened",
+          "suppressed",
+          "remediated",
+          "unknown"
+        ]
+      },
+      "GlobalPatchTarget": {
+        "required": [
+          "kind",
+          "package_manager",
+          "package_id",
+          "target_version",
+          "kb_ids",
+          "architectures",
+          "installer_scope",
+          "minimum_os_build",
+          "maximum_os_build",
+          "reboot_required",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "package_manager": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "package_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "target_version": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "kb_ids": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "architectures": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "installer_scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "minimum_os_build": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "maximum_os_build": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reboot_required": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "patch_target_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source_artifact_version": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "installed_app_aliases": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "GlobalPortObservation": {
+        "enum": [
+          "host_observed",
+          "scan_observed"
+        ]
+      },
+      "GlobalRootCauseRow": {
+        "required": [
+          "root_cause_key",
+          "root_cause_label",
+          "root_cause_type",
+          "product_key",
+          "package_manager",
+          "highest_cvr_score",
+          "impact",
+          "affected_asset_count",
+          "affected_tenant_count",
+          "cve_count",
+          "highest_epss_probability",
+          "exploitability_label",
+          "patch_available",
+          "fixed_version"
+        ],
+        "type": "object",
+        "properties": {
+          "root_cause_key": {
+            "type": "string"
+          },
+          "root_cause_label": {
+            "type": "string"
+          },
+          "root_cause_type": {
+            "$ref": "#/components/schemas/GlobalRootCauseType"
+          },
+          "product_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "package_manager": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "highest_cvr_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "impact": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "affected_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "affected_tenant_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "cve_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "highest_epss_probability": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "exploitability_label": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "patch_available": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "fixed_version": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "highest_cvss_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "critical_cve_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "high_cve_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "medium_cve_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "low_cve_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "asset_display_names": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "tenant_names": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "patchability_reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "online_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          },
+          "offline_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64",
+            "default": 0
+          }
+        }
+      },
+      "GlobalRootCauseType": {
+        "enum": [
+          "product",
+          "package",
+          "library",
+          "os",
+          "service",
+          "configuration",
+          "software",
+          "unknown"
+        ]
+      },
+      "GlobalSeverity": {
+        "enum": [
+          "critical",
+          "high",
+          "medium",
+          "low",
+          "info",
+          "unknown"
+        ]
+      },
+      "GlobalSourceCount": {
+        "required": [
+          "source_type",
+          "count"
+        ],
+        "type": "object",
+        "properties": {
+          "source_type": {
+            "$ref": "#/components/schemas/GlobalSourceType"
+          },
+          "count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          }
+        }
+      },
+      "GlobalSourceTabCountRow": {
+        "required": [
+          "source_type",
+          "open_finding_count",
+          "affected_asset_count",
+          "affected_tenant_count"
+        ],
+        "type": "object",
+        "properties": {
+          "source_type": {
+            "$ref": "#/components/schemas/GlobalSourceType"
+          },
+          "open_finding_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "affected_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "affected_tenant_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          }
+        }
+      },
+      "GlobalSourceType": {
+        "enum": [
+          "endpoint",
+          "network",
+          "external",
+          "domain",
+          "unknown"
+        ]
+      },
+      "GlobalVulnerabilitySeriesPoint": {
+        "required": [
+          "date",
+          "opened_count",
+          "remediated_count",
+          "cumulative_open_count"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "opened_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "remediated_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "cumulative_open_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          }
+        }
+      },
+      "PartnerAssetsResponse": {
+        "required": [
+          "root_tenant_id",
+          "page_size",
+          "next_cursor",
+          "coverage",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "page_size": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "next_cursor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalAssetRow"
+            }
+          }
+        }
+      },
+      "PartnerCveDetailResponse": {
+        "required": [
+          "root_tenant_id",
+          "coverage",
+          "cve"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "cve": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GlobalCveRow"
+              }
+            ]
+          }
+        }
+      },
+      "PartnerPagedResponseOfGlobalAffectedAssetRow": {
+        "required": [
+          "root_tenant_id",
+          "page_size",
+          "next_cursor",
+          "coverage",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "page_size": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "next_cursor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalAffectedAssetRow"
+            }
+          }
+        }
+      },
+      "PartnerPagedResponseOfGlobalCveRow": {
+        "required": [
+          "root_tenant_id",
+          "page_size",
+          "next_cursor",
+          "coverage",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "page_size": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "next_cursor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalCveRow"
+            }
+          }
+        }
+      },
+      "PartnerPagedResponseOfGlobalRootCauseRow": {
+        "required": [
+          "root_tenant_id",
+          "page_size",
+          "next_cursor",
+          "coverage",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "page_size": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "next_cursor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalRootCauseRow"
+            }
+          }
+        }
+      },
+      "PartnerRootCauseDetailResponse": {
+        "required": [
+          "root_tenant_id",
+          "coverage",
+          "root_cause"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "root_cause": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GlobalRootCauseRow"
+              }
+            ]
+          }
+        }
+      },
+      "PartnerTenantCoverage": {
+        "required": [
+          "tenant_id",
+          "tenant_host"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string"
+          }
+        }
+      },
+      "PartnerTenantListResponse": {
+        "required": [
+          "root_tenant_id",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantRow"
+            }
+          }
+        }
+      },
+      "PartnerTenantRow": {
+        "required": [
+          "tenant_id",
+          "tenant_host",
+          "name",
+          "kind",
+          "status",
+          "parent_tenant_id",
+          "depth"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "parent_tenant_id": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "depth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "PartnerTenantVulnerabilityRollups": {
+        "required": [
+          "tenant_id",
+          "tenant_host",
+          "rows"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VulnerabilityRollupRow"
+            }
+          }
+        }
+      },
+      "PartnerTenantVulnerabilitySeries": {
+        "required": [
+          "tenant_id",
+          "tenant_host",
+          "points"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardVulnerabilitySeriesPoint"
+            }
+          }
+        }
+      },
+      "PartnerUsageResponse": {
+        "required": [
+          "root_tenant_id",
+          "grain",
+          "from",
+          "to",
+          "coverage",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "grain": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TenantEndpointHistoryPoint"
+            }
+          }
+        }
+      },
+      "PartnerVulnerabilityEventExportResponse": {
+        "required": [
+          "root_tenant_id",
+          "generated_at",
+          "from",
+          "to",
+          "format",
+          "coverage",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "format": {
+            "type": "string"
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalDetectionRow"
+            }
+          }
+        }
+      },
+      "PartnerVulnerabilityEventsResponse": {
+        "required": [
+          "root_tenant_id",
+          "from",
+          "to",
+          "page_size",
+          "next_cursor",
+          "coverage",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "page_size": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "next_cursor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalDetectionRow"
+            }
+          }
+        }
+      },
+      "PartnerVulnerabilityRollupsResponse": {
+        "required": [
+          "root_tenant_id",
+          "from",
+          "to",
+          "group_by",
+          "limit",
+          "coverage",
+          "tenants"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "group_by": {
+            "type": "string"
+          },
+          "limit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "tenants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantVulnerabilityRollups"
+            }
+          }
+        }
+      },
+      "PartnerVulnerabilitySeriesResponse": {
+        "required": [
+          "root_tenant_id",
+          "range_days",
+          "coverage",
+          "tenants"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "range_days": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "tenants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantVulnerabilitySeries"
+            }
+          }
+        }
+      },
+      "PartnerVulnerabilityStateResponse": {
+        "required": [
+          "root_tenant_id",
+          "coverage",
+          "open_finding_count",
+          "open_critical_count",
+          "open_high_count",
+          "open_medium_count",
+          "open_low_count",
+          "affected_asset_count",
+          "affected_tenant_count",
+          "kev_finding_count",
+          "exploitable_finding_count",
+          "patchable_root_cause_count",
+          "remediated_30d_count",
+          "last_detection_at",
+          "source_tab_counts",
+          "lifecycle_series"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            }
+          },
+          "open_finding_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_critical_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_high_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_medium_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "open_low_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "affected_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "affected_tenant_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "kev_finding_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "exploitable_finding_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "patchable_root_cause_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "remediated_30d_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "last_detection_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "source_tab_counts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalSourceTabCountRow"
+            }
+          },
+          "lifecycle_series": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalVulnerabilitySeriesPoint"
+            }
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "TenantEndpointHistoryPoint": {
+        "required": [
+          "tenant_id",
+          "period_start",
+          "endpoint_count",
+          "email_count"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "period_start": {
+            "type": "string",
+            "format": "date"
+          },
+          "endpoint_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "email_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "VulnerabilityRollupRow": {
+        "required": [
+          "group_value",
+          "metric_group",
+          "metric_name",
+          "severity",
+          "asset_type",
+          "value_int",
+          "value_float",
+          "sample_count",
+          "reconciliation_state"
+        ],
+        "type": "object",
+        "properties": {
+          "group_value": {
+            "type": "string"
+          },
+          "metric_group": {
+            "type": "string"
+          },
+          "metric_name": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "asset_type": {
+            "type": "string"
+          },
+          "value_int": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "value_float": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "sample_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "reconciliation_state": {
+            "$ref": "#/components/schemas/DashboardReconciliationState"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "A Tenant Authority machine-client token from POST /v1/auth/client-token, carrying subject_type=machine_client and the pulse.read scope.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": [
+        "pulse.read"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Reporting"
+    }
+  ]
+}
