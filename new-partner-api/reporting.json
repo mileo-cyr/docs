@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.1",
   "info": {
-    "title": "Cyrisma New Partner API \u2014 Reporting",
+    "title": "Cyrisma New Partner API: Reporting",
     "version": "v1"
   },
   "servers": [
@@ -23,7 +23,7 @@
           "Reporting"
         ],
         "summary": "Get vulnerability state for authorized partner tenants.",
-        "description": "This endpoint returns an aggregated vulnerability posture snapshot -- open finding counts by\nseverity, affected asset/tenant counts, KEV and exploitable finding counts, patchable root\ncause count, and a lifecycle series -- across the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the snapshot to specific tenants; omit\n  it to include every tenant the caller is authorized for.\n- Only tenants within the caller\u0027s authorized scope are included; requesting a tenant\n  outside that scope returns 403.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns an aggregated vulnerability posture snapshot: open finding counts by\nseverity, affected asset/tenant counts, KEV and exploitable finding counts, patchable root\ncause count, and a lifecycle series, across the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the snapshot to specific tenants; omit\n  it to include every tenant the caller is authorized for.\n- Only tenants within the caller\u0027s authorized scope are included; requesting a tenant\n  outside that scope returns 403.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
         "operationId": "GetPartnerVulnerabilityStateV1",
         "parameters": [
           {
@@ -944,7 +944,7 @@
           "Reporting"
         ],
         "summary": "Get vulnerability trend series for authorized partner tenants.",
-        "description": "This endpoint returns a per-tenant vulnerability trend series -- one data point per day over\nthe requested range -- for the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060range\u0060 (optional, one of \u006030\u0060, \u006060\u0060, \u006090\u0060; default \u006030\u0060) is the number of days of history\n  to return.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a per-tenant vulnerability trend series, one data point per day over\nthe requested range, for the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060range\u0060 (optional, one of \u006030\u0060, \u006060\u0060, \u006090\u0060; default \u006030\u0060) is the number of days of history\n  to return.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
         "operationId": "GetPartnerVulnerabilitySeriesV1",
         "parameters": [
           {
@@ -1207,7 +1207,7 @@
           "Reporting"
         ],
         "summary": "Export vulnerability events for authorized partner tenants.",
-        "description": "This endpoint returns a single-page export of live vulnerability detection events, within a\nbounded time window, for the authorized partner\u0027s tenant scope. The response is returned\nwith a \u0060Content-Disposition: attachment\u0060 header naming a timestamped export file.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the export to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (optional, ISO-8601 timestamps) bound the detection window; defaults to the\n  last 24 hours. \u0060from\u0060 must not be later than \u0060to\u0060.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060format\u0060 (optional, default \u0060json\u0060) selects the export format; only \u0060json\u0060 is currently\n  supported -- any other value returns 400.\n- The export is capped at the maximum page size (500 events) and is not cursor-paginated.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a single-page export of live vulnerability detection events, within a\nbounded time window, for the authorized partner\u0027s tenant scope. The response is returned\nwith a \u0060Content-Disposition: attachment\u0060 header naming a timestamped export file.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the export to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (optional, ISO-8601 timestamps) bound the detection window; defaults to the\n  last 24 hours. \u0060from\u0060 must not be later than \u0060to\u0060.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060format\u0060 (optional, default \u0060json\u0060) selects the export format; only \u0060json\u0060 is currently\n  supported; any other value returns 400.\n- The export is capped at the maximum page size (500 events) and is not cursor-paginated.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
         "operationId": "ExportPartnerVulnerabilityEventsV1",
         "parameters": [
           {

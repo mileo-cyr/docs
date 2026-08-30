@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.1",
   "info": {
-    "title": "Cyrisma New Partner API — Provisioning",
+    "title": "Cyrisma New Partner API: Provisioning",
     "version": "v1"
   },
   "servers": [
