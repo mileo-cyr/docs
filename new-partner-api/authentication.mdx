@@ -1,71 +1,50 @@
 ---
 title: "Authentication"
-description: "Create machine clients and obtain access tokens for the Cyrisma New Partner API"
+description: "Create an API key and obtain access tokens for the Cyrisma New Partner API"
 ---
 
-The New Partner API authenticates with a **machine client**: a `client_id` and `client_secret` pair
-that you create and manage yourself. You exchange the pair for a short-lived bearer token, and send
-that token on every request.
+The New Partner API authenticates with an **API key**: a client ID and client secret pair. You
+exchange the pair for a short-lived bearer token, and send that token on every request.
 
-## Create a machine client
+## Create an API key
+
+API keys are created and managed in the Cyrisma web platform. Sign in, then go to
+**Settings → API Keys**.
+
+API keys are available at both the organization and the instance level. A key belongs to the
+organization or instance it is created under.
+
+<Steps>
+  <Step title="Open Settings → API Keys">
+    The screen lists existing keys with their access level, status, creation date, and last use.
+  </Step>
+  <Step title="Create a key">
+    Supply a name, choose an access level, and choose whether the key applies to sub-organizations.
+  </Step>
+  <Step title="Store the client secret">
+    The client ID and client secret are displayed once, when the key is created.
+  </Step>
+</Steps>
+
+| Field | Description |
+| --- | --- |
+| Name | A label to identify the key in the list. |
+| Access level | **Read** for reporting only. **Read and write** to also provision tenants and manage users. |
+| Applies to sub-organizations | Whether the key also covers organizations and instances beneath the one it is created under. Leave this off to restrict the key to a single organization. |
+
+<Warning>
+  The client secret is displayed once, at the moment the key is created. It cannot be retrieved
+  afterwards. Store it before leaving the page. If a secret is lost, revoke the key on the same
+  screen and create a new one; the replacement has a new client ID.
+</Warning>
+
+Revoking a key takes effect immediately.
+
+## Request an access token
 
 <Info>
   The values shown throughout this documentation are examples only.
 </Info>
-
-```bash
-curl -fsS -X POST "https://ccnnnnnn.cyrisma.com/ta/v1/partners/machine-clients" \
-  -H "Authorization: Bearer $ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "display_name": "Reporting integration",
-    "scopes": ["pulse.read"],
-    "inherits": true
-  }'
-```
-
-```json
-{
-  "client_id": "pc_9f2c41d8a7b34e10",
-  "client_secret": "pcs_1a2b3c4d5e6f7g8h9i0j",
-  "display_name": "Reporting integration",
-  "scopes": ["pulse.read"],
-  "roles": [],
-  "inherits": true,
-  "status": "active",
-  "created_at": "2026-08-30T09:14:22Z"
-}
-```
-
-<Warning>
-  `client_secret` is returned only in this response and cannot be retrieved afterwards. Store it
-  before continuing. If a secret is lost, revoke the machine client and create a new one; the
-  replacement has a new `client_id`.
-</Warning>
-
-### Fields
-
-| Field | Description |
-| --- | --- |
-| `display_name` | Label shown when listing credentials. |
-| `scopes` | Permissions the credential may request. See [Scopes](#scopes). |
-| `roles` | Optional role names. Leave empty unless directed otherwise. |
-| `inherits` | Whether the credential reaches tenants beneath the one it is created under. Set `true` for a credential that covers your organization and all tenants under it. Set `false` to restrict it to that one tenant. |
-
-### List and revoke
-
-```bash
-curl -fsS "https://ccnnnnnn.cyrisma.com/ta/v1/partners/machine-clients" \
-  -H "Authorization: Bearer $ADMIN_TOKEN"
-
-curl -fsS -X DELETE "https://ccnnnnnn.cyrisma.com/ta/v1/partners/machine-clients/pc_9f2c41d8a7b34e10" \
-  -H "Authorization: Bearer $ADMIN_TOKEN"
-```
-
-Listing returns `client_id` and metadata. It never returns the secret. Revoking is immediate and
-cannot be undone.
-
-## Request an access token
 
 ```bash
 curl -fsS -X POST "https://ccnnnnnn.cyrisma.com/ta/v1/auth/client-token" \
@@ -88,7 +67,7 @@ curl -fsS -X POST "https://ccnnnnnn.cyrisma.com/ta/v1/auth/client-token" \
 ```
 
 Tokens are valid for 60 minutes. Request a new token when the current one expires; there is no
-refresh token. Invalid credentials return `401`.
+refresh token. Invalid or revoked credentials return `401`.
 
 ## Send the token
 
@@ -100,18 +79,17 @@ curl -fsS \
 
 ## Scopes
 
-| Scope | Grants |
-| --- | --- |
-| `pulse.read` | Reading reporting data, tenants, and usage. |
-| `pulse.write` | Provisioning tenants, managing users, and changing authentication policy. |
+| Scope | Access level | Grants |
+| --- | --- | --- |
+| `pulse.read` | Read | Reading reporting data, tenants, and usage. |
+| `pulse.write` | Read and write | Provisioning tenants, managing users, and changing authentication policy. |
 
-Request only the scopes an integration needs. A token requesting a scope the machine client does not
-hold is rejected.
+Request only the scopes an integration needs. Requesting a scope the key does not hold is rejected.
 
 ## Tenant scope
 
-Every request is restricted to the tenants the credential is authorized for: the tenant it was
-created under, plus that tenant's descendants when `inherits` is `true`.
+Every request is restricted to the organizations and instances the key is authorized for: the one it
+was created under, plus everything beneath it when the key applies to sub-organizations.
 
 Narrow a request with `tenant_ids`, a comma-separated list of tenant identifiers. Add
 `include_descendants=true` to widen each identifier to that tenant and everything beneath it.
@@ -124,4 +102,4 @@ curl -fsS \
 
 Requesting a tenant outside the authorized set returns `403`, whether or not that tenant exists.
 
-Use `GET /app/pulse/v1/partner/tenants` to list the tenants a credential can reach.
+Use `GET /app/pulse/v1/partner/tenants` to list the tenants a key can reach.

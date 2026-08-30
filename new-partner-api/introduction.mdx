@@ -30,7 +30,7 @@ single hostname covers the whole API.
 | --- | --- | --- |
 | Request format | `x-www-form-urlencoded` | JSON |
 | Hosts | `api.cyrisma.com` plus the instance host | Instance host only |
-| Credentials | API Key and Secret from Cyrisma Support | Self-managed machine clients |
+| Credentials | API Key and Secret from Cyrisma Support | API keys you create in the web platform |
 | List responses | Full result sets | Cursor-paginated |
 | Vulnerability model | Scan runs | Continuous state, reported by CVE and by root cause |
 
@@ -49,9 +49,9 @@ Vulnerabilities are available two ways:
 ## Sequence
 
 <Steps>
-  <Step title="Create a machine client">
-    Call `POST /ta/v1/partners/machine-clients` to create a credential. The response contains the
-    `client_id` and the `client_secret`. The secret is returned once and cannot be retrieved again.
+  <Step title="Create an API key">
+    In the Cyrisma web platform, go to **Settings → API Keys** and create a key. The client ID and
+    client secret are shown once, when the key is created.
   </Step>
   <Step title="Request an access token">
     Exchange the credential at `POST /ta/v1/auth/client-token` for a bearer token. Tokens are valid
