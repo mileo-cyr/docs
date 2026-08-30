@@ -295,6 +295,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "asset_id",
+            "in": "query",
+            "description": "Restricts the read to a single asset. Asset identifiers are unique within a tenant, not across tenants, so \u0060tenant_ids\u0060 must also be supplied; a request with \u0060asset_id\u0060 and no \u0060tenant_ids\u0060 is rejected with 400 \u0060asset_id_requires_tenant_ids\u0060.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -618,6 +626,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "asset_id",
+            "in": "query",
+            "description": "Restricts the read to a single asset. Asset identifiers are unique within a tenant, not across tenants, so \u0060tenant_ids\u0060 must also be supplied; a request with \u0060asset_id\u0060 and no \u0060tenant_ids\u0060 is rejected with 400 \u0060asset_id_requires_tenant_ids\u0060.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -886,6 +902,14 @@
             "name": "expand",
             "in": "query",
             "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "asset_id",
+            "in": "query",
+            "description": "Restricts the read to a single asset. Asset identifiers are unique within a tenant, not across tenants, so \u0060tenant_ids\u0060 must also be supplied; a request with \u0060asset_id\u0060 and no \u0060tenant_ids\u0060 is rejected with 400 \u0060asset_id_requires_tenant_ids\u0060.",
             "schema": {
               "type": "string"
             }

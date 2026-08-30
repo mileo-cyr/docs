@@ -56,6 +56,24 @@ returns every row exactly once.
 | `source_type` | `endpoint`, `network`, or `external`. |
 | `root_cause_type` | `product`, `package`, `library`, `os`, `service`, `configuration`, `software`, `unknown`. |
 | `patchability` | `patch_available`, `manual_only`, or `unknown`. |
+| `asset_id` | A single asset. Requires `tenant_ids`; see below. |
+
+## Reading one asset
+
+`asset_id` narrows `/vulnerabilities/cves`, `/vulnerabilities/root-causes` or `/assets` to a single
+asset.
+
+Asset identifiers are unique within a tenant rather than across tenants, so `tenant_ids` must be
+supplied alongside `asset_id`. A request with `asset_id` and no `tenant_ids` is rejected with
+`400 asset_id_requires_tenant_ids`.
+
+```bash
+curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "https://ccnnnnnn.cyrisma.com/app/pulse/v1/partner/vulnerabilities/cves?tenant_ids=$TENANT_ID&asset_id=$ASSET_ID"
+```
+
+`asset_id` combines with the other filters, so one call answers narrower questions such as the
+patchable critical CVEs on a single machine.
 
 ## Expansions
 
