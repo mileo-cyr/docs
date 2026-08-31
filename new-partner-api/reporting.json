@@ -1056,6 +1056,7 @@
             "name": "from",
             "in": "query",
             "description": "Start of the window, RFC 3339. Treated as UTC.",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -1064,6 +1065,7 @@
             "name": "to",
             "in": "query",
             "description": "End of the window, RFC 3339. Treated as UTC.",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -1153,6 +1155,7 @@
             "name": "from",
             "in": "query",
             "description": "Start of the window, RFC 3339. Treated as UTC.",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -1161,6 +1164,7 @@
             "name": "to",
             "in": "query",
             "description": "End of the window, RFC 3339. Treated as UTC.",
+            "required": true,
             "schema": {
               "type": "string"
             }

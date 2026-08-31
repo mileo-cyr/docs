@@ -92,8 +92,12 @@ curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
 
 ## Time windows
 
-Event and export endpoints accept `from` and `to` as RFC 3339 timestamps. Treat `as_of`, `from`, and
-`to` values in responses as UTC instants.
+Event and export endpoints accept `from` and `to` as RFC 3339 timestamps.
+
+On `/dashboards/vulnerability-rollups` and `/usage` both are **required** and take calendar dates in
+`yyyy-MM-dd` form. Omitting either returns `400 invalid_date_range`.
+
+Treat `as_of`, `from`, and `to` values in responses as UTC instants.
 
 ```bash
 curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
