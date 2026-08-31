@@ -56,12 +56,7 @@
         "label": "Support",
         "href": "https://portal.cyrisma.com"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
+    ]
   },
   "contextual": {
     "options": [
