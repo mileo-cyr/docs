@@ -11,6 +11,27 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "New Partner API",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/partner-api",
+              "api/partner-api/authentication",
+              "api/partner-api/conventions"
+            ]
+          },
+          {
+            "group": "Provisioning",
+            "openapi": "api/partner-api/provisioning.json"
+          },
+          {
+            "group": "Reporting",
+            "openapi": "api/partner-api/reporting.json"
+          }
+        ]
+      },
+      {
         "tab": "Legacy Partner API",
         "groups": [
           {
@@ -22,27 +43,6 @@
           }
         ],
         "openapi": "openapi.json"
-      },
-      {
-        "tab": "New Partner API",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "new-partner-api/introduction",
-              "new-partner-api/authentication",
-              "new-partner-api/conventions"
-            ]
-          },
-          {
-            "group": "Provisioning",
-            "openapi": "new-partner-api/provisioning.json"
-          },
-          {
-            "group": "Reporting",
-            "openapi": "new-partner-api/reporting.json"
-          }
-        ]
       }
     ]
   },
@@ -78,11 +78,25 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/api-reference/getting-started"
+      "destination": "/api/partner-api",
+      "permanent": false
     },
     {
       "source": "/index",
-      "destination": "/api-reference/getting-started"
+      "destination": "/api/partner-api",
+      "permanent": false
+    },
+    {
+      "source": "/new-partner-api/introduction",
+      "destination": "/api/partner-api"
+    },
+    {
+      "source": "/new-partner-api/authentication",
+      "destination": "/api/partner-api/authentication"
+    },
+    {
+      "source": "/new-partner-api/conventions",
+      "destination": "/api/partner-api/conventions"
     }
   ],
   "api": {
