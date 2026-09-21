@@ -31,6 +31,31 @@ single hostname covers the whole API.
 | List responses | Full result sets | Cursor-paginated |
 | Vulnerability model | Scan runs | Continuous state, reported by CVE and by root cause |
 
+## Legacy call equivalents
+
+| Legacy Partner API | New Partner API |
+| --- | --- |
+| `PATCH /partner/instances/suspend` | `POST /ta/v1/msp/provisioning/tenants/{tenantId}/suspend` |
+| `PATCH /partner/instances/reactivate` | `POST /ta/v1/msp/provisioning/tenants/{tenantId}/reactivate` |
+| `PATCH /partner/instances/convert` | `PATCH /ta/v1/msp/admin/tenants/{tenantId}` with `{"trial": false}` |
+| `GET /partner/dashboards/overall` | `GET /app/pulse/v1/partner/dashboards/posture` |
+
+Suspending a tenant blocks sign in, API keys, and agent check in for that tenant, so its data stops
+updating until it is reactivated. Nothing is deleted. A suspended tenant stays in the tenant list
+with `status` set to `suspended`.
+
+Suspending an organization does not suspend the tenants under it. This differs from the Legacy
+Partner API. To include them, send `{"include_descendants": true}`. The same option on reactivate
+restores every suspended tenant under the organization. The response lists the tenants that changed
+in `changed_tenant_ids`. Both calls are safe to repeat.
+
+A trial tenant is what the Legacy Partner API called a consulting instance. Converting it to
+standard is one way. The tenant read returns the current value in `trial`.
+
+Posture grades run from `A+` to `F`, each with a score from 0 to 100, for overall risk,
+vulnerability, and secure baseline. The overall grade combines the other two. Data sensitivity and
+compliance grades are not available in the New Partner API.
+
 ## Reporting model
 
 The Legacy Partner API reports discrete scan runs. The New Partner API reports the current state of

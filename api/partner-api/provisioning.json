@@ -353,6 +353,40 @@
         }
       }
     },
+    "/v1/msp/admin/lookups/currencies": {
+      "get": {
+        "tags": [
+          "MSP Administration"
+        ],
+        "summary": "List currencies",
+        "operationId": "ListMspAdminCurrenciesV1",
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MspCurrencyReference"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/msp/admin/lookups/tenant-kinds": {
       "get": {
         "tags": [
@@ -545,6 +579,162 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TenantProvisioningCreateApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/msp/provisioning/tenants/{tenantId}/suspend": {
+      "post": {
+        "tags": [
+          "MSP Administration"
+        ],
+        "summary": "Suspend a tenant",
+        "operationId": "SuspendMspTenantV1",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TenantAccessApiRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantAccessApiResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/msp/provisioning/tenants/{tenantId}/reactivate": {
+      "post": {
+        "tags": [
+          "MSP Administration"
+        ],
+        "summary": "Reactivate a suspended tenant",
+        "operationId": "ReactivateMspTenantV1",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TenantAccessApiRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantAccessApiResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1787,6 +1977,25 @@
           }
         }
       },
+      "MspCurrencyReference": {
+        "required": [
+          "code",
+          "name",
+          "symbol"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          }
+        }
+      },
       "MspIndustryReference": {
         "required": [
           "id",
@@ -1862,6 +2071,39 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "TenantAccessApiRequest": {
+        "type": "object",
+        "properties": {
+          "include_descendants": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "TenantAccessApiResponse": {
+        "required": [
+          "tenant_id",
+          "status",
+          "changed_tenant_ids"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string"
+          },
+          "changed_tenant_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         }
       },
@@ -1979,6 +2221,12 @@
               "null",
               "string"
             ]
+          },
+          "trial": {
+            "type": [
+              "null",
+              "boolean"
+            ]
           }
         }
       },
@@ -2011,7 +2259,8 @@
           "assigned_technician_email",
           "mdr_xdr_tenant_id",
           "display_currency_code",
-          "provisioning_status"
+          "provisioning_status",
+          "trial"
         ],
         "type": "object",
         "properties": {
@@ -2183,6 +2432,9 @@
               "null",
               "string"
             ]
+          },
+          "trial": {
+            "type": "boolean"
           }
         }
       },

@@ -247,44 +247,24 @@
           {
             "name": "source_type",
             "in": "query",
-            "description": "Filter by asset source.",
+            "description": "Filter by asset source. Comma-separated; any of: endpoint, network, external, domain.",
             "schema": {
-              "enum": [
-                "endpoint",
-                "network",
-                "external"
-              ],
               "type": "string"
             }
           },
           {
             "name": "root_cause_type",
             "in": "query",
-            "description": "Filter by root-cause type.",
+            "description": "Filter by root-cause type. Comma-separated; any of: product, package, library, os, service, configuration, software, unknown.",
             "schema": {
-              "enum": [
-                "product",
-                "package",
-                "library",
-                "os",
-                "service",
-                "configuration",
-                "software",
-                "unknown"
-              ],
               "type": "string"
             }
           },
           {
             "name": "patchability",
             "in": "query",
-            "description": "Filter by patch availability.",
+            "description": "Filter by patch availability. Comma-separated; any of: patch_available, manual_only, unknown. \u0060unknown\u0060 (no patch state recorded) is a strict subset of manual_only, so /filters offers only the first two.",
             "schema": {
-              "enum": [
-                "patch_available",
-                "manual_only",
-                "unknown"
-              ],
               "type": "string"
             }
           },
@@ -578,44 +558,24 @@
           {
             "name": "source_type",
             "in": "query",
-            "description": "Filter by asset source.",
+            "description": "Filter by asset source. Comma-separated; any of: endpoint, network, external, domain.",
             "schema": {
-              "enum": [
-                "endpoint",
-                "network",
-                "external"
-              ],
               "type": "string"
             }
           },
           {
             "name": "root_cause_type",
             "in": "query",
-            "description": "Filter by root-cause type.",
+            "description": "Filter by root-cause type. Comma-separated; any of: product, package, library, os, service, configuration, software, unknown.",
             "schema": {
-              "enum": [
-                "product",
-                "package",
-                "library",
-                "os",
-                "service",
-                "configuration",
-                "software",
-                "unknown"
-              ],
               "type": "string"
             }
           },
           {
             "name": "patchability",
             "in": "query",
-            "description": "Filter by patch availability.",
+            "description": "Filter by patch availability. Comma-separated; any of: patch_available, manual_only, unknown. \u0060unknown\u0060 (no patch state recorded) is a strict subset of manual_only, so /filters offers only the first two.",
             "schema": {
-              "enum": [
-                "patch_available",
-                "manual_only",
-                "unknown"
-              ],
               "type": "string"
             }
           },
@@ -1094,6 +1054,61 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PartnerVulnerabilityRollupsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/dashboards/posture": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Get current posture grades for authorized partner tenants.",
+        "description": "This endpoint returns each tenant\u0027s current score (0-100) and letter grade (\u0060A\u002B\u0060 to \u0060F\u0060)\nfor overall risk, vulnerability, and secure baseline, for the authorized partner\u0027s tenant\nscope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- The overall grade combines the vulnerability and secure baseline grades.\n- A component is \u0060null\u0060 until the tenant has been scored for it.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "operationId": "GetPartnerPostureV1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerPostureResponse"
                 }
               }
             }
@@ -1650,6 +1665,14 @@
           }
         }
       },
+      "EndpointLifecycleState": {
+        "enum": [
+          "active",
+          "inactive",
+          "retired",
+          "unknown"
+        ]
+      },
       "GlobalAffectedAssetRow": {
         "required": [
           "tenant_id",
@@ -1866,6 +1889,7 @@
           "asset_id",
           "asset_type",
           "source_type",
+          "lifecycle_state",
           "display_name",
           "hostname",
           "fqdn",
@@ -1909,6 +1933,9 @@
           },
           "source_type": {
             "$ref": "#/components/schemas/GlobalSourceType"
+          },
+          "lifecycle_state": {
+            "$ref": "#/components/schemas/EndpointLifecycleState"
           },
           "display_name": {
             "type": [
@@ -2158,6 +2185,13 @@
               "null",
               "string"
             ]
+          },
+          "os_eol": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
           }
         }
       },
@@ -2187,6 +2221,7 @@
           "cvr_score",
           "epss_probability",
           "kev",
+          "exploitability_label",
           "impact",
           "affected_asset_count",
           "affected_tenant_count",
@@ -2246,6 +2281,12 @@
           },
           "kev": {
             "type": "boolean"
+          },
+          "exploitability_label": {
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "impact": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
@@ -2344,6 +2385,21 @@
           "detected_while_offline": {
             "type": "boolean",
             "default": false
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "exploit_sources": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -2357,6 +2413,7 @@
           "cve_id",
           "description",
           "severity",
+          "cvss_score",
           "cvr_score",
           "epss_probability",
           "exploitability_label",
@@ -2414,6 +2471,15 @@
                 "$ref": "#/components/schemas/GlobalSeverity"
               }
             ]
+          },
+          "cvss_score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
           },
           "cvr_score": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
@@ -2500,6 +2566,15 @@
           "detected_while_offline": {
             "type": "boolean",
             "default": false
+          },
+          "exploit_sources": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -2822,6 +2897,15 @@
             ],
             "format": "uint64",
             "default": 0
+          },
+          "exploit_sources": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -2872,7 +2956,11 @@
           "source_type",
           "open_finding_count",
           "affected_asset_count",
-          "affected_tenant_count"
+          "affected_tenant_count",
+          "critical_cve_count",
+          "high_cve_count",
+          "medium_cve_count",
+          "low_cve_count"
         ],
         "type": "object",
         "properties": {
@@ -2896,6 +2984,38 @@
             "format": "uint64"
           },
           "affected_tenant_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "critical_cve_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "high_cve_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "medium_cve_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "low_cve_count": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
@@ -3151,6 +3271,54 @@
           }
         }
       },
+      "PartnerPostureGrade": {
+        "required": [
+          "score",
+          "grade",
+          "scores_as_of"
+        ],
+        "type": "object",
+        "properties": {
+          "score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "grade": {
+            "type": "string"
+          },
+          "scores_as_of": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "PartnerPostureResponse": {
+        "required": [
+          "root_tenant_id",
+          "tenants"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantPosture"
+            }
+          }
+        }
+      },
       "PartnerRootCauseDetailResponse": {
         "required": [
           "root_tenant_id",
@@ -3213,6 +3381,55 @@
             "items": {
               "$ref": "#/components/schemas/PartnerTenantRow"
             }
+          }
+        }
+      },
+      "PartnerTenantPosture": {
+        "required": [
+          "tenant_id",
+          "tenant_host",
+          "overall",
+          "vulnerability",
+          "secure_baseline"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string"
+          },
+          "overall": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PartnerPostureGrade"
+              }
+            ]
+          },
+          "vulnerability": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PartnerPostureGrade"
+              }
+            ]
+          },
+          "secure_baseline": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PartnerPostureGrade"
+              }
+            ]
           }
         }
       },
