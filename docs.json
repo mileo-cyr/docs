@@ -43,6 +43,27 @@
           }
         ],
         "openapi": "openapi.json"
+      },
+      {
+        "tab": "New Partner API - STAGING",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/partner-api-2",
+              "api/partner-api/authentication-2",
+              "api/partner-api/conventions-2"
+            ]
+          },
+          {
+            "group": "Provisioning",
+            "openapi": "api/partner-api/provisioning.json"
+          },
+          {
+            "group": "Reporting",
+            "openapi": "api/partner-api/reporting.json"
+          }
+        ]
       }
     ]
   },
@@ -106,5 +127,8 @@
     "mdx": {
       "server": "https://ccnnnnnn.cyrisma.com/app"
     }
+  },
+  "variables": {
+    "instance_url": "ccnnnnnn.cyrisma.com/app"
   }
 }
