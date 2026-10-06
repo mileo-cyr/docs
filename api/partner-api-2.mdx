@@ -1,0 +1,84 @@
+---
+title: "Introduction"
+description: "Overview of the Cyrisma New Partner API"
+---
+
+Our new Partner API supersedes and fully replaces the Cyrisma Legacy Partner API. It covers the same areas, provisioning and reporting, in line with our brand new Cyrisma Vulnerability Management platform.
+
+The Legacy Partner API is deprecated and no longer in service. Existing integrations must move to the New Partner API. The legacy reference is unchanged and stays published to help with that move.
+
+## Base URLs
+
+All requests are made against your own Cyrisma instance host. There is no separate central API host.
+
+| Area | Base URL |
+| --- | --- |
+| Provisioning, users, credentials | `https://ccnnnnnn.cyrisma.com/ta` |
+| Reporting | `https://ccnnnnnn.cyrisma.com/app` |
+
+Replace `ccnnnnnn` with your instance identifier. Both paths are served by your instance host, so a single hostname covers the whole API.
+
+## Differences from the Legacy Partner API
+
+|  | Legacy Partner API | New Partner API |
+| --- | --- | --- |
+| Request format | `x-www-form-urlencoded` | JSON |
+| Hosts | `api.cyrisma.com` plus the instance host | Instance host only |
+| Credentials | API Key and Secret from Cyrisma Support | API keys you create in the web platform |
+| List responses | Full result sets | Cursor-paginated |
+| Vulnerability model | Scan runs | Continuous state, reported by CVE and by root cause |
+
+## Legacy call equivalents
+
+| Legacy Partner API | New Partner API |
+| --- | --- |
+| `PATCH /partner/instances/suspend` | `POST /ta/v1/msp/provisioning/tenants/{tenantId}/suspend` |
+| `PATCH /partner/instances/reactivate` | `POST /ta/v1/msp/provisioning/tenants/{tenantId}/reactivate` |
+| `PATCH /partner/instances/convert` | `PATCH /ta/v1/msp/admin/tenants/{tenantId}` with `{"trial": false}` |
+| `GET /partner/dashboards/overall` | `GET /app/pulse/v1/partner/dashboards/posture` |
+
+Suspending a tenant blocks sign in, API keys, and agent check in for that tenant, so its data stops updating until it is reactivated. Nothing is deleted. A suspended tenant stays in the tenant list with `status` set to `suspended`.
+
+Suspending an organization does not suspend the tenants under it. This differs from the Legacy Partner API. To include them, send `{"include_descendants": true}`. The same option on reactivate restores every suspended tenant under the organization. The response lists the tenants that changed in `changed_tenant_ids`. Both calls are safe to repeat.
+
+A trial tenant is what the Legacy Partner API called a consulting instance. Converting it to standard is one way. The tenant read returns the current value in `trial`.
+
+Posture grades run from `A+` to `F`, each with a score from 0 to 100, for overall risk, vulnerability, and secure baseline. The overall grade combines the other two. Data sensitivity and compliance grades are not available in the New Partner API.
+
+## Reporting model
+
+The Legacy Partner API reports discrete scan runs. The New Partner API reports the current state of each tenant, updated continuously as endpoints report in. Reads are therefore expressed as the present state of a tenant rather than the result of a particular scan.
+
+Vulnerabilities are available two ways:
+
+- **By CVE**: one row per CVE, with the assets and tenants it affects.
+- **By root cause**: one row per underlying cause, such as an out-of-date product. A single root cause commonly accounts for many CVEs, and remediating it closes all of them.
+
+## Sequence
+
+<Steps>
+  <Step title="Create an API key">
+    In the Cyrisma web platform, go to **Settings → API Keys** and create a key. The client ID and client secret are shown once, when the key is created.
+  </Step>
+  <Step title="Request an access token">
+    Exchange the credential at `POST /ta/v1/auth/client-token` for a bearer token. Tokens are valid for 60 minutes and may be requested again as often as needed.
+  </Step>
+  <Step title="Provision tenants and users">
+    Create tenants with `POST /ta/v1/msp/provisioning/tenants` and poll `GET /ta/v1/msp/provisioning/jobs/{jobId}` for completion. Add users with `POST /ta/v1/msp/admin/users`.
+  </Step>
+  <Step title="Read reporting data">
+    Call the reporting endpoints under `/app/pulse/v1/partner` for vulnerability state, CVEs, root causes, assets, dashboards, and usage.
+  </Step>
+</Steps>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/api/partner-api/authentication">
+    Create credentials and obtain access tokens.
+  </Card>
+
+  <Card title="Conventions" icon="list" href="/api/partner-api/conventions">
+    Pagination, filters, expansions, and error handling.
+  </Card>
+</CardGroup>
