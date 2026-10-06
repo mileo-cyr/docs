@@ -57,7 +57,7 @@
           },
           {
             "group": "Provisioning",
-            "openapi": "api/partner-api/provisioning.json"
+            "openapi": "api/partner-api-staging/provisioning.json"
           },
           {
             "group": "Reporting",
