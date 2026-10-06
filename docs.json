@@ -61,7 +61,7 @@
           },
           {
             "group": "Reporting",
-            "openapi": "api/partner-api/reporting.json"
+            "openapi": "api/partner-api-staging/reporting.json"
           }
         ]
       }
