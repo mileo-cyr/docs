@@ -43,6 +43,27 @@
           }
         ],
         "openapi": "openapi.json"
+      },
+      {
+        "tab": "New Partner API - staging",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/partner-api",
+              "api/partner-api/authentication",
+              "api/partner-api/conventions"
+            ]
+          },
+          {
+            "group": "Provisioning",
+            "openapi": "api/partner-api-staging/provisioning.json"
+          },
+          {
+            "group": "Reporting",
+            "openapi": "api/partner-api-staging/reporting.json"
+          }
+        ]
       }
     ]
   },
