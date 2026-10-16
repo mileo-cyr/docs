@@ -7,7 +7,7 @@
   "servers": [
     {
       "url": "https://{instance}.cyrisma.com/app",
-      "description": "The partner\u0027s CYRISMA instance host.",
+      "description": "The partner's CYRISMA instance host.",
       "variables": {
         "instance": {
           "default": "ccnnnnnn",
@@ -23,13 +23,13 @@
           "Reporting"
         ],
         "summary": "Get vulnerability state for authorized partner tenants.",
-        "description": "This endpoint returns an aggregated vulnerability posture snapshot: open finding counts by\nseverity, affected asset/tenant counts, KEV and exploitable finding counts, patchable root\ncause count, and a lifecycle series, across the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the snapshot to specific tenants; omit\n  it to include every tenant the caller is authorized for.\n- Only tenants within the caller\u0027s authorized scope are included; requesting a tenant\n  outside that scope returns 403.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns an aggregated vulnerability posture snapshot: open finding counts by\nseverity, affected asset/tenant counts, KEV and exploitable finding counts, patchable root\ncause count, and a lifecycle series, across the authorized partner's tenant scope.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts the snapshot to specific tenants; omit\n  it to include every tenant the caller is authorized for.\n- Only tenants within the caller's authorized scope are included; requesting a tenant\n  outside that scope returns 403.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "GetPartnerVulnerabilityStateV1",
         "parameters": [
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -37,7 +37,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The vulnerability snapshot for the covered tenants.",
             "content": {
               "application/json": {
                 "schema": {
@@ -47,12 +47,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -60,9 +60,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -70,9 +70,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_vulnerability_state_unavailable`), or the tenant scope could not be loaded (`tenant_scope_unavailable`). Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -88,13 +88,13 @@
           "Reporting"
         ],
         "summary": "List vulnerability events for authorized partner tenants.",
-        "description": "This endpoint returns a cursor-paginated list of live vulnerability detection events across\nthe authorized partner\u0027s tenant scope, within a bounded time window.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (optional, ISO-8601 timestamps) bound the detection window; defaults to the\n  last 24 hours. \u0060from\u0060 must not be later than \u0060to\u0060.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a cursor-paginated list of live vulnerability detection events across\nthe authorized partner's tenant scope, within a bounded time window.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `from` / `to` (optional, ISO-8601 timestamps) bound the detection window; defaults to the\n  last 24 hours. `from` must not be later than `to`.\n- `source_type`, `severity`, `root_cause_type`, and `patchability` filter the result set.\n- `page_size` (optional, default 100, max 500) controls page size.\n- `cursor` (optional) resumes from a previous page using the `next_cursor` value returned in\n  the response.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "ListPartnerVulnerabilityEventsV1",
         "parameters": [
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -102,7 +102,7 @@
           {
             "name": "include_descendants",
             "in": "query",
-            "description": "When true, widens each id in \u0060tenant_ids\u0060 to that tenant and every tenant beneath it in the hierarchy. Ignored when \u0060tenant_ids\u0060 is omitted, since the default is already the caller\u0027s whole scope.",
+            "description": "When true, widens each id in `tenant_ids` to that tenant and every tenant beneath it in the hierarchy. Ignored when `tenant_ids` is omitted, since the default is already the caller's whole scope.",
             "schema": {
               "enum": [
                 "true",
@@ -138,7 +138,7 @@
           {
             "name": "cursor",
             "in": "query",
-            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "description": "Opaque pagination cursor: pass the previous response's next_cursor to fetch the next page.",
             "schema": {
               "type": "string"
             }
@@ -146,7 +146,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "One page of detection events, newest first.",
             "content": {
               "application/json": {
                 "schema": {
@@ -156,12 +156,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -169,9 +169,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -179,9 +179,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_vulnerability_events_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -197,13 +197,13 @@
           "Reporting"
         ],
         "summary": "List CVEs for authorized partner tenants.",
-        "description": "This endpoint returns a cursor-paginated list of CVEs observed across the authorized\npartner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a cursor-paginated list of CVEs observed across the authorized\npartner's tenant scope.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `source_type`, `severity`, `root_cause_type`, and `patchability` filter the result set.\n- `page_size` (optional, default 100, max 500) controls page size.\n- `cursor` (optional) resumes from a previous page using the `next_cursor` value returned in\n  the response.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "ListPartnerCvesV1",
         "parameters": [
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -211,7 +211,7 @@
           {
             "name": "include_descendants",
             "in": "query",
-            "description": "When true, widens each id in \u0060tenant_ids\u0060 to that tenant and every tenant beneath it in the hierarchy. Ignored when \u0060tenant_ids\u0060 is omitted, since the default is already the caller\u0027s whole scope.",
+            "description": "When true, widens each id in `tenant_ids` to that tenant and every tenant beneath it in the hierarchy. Ignored when `tenant_ids` is omitted, since the default is already the caller's whole scope.",
             "schema": {
               "enum": [
                 "true",
@@ -231,7 +231,7 @@
           {
             "name": "cursor",
             "in": "query",
-            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "description": "Opaque pagination cursor: pass the previous response's next_cursor to fetch the next page.",
             "schema": {
               "type": "string"
             }
@@ -263,7 +263,7 @@
           {
             "name": "patchability",
             "in": "query",
-            "description": "Filter by patch availability. Comma-separated; any of: patch_available, manual_only, unknown. \u0060unknown\u0060 (no patch state recorded) is a strict subset of manual_only, so /filters offers only the first two.",
+            "description": "Filter by patch availability. Comma-separated; any of: patch_available, manual_only, unknown. `unknown` (no patch state recorded) is a strict subset of manual_only, so /filters offers only the first two.",
             "schema": {
               "type": "string"
             }
@@ -271,7 +271,7 @@
           {
             "name": "expand",
             "in": "query",
-            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "description": "Comma-separated optional expansions. `tenants` adds a per-tenant breakdown to each row; `cves` (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
             "schema": {
               "type": "string"
             }
@@ -279,7 +279,7 @@
           {
             "name": "asset_id",
             "in": "query",
-            "description": "Restricts the read to a single asset. Asset identifiers are unique within a tenant, not across tenants, so \u0060tenant_ids\u0060 must also be supplied; a request with \u0060asset_id\u0060 and no \u0060tenant_ids\u0060 is rejected with 400 \u0060asset_id_requires_tenant_ids\u0060.",
+            "description": "Restricts the read to a single asset. Asset identifiers are unique within a tenant, not across tenants, so `tenant_ids` must also be supplied; a request with `asset_id` and no `tenant_ids` is rejected with 400 `asset_id_requires_tenant_ids`.",
             "schema": {
               "type": "string"
             }
@@ -287,7 +287,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "One page of CVEs. With `expand=tenants` each row also carries a per-tenant breakdown.",
             "content": {
               "application/json": {
                 "schema": {
@@ -297,12 +297,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -310,9 +310,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -320,9 +320,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_cves_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -338,12 +338,13 @@
           "Reporting"
         ],
         "summary": "Get a single CVE for authorized partner tenants.",
-        "description": "This endpoint returns the details of a single CVE, scoped to the authorized partner\u0027s\ntenants.\n\n**Notes:**\n- \u0060cveId\u0060 is the CVE identifier (e.g. \u0060CVE-2024-12345\u0060).\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the lookup to specific tenants.\n- Cursor pagination is not supported on this endpoint; a \u0060cursor\u0060 query parameter returns\n  400.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns the details of a single CVE, scoped to the authorized partner's\ntenants.\n\n**Notes:**\n- `cveId` is the CVE identifier (e.g. `CVE-2024-12345`).\n- `tenant_ids` (optional, comma-separated) restricts the lookup to specific tenants.\n- Cursor pagination is not supported on this endpoint; a `cursor` query parameter returns\n  400.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "GetPartnerCveV1",
         "parameters": [
           {
             "name": "cveId",
             "in": "path",
+            "description": "The CVE identifier, for example `CVE-2024-12345`.",
             "required": true,
             "schema": {
               "type": "string"
@@ -352,7 +353,7 @@
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -360,7 +361,7 @@
           {
             "name": "expand",
             "in": "query",
-            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "description": "Comma-separated optional expansions. `tenants` adds a per-tenant breakdown to each row; `cves` (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
             "schema": {
               "type": "string"
             }
@@ -368,7 +369,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The CVE across the covered tenants. `cve` is null when none of them is affected.",
             "content": {
               "application/json": {
                 "schema": {
@@ -378,12 +379,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A `cursor` was sent (`cursor_not_supported`: this endpoint is not paginated), or another parameter is invalid."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -391,9 +392,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -401,9 +402,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_cve_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -419,12 +420,13 @@
           "Reporting"
         ],
         "summary": "List assets affected by a CVE for authorized partner tenants.",
-        "description": "This endpoint returns a cursor-paginated list of assets affected by a specific CVE, scoped\nto the authorized partner\u0027s tenants.\n\n**Notes:**\n- \u0060cveId\u0060 is the CVE identifier (e.g. \u0060CVE-2024-12345\u0060).\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a cursor-paginated list of assets affected by a specific CVE, scoped\nto the authorized partner's tenants.\n\n**Notes:**\n- `cveId` is the CVE identifier (e.g. `CVE-2024-12345`).\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `page_size` (optional, default 100, max 500) controls page size.\n- `cursor` (optional) resumes from a previous page using the `next_cursor` value returned in\n  the response.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "ListPartnerCveAssetsV1",
         "parameters": [
           {
             "name": "cveId",
             "in": "path",
+            "description": "The CVE identifier, for example `CVE-2024-12345`.",
             "required": true,
             "schema": {
               "type": "string"
@@ -433,7 +435,7 @@
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -449,7 +451,7 @@
           {
             "name": "cursor",
             "in": "query",
-            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "description": "Opaque pagination cursor: pass the previous response's next_cursor to fetch the next page.",
             "schema": {
               "type": "string"
             }
@@ -457,7 +459,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "One page of the assets the CVE affects.",
             "content": {
               "application/json": {
                 "schema": {
@@ -467,12 +469,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -480,9 +482,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -490,9 +492,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_cve_assets_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -508,13 +510,13 @@
           "Reporting"
         ],
         "summary": "List vulnerability root causes for authorized partner tenants.",
-        "description": "This endpoint returns a cursor-paginated list of vulnerability root causes observed across\nthe authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a cursor-paginated list of vulnerability root causes observed across\nthe authorized partner's tenant scope.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `source_type`, `severity`, `root_cause_type`, and `patchability` filter the result set.\n- `page_size` (optional, default 100, max 500) controls page size.\n- `cursor` (optional) resumes from a previous page using the `next_cursor` value returned in\n  the response.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "ListPartnerRootCausesV1",
         "parameters": [
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -522,7 +524,7 @@
           {
             "name": "include_descendants",
             "in": "query",
-            "description": "When true, widens each id in \u0060tenant_ids\u0060 to that tenant and every tenant beneath it in the hierarchy. Ignored when \u0060tenant_ids\u0060 is omitted, since the default is already the caller\u0027s whole scope.",
+            "description": "When true, widens each id in `tenant_ids` to that tenant and every tenant beneath it in the hierarchy. Ignored when `tenant_ids` is omitted, since the default is already the caller's whole scope.",
             "schema": {
               "enum": [
                 "true",
@@ -542,7 +544,7 @@
           {
             "name": "cursor",
             "in": "query",
-            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "description": "Opaque pagination cursor: pass the previous response's next_cursor to fetch the next page.",
             "schema": {
               "type": "string"
             }
@@ -574,7 +576,7 @@
           {
             "name": "patchability",
             "in": "query",
-            "description": "Filter by patch availability. Comma-separated; any of: patch_available, manual_only, unknown. \u0060unknown\u0060 (no patch state recorded) is a strict subset of manual_only, so /filters offers only the first two.",
+            "description": "Filter by patch availability. Comma-separated; any of: patch_available, manual_only, unknown. `unknown` (no patch state recorded) is a strict subset of manual_only, so /filters offers only the first two.",
             "schema": {
               "type": "string"
             }
@@ -582,7 +584,7 @@
           {
             "name": "expand",
             "in": "query",
-            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "description": "Comma-separated optional expansions. `tenants` adds a per-tenant breakdown to each row; `cves` (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
             "schema": {
               "type": "string"
             }
@@ -590,7 +592,7 @@
           {
             "name": "asset_id",
             "in": "query",
-            "description": "Restricts the read to a single asset. Asset identifiers are unique within a tenant, not across tenants, so \u0060tenant_ids\u0060 must also be supplied; a request with \u0060asset_id\u0060 and no \u0060tenant_ids\u0060 is rejected with 400 \u0060asset_id_requires_tenant_ids\u0060.",
+            "description": "Restricts the read to a single asset. Asset identifiers are unique within a tenant, not across tenants, so `tenant_ids` must also be supplied; a request with `asset_id` and no `tenant_ids` is rejected with 400 `asset_id_requires_tenant_ids`.",
             "schema": {
               "type": "string"
             }
@@ -598,7 +600,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "One page of root causes. With `expand=tenants` each row also carries a per-tenant breakdown.",
             "content": {
               "application/json": {
                 "schema": {
@@ -608,12 +610,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -621,9 +623,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -631,9 +633,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_root_causes_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -649,12 +651,13 @@
           "Reporting"
         ],
         "summary": "Get a single vulnerability root cause for authorized partner tenants.",
-        "description": "This endpoint returns the details of a single vulnerability root cause, scoped to the\nauthorized partner\u0027s tenants.\n\n**Notes:**\n- \u0060rootCauseKey\u0060 is the unique identifier for the root cause.\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the lookup to specific tenants.\n- Cursor pagination is not supported on this endpoint; a \u0060cursor\u0060 query parameter returns\n  400.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns the details of a single vulnerability root cause, scoped to the\nauthorized partner's tenants.\n\n**Notes:**\n- `rootCauseKey` is the unique identifier for the root cause.\n- `tenant_ids` (optional, comma-separated) restricts the lookup to specific tenants.\n- Cursor pagination is not supported on this endpoint; a `cursor` query parameter returns\n  400.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "GetPartnerRootCauseV1",
         "parameters": [
           {
             "name": "rootCauseKey",
             "in": "path",
+            "description": "The root cause's key: a `root_cause_key` from **List vulnerability root causes**.",
             "required": true,
             "schema": {
               "type": "string"
@@ -663,7 +666,7 @@
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -671,7 +674,7 @@
           {
             "name": "expand",
             "in": "query",
-            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "description": "Comma-separated optional expansions. `tenants` adds a per-tenant breakdown to each row; `cves` (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
             "schema": {
               "type": "string"
             }
@@ -679,7 +682,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The root cause across the covered tenants. `root_cause` is null when none of them is affected.",
             "content": {
               "application/json": {
                 "schema": {
@@ -689,12 +692,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A `cursor` was sent (`cursor_not_supported`: this endpoint is not paginated), or another parameter is invalid."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -702,9 +705,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -712,9 +715,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_root_cause_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -730,12 +733,13 @@
           "Reporting"
         ],
         "summary": "List assets affected by a vulnerability root cause for authorized partner tenants.",
-        "description": "This endpoint returns a cursor-paginated list of assets affected by a specific vulnerability\nroot cause, scoped to the authorized partner\u0027s tenants.\n\n**Notes:**\n- \u0060rootCauseKey\u0060 is the unique identifier for the root cause.\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a cursor-paginated list of assets affected by a specific vulnerability\nroot cause, scoped to the authorized partner's tenants.\n\n**Notes:**\n- `rootCauseKey` is the unique identifier for the root cause.\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `page_size` (optional, default 100, max 500) controls page size.\n- `cursor` (optional) resumes from a previous page using the `next_cursor` value returned in\n  the response.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "ListPartnerRootCauseAssetsV1",
         "parameters": [
           {
             "name": "rootCauseKey",
             "in": "path",
+            "description": "The root cause's key: a `root_cause_key` from **List vulnerability root causes**.",
             "required": true,
             "schema": {
               "type": "string"
@@ -744,7 +748,7 @@
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -760,7 +764,7 @@
           {
             "name": "cursor",
             "in": "query",
-            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "description": "Opaque pagination cursor: pass the previous response's next_cursor to fetch the next page.",
             "schema": {
               "type": "string"
             }
@@ -768,7 +772,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "One page of the assets the root cause affects.",
             "content": {
               "application/json": {
                 "schema": {
@@ -778,12 +782,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -791,9 +795,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -801,9 +805,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_root_cause_assets_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -819,13 +823,13 @@
           "Reporting"
         ],
         "summary": "List assets for authorized partner tenants.",
-        "description": "This endpoint returns a cursor-paginated list of assets across the authorized partner\u0027s\ntenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060page_size\u0060 (optional, default 100, max 500) controls page size.\n- \u0060cursor\u0060 (optional) resumes from a previous page using the \u0060next_cursor\u0060 value returned in\n  the response.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a cursor-paginated list of assets across the authorized partner's\ntenant scope.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `source_type`, `severity`, `root_cause_type`, and `patchability` filter the result set.\n- `page_size` (optional, default 100, max 500) controls page size.\n- `cursor` (optional) resumes from a previous page using the `next_cursor` value returned in\n  the response.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "ListPartnerAssetsV1",
         "parameters": [
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -833,7 +837,7 @@
           {
             "name": "include_descendants",
             "in": "query",
-            "description": "When true, widens each id in \u0060tenant_ids\u0060 to that tenant and every tenant beneath it in the hierarchy. Ignored when \u0060tenant_ids\u0060 is omitted, since the default is already the caller\u0027s whole scope.",
+            "description": "When true, widens each id in `tenant_ids` to that tenant and every tenant beneath it in the hierarchy. Ignored when `tenant_ids` is omitted, since the default is already the caller's whole scope.",
             "schema": {
               "enum": [
                 "true",
@@ -853,7 +857,7 @@
           {
             "name": "cursor",
             "in": "query",
-            "description": "Opaque pagination cursor: pass the previous response\u0027s next_cursor to fetch the next page.",
+            "description": "Opaque pagination cursor: pass the previous response's next_cursor to fetch the next page.",
             "schema": {
               "type": "string"
             }
@@ -861,7 +865,7 @@
           {
             "name": "expand",
             "in": "query",
-            "description": "Comma-separated optional expansions. \u0060tenants\u0060 adds a per-tenant breakdown to each row; \u0060cves\u0060 (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
+            "description": "Comma-separated optional expansions. `tenants` adds a per-tenant breakdown to each row; `cves` (on /assets) narrows the list to assets with at least one open finding and attaches their CVEs. Expansions cost extra reads, so ask for them only when needed.",
             "schema": {
               "type": "string"
             }
@@ -869,7 +873,7 @@
           {
             "name": "asset_id",
             "in": "query",
-            "description": "Restricts the read to a single asset. Asset identifiers are unique within a tenant, not across tenants, so \u0060tenant_ids\u0060 must also be supplied; a request with \u0060asset_id\u0060 and no \u0060tenant_ids\u0060 is rejected with 400 \u0060asset_id_requires_tenant_ids\u0060.",
+            "description": "Restricts the read to a single asset. Asset identifiers are unique within a tenant, not across tenants, so `tenant_ids` must also be supplied; a request with `asset_id` and no `tenant_ids` is rejected with 400 `asset_id_requires_tenant_ids`.",
             "schema": {
               "type": "string"
             }
@@ -877,7 +881,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "One page of assets. With `expand=cves` the list is narrowed to assets with an open finding and each row carries its CVEs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -887,12 +891,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -900,9 +904,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -910,9 +914,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_assets_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -928,13 +932,13 @@
           "Reporting"
         ],
         "summary": "Get vulnerability trend series for authorized partner tenants.",
-        "description": "This endpoint returns a per-tenant vulnerability trend series, one data point per day over\nthe requested range, for the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060range\u0060 (optional, one of \u006030\u0060, \u006060\u0060, \u006090\u0060; default \u006030\u0060) is the number of days of history\n  to return.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a per-tenant vulnerability trend series, one data point per day over\nthe requested range, for the authorized partner's tenant scope.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `range` (optional, one of `30`, `60`, `90`; default `30`) is the number of days of history\n  to return.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "GetPartnerVulnerabilitySeriesV1",
         "parameters": [
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -942,15 +946,20 @@
           {
             "name": "range",
             "in": "query",
-            "description": "Relative window for the series, e.g. 30d.",
+            "description": "The number of days of history: `30` (the default), `60` or `90`. Anything else returns 400 `invalid_range`.",
             "schema": {
+              "enum": [
+                "30",
+                "60",
+                "90"
+              ],
               "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "One daily series per covered tenant.",
             "content": {
               "application/json": {
                 "schema": {
@@ -960,12 +969,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "`range` is not 30, 60 or 90 (`invalid_range`), or `tenant_ids` is invalid."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -973,9 +982,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -983,9 +992,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_vulnerability_series_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1001,13 +1010,13 @@
           "Reporting"
         ],
         "summary": "Get vulnerability rollups for authorized partner tenants.",
-        "description": "This endpoint returns per-tenant vulnerability rollups, grouped and ranked by the requested\ndimension, over a bounded date range for the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (required, \u0060yyyy-MM-dd\u0060) bound the rollup date range. \u0060from\u0060 must not be\n  later than \u0060to\u0060.\n- \u0060group_by\u0060 (optional, one of \u0060cve\u0060, \u0060root_cause\u0060, \u0060severity\u0060, \u0060asset_type\u0060; default \u0060cve\u0060)\n  selects the rollup dimension.\n- \u0060limit\u0060 (optional, 1-100, default 25) caps the number of rollup rows returned per tenant.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns per-tenant vulnerability rollups, grouped and ranked by the requested\ndimension, over a bounded date range for the authorized partner's tenant scope.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `from` / `to` (required, `yyyy-MM-dd`) bound the rollup date range. `from` must not be\n  later than `to`.\n- `group_by` (optional, one of `cve`, `root_cause`, `severity`, `asset_type`; default `cve`)\n  selects the rollup dimension.\n- `limit` (optional, 1-100, default 25) caps the number of rollup rows returned per tenant.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "GetPartnerVulnerabilityRollupsV1",
         "parameters": [
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -1015,7 +1024,7 @@
           {
             "name": "from",
             "in": "query",
-            "description": "Start of the window, RFC 3339. Treated as UTC.",
+            "description": "Required. First day of the range, `yyyy-MM-dd`. Must not be later than `to`.",
             "required": true,
             "schema": {
               "type": "string"
@@ -1024,7 +1033,7 @@
           {
             "name": "to",
             "in": "query",
-            "description": "End of the window, RFC 3339. Treated as UTC.",
+            "description": "Required. Last day of the range, `yyyy-MM-dd`.",
             "required": true,
             "schema": {
               "type": "string"
@@ -1033,15 +1042,21 @@
           {
             "name": "group_by",
             "in": "query",
-            "description": "Rollup grouping key.",
+            "description": "What to group the rows by: `cve` (the default), `root_cause`, `severity` or `asset_type`. Anything else returns 400 `invalid_group_by`.",
             "schema": {
+              "enum": [
+                "cve",
+                "root_cause",
+                "severity",
+                "asset_type"
+              ],
               "type": "string"
             }
           },
           {
             "name": "limit",
             "in": "query",
-            "description": "Maximum number of rollup groups to return.",
+            "description": "The most rows to return per tenant: `1`-`100`, default `25`. Anything else returns 400 `invalid_limit`.",
             "schema": {
               "type": "string"
             }
@@ -1049,7 +1064,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The rollup rows for each covered tenant.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1059,12 +1074,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "`from` or `to` is missing or not `yyyy-MM-dd`, or `from` is later than `to` (`invalid_date_range`); `group_by` or `limit` is invalid; or `tenant_ids` is invalid."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1072,9 +1087,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1082,9 +1097,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_vulnerability_rollups_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1100,11 +1115,21 @@
           "Reporting"
         ],
         "summary": "Get current posture grades for authorized partner tenants.",
-        "description": "This endpoint returns each tenant\u0027s current score (0-100) and letter grade (\u0060A\u002B\u0060 to \u0060F\u0060)\nfor overall risk, vulnerability, and secure baseline, for the authorized partner\u0027s tenant\nscope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- The overall grade combines the vulnerability and secure baseline grades.\n- A component is \u0060null\u0060 until the tenant has been scored for it.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns each tenant's current score (0-100) and letter grade (`A+` to `F`)\nfor overall risk, vulnerability, and secure baseline, for the authorized partner's tenant\nscope.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- The overall grade combines the vulnerability and secure baseline grades.\n- A component is `null` until the tenant has been scored for it.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "GetPartnerPostureV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The current grades for each covered tenant.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1114,12 +1139,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1127,9 +1152,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1137,9 +1162,167 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_posture_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/dashboards/overall": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Get the overall dashboard for authorized partner tenants.",
+        "description": "This endpoint returns one row per tenant in the authorized partner's tenant scope: where\nthe tenant sits in the hierarchy, its industry and tags, its asset and finding counts, and\nits current scores and grades.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- A grade is `null` until the tenant has been scored for it.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
+        "operationId": "GetPartnerOverallDashboardV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One row per covered tenant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerOverallDashboardResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
+          },
+          "401": {
+            "description": "No bearer token, or an invalid or expired one.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The data store is unavailable (`pulse_overall_dashboard_unavailable`), or the tenant scope could not be loaded. Retry later.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulse/v1/partner/dashboards/baseline": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "List secure-baseline posture by asset for authorized partner tenants.",
+        "description": "This endpoint returns a cursor-paginated list of secure-baseline posture by asset\n(score, grade, and benchmark pass/fail counts) across the authorized partner's tenant scope,\nlowest score first.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `page_size` (optional, default 100, max 500) controls page size.\n- `cursor` (optional) resumes from a previous page using the `next_cursor` value returned in\n  the response.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
+        "operationId": "ListPartnerBaselineAssetsV1",
+        "parameters": [
+          {
+            "name": "tenant_ids",
+            "in": "query",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include_descendants",
+            "in": "query",
+            "description": "When true, widens each id in `tenant_ids` to that tenant and every tenant beneath it in the hierarchy. Ignored when `tenant_ids` is omitted, since the default is already the caller's whole scope.",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Maximum number of items per page.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque pagination cursor: pass the previous response's next_cursor to fetch the next page.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One page of assets with their secure-baseline posture, lowest score first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerPagedResponseOfGlobalConfigurationAssetRow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A value in `tenant_ids` is not a UUID (`invalid_tenant_id`), or another parameter is invalid; the `error` field names the problem."
+          },
+          "401": {
+            "description": "No bearer token, or an invalid or expired one.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The data store is unavailable (`pulse_baseline_unavailable`), or the tenant scope could not be loaded. Retry later.",
+            "content": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1155,13 +1338,13 @@
           "Reporting"
         ],
         "summary": "Get endpoint usage history for authorized partner tenants.",
-        "description": "This endpoint returns endpoint usage history, bucketed by day or month, over a bounded date\nrange for the authorized partner\u0027s tenant scope.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts results to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (required, \u0060yyyy-MM-dd\u0060) bound the usage date range. \u0060from\u0060 must not be\n  later than \u0060to\u0060.\n- \u0060grain\u0060 (optional, one of \u0060day\u0060, \u0060month\u0060; default \u0060day\u0060) controls the bucketing interval.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns endpoint usage history, bucketed by day or month, over a bounded date\nrange for the authorized partner's tenant scope.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts results to specific tenants.\n- `from` / `to` (required, `yyyy-MM-dd`) bound the usage date range. `from` must not be\n  later than `to`.\n- `grain` (optional, one of `day`, `month`; default `day`) controls the bucketing interval.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "GetPartnerUsageV1",
         "parameters": [
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -1169,7 +1352,7 @@
           {
             "name": "from",
             "in": "query",
-            "description": "Start of the window, RFC 3339. Treated as UTC.",
+            "description": "Required. First day of the range, `yyyy-MM-dd`. Must not be later than `to`.",
             "required": true,
             "schema": {
               "type": "string"
@@ -1178,7 +1361,7 @@
           {
             "name": "to",
             "in": "query",
-            "description": "End of the window, RFC 3339. Treated as UTC.",
+            "description": "Required. Last day of the range, `yyyy-MM-dd`.",
             "required": true,
             "schema": {
               "type": "string"
@@ -1187,7 +1370,7 @@
           {
             "name": "grain",
             "in": "query",
-            "description": "Usage reporting grain.",
+            "description": "The bucket size: `day` (the default) or `month`. Anything else returns 400 `invalid_grain`.",
             "schema": {
               "enum": [
                 "day",
@@ -1199,7 +1382,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The usage history for the covered tenants.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1209,12 +1392,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "`from` or `to` is missing or not `yyyy-MM-dd`, or `from` is later than `to` (`invalid_date_range`); `grain` is invalid (`invalid_grain`); or `tenant_ids` is invalid."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1222,9 +1405,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1232,9 +1415,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The usage history could not be provided (`pulse_usage_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1250,13 +1433,13 @@
           "Reporting"
         ],
         "summary": "Export vulnerability events for authorized partner tenants.",
-        "description": "This endpoint returns a single-page export of live vulnerability detection events, within a\nbounded time window, for the authorized partner\u0027s tenant scope. The response is returned\nwith a \u0060Content-Disposition: attachment\u0060 header naming a timestamped export file.\n\n**Notes:**\n- \u0060tenant_ids\u0060 (optional, comma-separated) restricts the export to specific tenants.\n- \u0060from\u0060 / \u0060to\u0060 (optional, ISO-8601 timestamps) bound the detection window; defaults to the\n  last 24 hours. \u0060from\u0060 must not be later than \u0060to\u0060.\n- \u0060source_type\u0060, \u0060severity\u0060, \u0060root_cause_type\u0060, and \u0060patchability\u0060 filter the result set.\n- \u0060format\u0060 (optional, default \u0060json\u0060) selects the export format; only \u0060json\u0060 is currently\n  supported; any other value returns 400.\n- The export is capped at the maximum page size (500 events) and is not cursor-paginated.\n\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "This endpoint returns a single-page export of live vulnerability detection events, within a\nbounded time window, for the authorized partner's tenant scope. The response is returned\nwith a `Content-Disposition: attachment` header naming a timestamped export file.\n\n**Notes:**\n- `tenant_ids` (optional, comma-separated) restricts the export to specific tenants.\n- `from` / `to` (optional, ISO-8601 timestamps) bound the detection window; defaults to the\n  last 24 hours. `from` must not be later than `to`.\n- `source_type`, `severity`, `root_cause_type`, and `patchability` filter the result set.\n- `format` (optional, default `json`) selects the export format; only `json` is currently\n  supported; any other value returns 400.\n- The export is capped at the maximum page size (500 events) and is not cursor-paginated.\n\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "ExportPartnerVulnerabilityEventsV1",
         "parameters": [
           {
             "name": "tenant_ids",
             "in": "query",
-            "description": "Comma-separated tenant UUIDs to scope the list to. Omit to use every tenant the caller is authorized for.",
+            "description": "Comma-separated tenant ids to read. Every id must be inside the caller's authorized scope, otherwise 403 `tenant_out_of_scope`. Omit it to read every authorized tenant.",
             "schema": {
               "type": "string"
             }
@@ -1264,7 +1447,7 @@
           {
             "name": "from",
             "in": "query",
-            "description": "Start of the window, RFC 3339. Treated as UTC.",
+            "description": "Start of the detection window, an ISO 8601 timestamp, treated as UTC. Defaults to 24 hours before `to`. Must not be later than `to`.",
             "schema": {
               "type": "string"
             }
@@ -1272,7 +1455,7 @@
           {
             "name": "to",
             "in": "query",
-            "description": "End of the window, RFC 3339. Treated as UTC.",
+            "description": "End of the detection window, an ISO 8601 timestamp, treated as UTC. Defaults to now.",
             "schema": {
               "type": "string"
             }
@@ -1280,11 +1463,10 @@
           {
             "name": "format",
             "in": "query",
-            "description": "Export encoding.",
+            "description": "The export format. Only `json` is supported; anything else returns 400 `unsupported_export_format`.",
             "schema": {
               "enum": [
-                "json",
-                "csv"
+                "json"
               ],
               "type": "string"
             }
@@ -1292,7 +1474,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "A page of detection events, sent as an attachment named `pulse-vulnerability-events-<timestamp>.json`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1302,12 +1484,12 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "`format` is not `json` (`unsupported_export_format`), the window is invalid, or `tenant_ids` is invalid."
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1315,9 +1497,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1325,9 +1507,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The data store is unavailable (`pulse_vulnerability_event_export_unavailable`), or the tenant scope could not be loaded. Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1343,11 +1525,11 @@
           "Reporting"
         ],
         "summary": "List the tenants in the authorized partner scope.",
-        "description": "Returns every tenant the calling machine client is authorized for, as a flat list\nordered by position in the hierarchy.\n\n**Notes:**\n- \u0060parent_tenant_id\u0060 and \u0060depth\u0060 describe each tenant\u0027s place in the hierarchy;\n  the roots of the caller\u0027s scope have a \u0060parent_tenant_id\u0060 outside it.\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "Returns every tenant the calling machine client is authorized for, as a flat list\nordered by position in the hierarchy.\n\n**Notes:**\n- `parent_tenant_id` and `depth` describe each tenant's place in the hierarchy;\n  the roots of the caller's scope have a `parent_tenant_id` outside it.\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "ListPartnerTenantsV1",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Every tenant the caller is authorized for.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1357,9 +1539,9 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1367,9 +1549,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The token is not allowed to read this: it is not a machine-client token (`machine_client_subject_required`), lacks the `pulse.read` scope (`missing_required_scope`), is outdated (`stale_token_version`), or belongs to a disabled tenant. A tenant outside the caller's scope in `tenant_ids` returns `tenant_out_of_scope`.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1377,9 +1559,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The tenant scope could not be loaded (`tenant_scope_unavailable`). Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1395,12 +1577,13 @@
           "Reporting"
         ],
         "summary": "Get one tenant and its sub-tenants from the authorized partner scope.",
-        "description": "Returns \u0060tenantId\u0060 plus every tenant beneath it in the hierarchy, narrowed from the\ncaller\u0027s full authorized scope.\n\n**Notes:**\n- \u0060tenantId\u0060 must be inside the caller\u0027s authorized scope; anything else returns 403,\n  whether or not the tenant exists.\n\nRequired headers:\n\n- \u0060Authorization: Bearer {token}\u0060 (requires the \u0060pulse.read\u0060 scope)",
+        "description": "Returns `tenantId` plus every tenant beneath it in the hierarchy, narrowed from the\ncaller's full authorized scope.\n\n**Notes:**\n- `tenantId` must be inside the caller's authorized scope; anything else returns 403,\n  whether or not the tenant exists.\n\nRequired headers:\n\n- `Authorization: Bearer {token}` (requires the `pulse.read` scope)",
         "operationId": "GetPartnerTenantV1",
         "parameters": [
           {
             "name": "tenantId",
             "in": "path",
+            "description": "The tenant: a `tenant_id` from **List tenants**. It must be inside the caller's authorized scope.",
             "required": true,
             "schema": {
               "type": "string",
@@ -1410,7 +1593,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The tenant and every tenant beneath it.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1420,9 +1603,9 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "No bearer token, or an invalid or expired one.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1430,9 +1613,9 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "The tenant is outside the caller's authorized scope (`tenant_out_of_scope`), whether or not it exists, or the token is not allowed to read (see **List tenants**).",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1440,9 +1623,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "The tenant scope could not be loaded (`tenant_scope_unavailable`). Retry later.",
             "content": {
-              "application/problem\u002Bjson": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -1455,12 +1638,81 @@
   },
   "components": {
     "schemas": {
+      "ConfigRemediation": {
+        "required": [
+          "actions"
+        ],
+        "type": "object",
+        "properties": {
+          "actions": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/ConfigRemediationAction"
+            }
+          },
+          "requires_reboot": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "ConfigRemediationAction": {
+        "required": [
+          "kind"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "registry_path": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "value_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "value_kind": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "value_data": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "cipher_suites": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "DashboardReconciliationState": {
         "enum": [
           "matched",
           "mismatched",
           "source_grade"
-        ]
+        ],
+        "description": "Whether the figures agree with their source: `matched`, `mismatched`, or `source_grade` for a row that carries one source's own grade rather than a reconciliation of two."
       },
       "DashboardVulnerabilitySeriesPoint": {
         "required": [
@@ -1490,22 +1742,25 @@
         "properties": {
           "day": {
             "type": "string",
+            "description": "The day, in UTC.",
             "format": "date"
           },
           "score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The tenant's vulnerability score that day, from 0 to 100. Higher is better. Null when it was not scored.",
             "format": "double"
           },
           "grade": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The letter grade for the score, from `A+` to `F`."
           },
           "open_critical_count": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -1513,6 +1768,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `critical`.",
             "format": "uint64"
           },
           "open_high_count": {
@@ -1521,6 +1777,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `high`.",
             "format": "uint64"
           },
           "open_medium_count": {
@@ -1529,6 +1786,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `medium`.",
             "format": "uint64"
           },
           "open_low_count": {
@@ -1537,6 +1795,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `low`.",
             "format": "uint64"
           },
           "open_total_count": {
@@ -1545,6 +1804,7 @@
               "integer",
               "string"
             ],
+            "description": "All open findings.",
             "format": "uint64"
           },
           "unique_critical_count": {
@@ -1554,6 +1814,7 @@
               "integer",
               "string"
             ],
+            "description": "Distinct CVEs rated `critical` among the open findings. Null when not recorded for that day.",
             "format": "uint64"
           },
           "unique_high_count": {
@@ -1563,6 +1824,7 @@
               "integer",
               "string"
             ],
+            "description": "Distinct CVEs rated `high` among the open findings. Null when not recorded.",
             "format": "uint64"
           },
           "unique_medium_count": {
@@ -1572,6 +1834,7 @@
               "integer",
               "string"
             ],
+            "description": "Distinct CVEs rated `medium` among the open findings. Null when not recorded.",
             "format": "uint64"
           },
           "unique_low_count": {
@@ -1581,6 +1844,7 @@
               "integer",
               "string"
             ],
+            "description": "Distinct CVEs rated `low` among the open findings. Null when not recorded.",
             "format": "uint64"
           },
           "unique_total_count": {
@@ -1590,6 +1854,7 @@
               "integer",
               "string"
             ],
+            "description": "Distinct CVEs among all the open findings. Null when not recorded.",
             "format": "uint64"
           },
           "new_total_count": {
@@ -1598,6 +1863,7 @@
               "integer",
               "string"
             ],
+            "description": "Findings opened or reopened that day.",
             "format": "uint64"
           },
           "resolved_total_count": {
@@ -1606,6 +1872,7 @@
               "integer",
               "string"
             ],
+            "description": "Findings fixed or retired that day.",
             "format": "uint64"
           },
           "remediated_total_count": {
@@ -1614,6 +1881,7 @@
               "integer",
               "string"
             ],
+            "description": "Findings remediated that day.",
             "format": "uint64"
           },
           "suppressed_total_count": {
@@ -1622,6 +1890,7 @@
               "integer",
               "string"
             ],
+            "description": "Findings suppressed that day.",
             "format": "uint64"
           },
           "affected_asset_count": {
@@ -1630,6 +1899,7 @@
               "integer",
               "string"
             ],
+            "description": "Assets with an open finding.",
             "format": "uint64"
           },
           "evaluated_asset_count": {
@@ -1638,6 +1908,7 @@
               "integer",
               "string"
             ],
+            "description": "Assets that were evaluated.",
             "format": "uint64"
           },
           "source_watermark_at": {
@@ -1645,9 +1916,11 @@
               "null",
               "string"
             ],
+            "description": "How current the underlying data is, in UTC.",
             "format": "date-time"
           },
           "reconciliation_state": {
+            "description": "Whether the day's figures agree with their source.",
             "$ref": "#/components/schemas/DashboardReconciliationState"
           },
           "scores_as_of": {
@@ -1655,23 +1928,28 @@
               "null",
               "string"
             ],
+            "description": "When the score was calculated, in UTC.",
             "format": "date-time"
           },
           "score_policy_version": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The version of the scoring policy that produced the score."
           }
-        }
+        },
+        "description": "One day of a tenant's vulnerability trend. The `open_*` counts count findings; the `unique_*` counts count distinct CVEs."
       },
       "EndpointLifecycleState": {
         "enum": [
           "active",
           "inactive",
           "retired",
+          "superseded",
           "unknown"
-        ]
+        ],
+        "description": "Where an endpoint is in its life: `active`, `inactive`, `retired`, or `superseded` (a reinstall's leftover identity, retired automatically and never reactivated). `unknown` when it is not recorded."
       },
       "GlobalAffectedAssetRow": {
         "required": [
@@ -1695,37 +1973,45 @@
         "properties": {
           "tenant_id": {
             "type": "string",
+            "description": "The tenant the asset belongs to.",
             "format": "uuid"
           },
           "tenant_host": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's host name."
           },
           "asset_id": {
-            "type": "string"
+            "type": "string",
+            "description": "The asset's id. Unique within a tenant, not across tenants."
           },
           "asset_type": {
+            "description": "What kind of asset it is.",
             "$ref": "#/components/schemas/GlobalAssetType"
           },
           "source_type": {
+            "description": "How the asset is scanned.",
             "$ref": "#/components/schemas/GlobalSourceType"
           },
           "display_name": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's name, for display."
           },
           "hostname": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's host name."
           },
           "address": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's IP address or URL."
           },
           "severity": {
             "oneOf": [
@@ -1735,46 +2021,52 @@
               {
                 "$ref": "#/components/schemas/GlobalSeverity"
               }
-            ]
+            ],
+            "description": "The finding's severity on this asset. Null when it has not been rated."
           },
           "cvr_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "CYRISMA's own risk score for the finding, from 0 to 10.",
             "format": "double"
           },
           "cvss_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The CVSS base score, from 0 to 10.",
             "format": "double"
           },
           "epss_probability": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The EPSS probability of exploitation, from 0 to 1.",
             "format": "double"
           },
           "patch_available": {
             "type": [
               "null",
               "boolean"
-            ]
+            ],
+            "description": "True when a patch can fix the finding, false when none can, null when unknown."
           },
           "first_seen_at": {
             "type": [
               "null",
               "string"
             ],
+            "description": "When the finding was first seen on the asset, in UTC.",
             "format": "date-time"
           },
           "last_seen_at": {
@@ -1782,6 +2074,7 @@
               "null",
               "string"
             ],
+            "description": "When the finding was last seen on the asset, in UTC.",
             "format": "date-time"
           },
           "fixed_at": {
@@ -1789,31 +2082,36 @@
               "null",
               "string"
             ],
+            "description": "When the finding was fixed, in UTC. Null while it is open.",
             "format": "date-time"
           },
           "platform": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The platform the asset runs on."
           },
           "os_family": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The operating-system family."
           },
           "os_name": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The operating-system name."
           },
           "os_version": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The operating-system version."
           },
           "open_finding_count": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -1821,6 +2119,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings on the asset in scope of this request.",
             "format": "uint64",
             "default": 0
           },
@@ -1830,6 +2129,7 @@
               "integer",
               "string"
             ],
+            "description": "Fixed findings on the asset in scope of this request.",
             "format": "uint64",
             "default": 0
           },
@@ -1839,6 +2139,7 @@
               "integer",
               "string"
             ],
+            "description": "All findings on the asset in scope of this request.",
             "format": "uint64",
             "default": 0
           },
@@ -1846,22 +2147,26 @@
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's own posture grade, the same as the Assets list shows, graded over every open finding on the machine and not only the ones in scope here. Null means ungraded, which is not the same as `A+`."
           },
           "tenant_name": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The tenant's name."
           },
           "fixed_version": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "This asset's own fixed or target version for the finding."
           },
           "detected_while_offline": {
             "type": "boolean",
+            "description": "True when the CVE was detected more than an hour after the agent's last check-in and the asset has not been online since. Only set for agent assets.",
             "default": false
           },
           "patch_target": {
@@ -1872,15 +2177,18 @@
               {
                 "$ref": "#/components/schemas/GlobalPatchTarget"
               }
-            ]
+            ],
+            "description": "How to patch the finding on this asset. Null when unknown."
           },
           "agent_status": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "`online` when the agent checked in within the agent online window, `offline` when it did not, null for a scan-only asset with no agent."
           }
-        }
+        },
+        "description": "An asset affected by a CVE or root cause, with that finding's details on it."
       },
       "GlobalAssetRow": {
         "required": [
@@ -1920,82 +2228,98 @@
         "properties": {
           "tenant_id": {
             "type": "string",
+            "description": "The tenant the asset belongs to.",
             "format": "uuid"
           },
           "tenant_host": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's host name."
           },
           "asset_id": {
-            "type": "string"
+            "type": "string",
+            "description": "The asset's id. Unique within a tenant, not across tenants, so pair it with `tenant_id`."
           },
           "asset_type": {
+            "description": "What kind of asset it is.",
             "$ref": "#/components/schemas/GlobalAssetType"
           },
           "source_type": {
+            "description": "How the asset is scanned.",
             "$ref": "#/components/schemas/GlobalSourceType"
           },
           "lifecycle_state": {
+            "description": "Where the endpoint is in its life.",
             "$ref": "#/components/schemas/EndpointLifecycleState"
           },
           "display_name": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's name, for display."
           },
           "hostname": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's host name."
           },
           "fqdn": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's fully qualified domain name."
           },
           "address": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's IP address or URL."
           },
           "platform": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The platform the asset runs on."
           },
           "os_family": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The operating-system family."
           },
           "os_name": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The operating-system name, as the Assets grid shows it."
           },
           "os_version": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The operating-system version."
           },
           "agent_status": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "`online` when the agent checked in within the agent online window, `offline` when it did not, null for a scan-only asset with no agent."
           },
           "agent_last_check_in_at": {
             "type": [
               "null",
               "string"
             ],
+            "description": "When the agent last checked in, in UTC.",
             "format": "date-time"
           },
           "last_seen_at": {
@@ -2003,6 +2327,7 @@
               "null",
               "string"
             ],
+            "description": "When the asset was last seen, in UTC.",
             "format": "date-time"
           },
           "open_finding_count": {
@@ -2011,6 +2336,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings on the asset.",
             "format": "uint64"
           },
           "open_critical_count": {
@@ -2019,6 +2345,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `critical`.",
             "format": "uint64"
           },
           "open_high_count": {
@@ -2027,6 +2354,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `high`.",
             "format": "uint64"
           },
           "open_medium_count": {
@@ -2035,6 +2363,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `medium`.",
             "format": "uint64"
           },
           "open_low_count": {
@@ -2043,6 +2372,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `low`.",
             "format": "uint64"
           },
           "open_info_count": {
@@ -2051,58 +2381,67 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `info`.",
             "format": "uint64"
           },
           "highest_cvr_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The highest CYRISMA risk score among its open findings, from 0 to 10.",
             "format": "double"
           },
           "vulnerability_grade": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's posture grade, from `A+` to `F`. Null means ungraded (no inventory yet, or nothing has evaluated it recently), which is not the same as `A+`. Do not derive a letter from the severity counts."
           },
           "password_manager_status": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Whether a password manager is installed."
           },
           "disk_encryption_status": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Whether the disk is encrypted."
           },
           "lock_status": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Whether the screen locks."
           },
           "security_software_status": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Whether security software is installed and running."
           },
           "eol_status": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Whether the operating system is still supported."
           },
           "tags": {
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The asset's tags."
           },
           "ports": {
             "type": [
@@ -2111,7 +2450,8 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Open ports, for example `TCP 443`. `port_observation` says how they were seen."
           },
           "port_observation": {
             "oneOf": [
@@ -2121,79 +2461,107 @@
               {
                 "$ref": "#/components/schemas/GlobalPortObservation"
               }
-            ]
+            ],
+            "description": "How `ports` were observed. Null when there are none."
           },
           "secure_baseline_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The pooled secure baseline score, from 0 to 100. Null when the asset has not been scoped to a profile, which is not the same as scoring 0.",
             "format": "double"
           },
           "secure_baseline_profile_id": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The secure baseline profile the asset is scoped to."
           },
           "secure_baseline_profile_label": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The name of that profile."
           },
           "fips_status": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Whether FIPS mode is enabled."
+          },
+          "inventory_present": {
+            "type": "boolean",
+            "description": "False until the agent's first inventory lands. Do not read an endpoint that has reported nothing as one with nothing to report.",
+            "default": false
           },
           "tenant_name": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The tenant's name."
           },
           "authenticated": {
             "type": [
               "null",
               "boolean"
-            ]
+            ],
+            "description": "Domain (web-app) assets only: whether the scan is configured with authentication. Null for every other asset."
           },
           "mac_address": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Network-scanned devices only: the MAC address."
           },
           "mac_vendor": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Network-scanned devices only: the vendor of the MAC address."
           },
           "device_fingerprint": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Network-scanned devices only: what the scan identified the device as."
           },
           "snmp_summary": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Network-scanned devices only: what SNMP reported."
+          },
+          "rmm_products": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Endpoints only: the remote monitoring and management (RMM) products recognized from the installed software and services. Null when none is recognized."
           },
           "os_eol": {
             "type": [
               "null",
               "string"
             ],
+            "description": "The date the operating system reaches end of life, resolved from its name and version.",
             "format": "date"
           }
-        }
+        },
+        "description": "An asset with its open findings and the state of its security controls."
       },
       "GlobalAssetType": {
         "enum": [
@@ -2210,7 +2578,262 @@
           "external",
           "domain",
           "unknown"
-        ]
+        ],
+        "description": "What kind of asset it is. `endpoint` is an agent-backed machine whose kind is not known yet; `server` and `workstation` refine it. The rest are scanned devices and services."
+      },
+      "GlobalConfigurationAssetRow": {
+        "required": [
+          "tenant_id",
+          "tenant_host",
+          "endpoint_id",
+          "endpoint_key",
+          "display_name",
+          "asset_type",
+          "os_family",
+          "os_name",
+          "os_version",
+          "agent_status",
+          "score",
+          "grade",
+          "benchmark_count",
+          "passing_count",
+          "failing_count",
+          "unknown_count",
+          "not_automatable_count",
+          "evidence_missing_count",
+          "not_applicable_count",
+          "waived_count",
+          "last_evaluated_at"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "description": "The tenant the asset belongs to.",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string",
+            "description": "The tenant's host name."
+          },
+          "endpoint_id": {
+            "type": "string",
+            "description": "The endpoint's id.",
+            "format": "uuid"
+          },
+          "endpoint_key": {
+            "type": "string",
+            "description": "The endpoint's stable key."
+          },
+          "display_name": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The asset's name, for display."
+          },
+          "asset_type": {
+            "description": "What kind of asset it is.",
+            "$ref": "#/components/schemas/GlobalAssetType"
+          },
+          "os_family": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The operating-system family."
+          },
+          "os_name": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The operating-system name."
+          },
+          "os_version": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The operating-system version."
+          },
+          "agent_status": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "`online` when the agent checked in within the agent online window, `offline` when it did not."
+          },
+          "score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "The pooled secure-baseline score, from 0 to 100. Higher is better. Null when the asset has not been scoped to a profile, which is not the same as 0.",
+            "format": "double"
+          },
+          "grade": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The letter grade for the score, from `A+` to `F`. Null when there is no score."
+          },
+          "benchmark_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Benchmarks the asset is evaluated against.",
+            "format": "uint64"
+          },
+          "passing_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Controls that pass.",
+            "format": "uint64"
+          },
+          "failing_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Controls that fail.",
+            "format": "uint64"
+          },
+          "unknown_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Controls whose result is not known.",
+            "format": "uint64"
+          },
+          "not_automatable_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Controls that cannot be checked automatically.",
+            "format": "uint64"
+          },
+          "evidence_missing_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Controls that could not be evaluated because the evidence is missing.",
+            "format": "uint64"
+          },
+          "not_applicable_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Controls that do not apply to the asset.",
+            "format": "uint64"
+          },
+          "waived_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Controls that were waived.",
+            "format": "uint64"
+          },
+          "last_evaluated_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "When the asset was last evaluated, in UTC.",
+            "format": "date-time"
+          },
+          "tenant_name": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The tenant's name."
+          },
+          "profile_ids": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "The ids of the profiles the asset is scoped to."
+          },
+          "profile_labels": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "The names of those profiles."
+          },
+          "benchmark_ids": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "The ids of the benchmarks the asset is evaluated against."
+          },
+          "benchmark_labels": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "The names of those benchmarks."
+          },
+          "platform_keys": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "The benchmark platform keys."
+          },
+          "assigned_profile_id": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The id of the profile assigned to the asset now."
+          },
+          "assigned_profile_label": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The name of the assigned profile. From the moment a profile is assigned until the asset is next evaluated, `profile_labels` does not contain it."
+          }
+        },
+        "description": "An asset's secure-baseline posture: how it scores against the configuration benchmarks it is scoped to."
       },
       "GlobalCveRow": {
         "required": [
@@ -2234,13 +2857,15 @@
         "type": "object",
         "properties": {
           "cve_id": {
-            "type": "string"
+            "type": "string",
+            "description": "The CVE identifier, for example `CVE-2024-12345`."
           },
           "description": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The CVE's description."
           },
           "severity": {
             "oneOf": [
@@ -2250,50 +2875,57 @@
               {
                 "$ref": "#/components/schemas/GlobalSeverity"
               }
-            ]
+            ],
+            "description": "The CVE's severity. Null when it has not been rated."
           },
           "cvss_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The CVSS base score, from 0 to 10.",
             "format": "double"
           },
           "cvr_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "CYRISMA's own risk score for the CVE, from 0 to 10, which weighs exploitability as well as severity.",
             "format": "double"
           },
           "epss_probability": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The EPSS probability that the CVE is exploited in the next 30 days, from 0 to 1.",
             "format": "double"
           },
           "kev": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True when the CVE is on a known-exploited-vulnerabilities list."
           },
           "exploitability_label": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The evaluator's exploitability verdict. It is not the same claim as `kev`: it also reads exploit evidence from other published sources."
           },
           "impact": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "number",
               "string"
             ],
+            "description": "CYRISMA's impact ranking for the CVE across the tenants read. Higher means more urgent.",
             "format": "double"
           },
           "affected_asset_count": {
@@ -2302,6 +2934,7 @@
               "integer",
               "string"
             ],
+            "description": "Assets affected by the CVE.",
             "format": "uint64"
           },
           "affected_tenant_count": {
@@ -2310,13 +2943,15 @@
               "integer",
               "string"
             ],
+            "description": "Tenants affected by the CVE.",
             "format": "uint64"
           },
           "source_counts": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GlobalSourceCount"
-            }
+            },
+            "description": "The affected assets split by how they are scanned."
           },
           "root_cause_count": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -2324,19 +2959,22 @@
               "integer",
               "string"
             ],
+            "description": "Root causes that produce the CVE.",
             "format": "uint64"
           },
           "top_root_causes": {
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Labels of the main root causes."
           },
           "first_seen_at": {
             "type": [
               "null",
               "string"
             ],
+            "description": "When the CVE was first seen in the tenants read, in UTC.",
             "format": "date-time"
           },
           "last_seen_at": {
@@ -2344,6 +2982,7 @@
               "null",
               "string"
             ],
+            "description": "When the CVE was last seen in the tenants read, in UTC.",
             "format": "date-time"
           },
           "asset_display_names": {
@@ -2353,7 +2992,8 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "A bounded, sorted sample of affected asset names, at most 25."
           },
           "tenant_names": {
             "type": [
@@ -2362,7 +3002,8 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "A bounded, sorted sample of affected tenant names, at most 25."
           },
           "online_asset_count": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -2370,6 +3011,7 @@
               "integer",
               "string"
             ],
+            "description": "Affected assets whose agent checked in within the agent online window. Scan-only assets, which have no agent, are in neither this nor `offline_asset_count`.",
             "format": "uint64",
             "default": 0
           },
@@ -2379,18 +3021,29 @@
               "integer",
               "string"
             ],
+            "description": "Affected assets whose agent last checked in before the agent online window.",
             "format": "uint64",
             "default": 0
           },
+          "device_status_as_of": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "When the online and offline counts were taken, in UTC. With several tenants it is the oldest of theirs.",
+            "format": "date-time"
+          },
           "detected_while_offline": {
             "type": "boolean",
+            "description": "True when at least one affected agent asset had the CVE inferred by a recompute while it was offline.",
             "default": false
           },
           "title": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The CVE's short title, where the catalogue has one."
           },
           "exploit_sources": {
             "type": [
@@ -2399,9 +3052,11 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The sources of exploit evidence, by label: KEV, EDB, Metasploit, Nuclei or PoC."
           }
-        }
+        },
+        "description": "A CVE with its impact across the authorized tenants. Name samples are bounded; the counts stay authoritative."
       },
       "GlobalDetectionRow": {
         "required": [
@@ -2431,16 +3086,20 @@
         "properties": {
           "finding_event_id": {
             "type": "string",
+            "description": "The event's id.",
             "format": "uuid"
           },
           "tenant_id": {
             "type": "string",
+            "description": "The tenant the asset belongs to.",
             "format": "uuid"
           },
           "tenant_host": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's host name."
           },
           "event_type": {
+            "description": "What happened to the finding.",
             "$ref": "#/components/schemas/GlobalFindingEventType"
           },
           "occurred_at": {
@@ -2448,19 +3107,22 @@
               "null",
               "string"
             ],
+            "description": "When the event happened, in UTC.",
             "format": "date-time"
           },
           "cve_id": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The CVE the finding is for. Null for a finding that has none."
           },
           "description": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "A description of the finding."
           },
           "severity": {
             "oneOf": [
@@ -2470,52 +3132,59 @@
               {
                 "$ref": "#/components/schemas/GlobalSeverity"
               }
-            ]
+            ],
+            "description": "The finding's severity. Null when it has not been rated."
           },
           "cvss_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The CVSS base score, from 0 to 10.",
             "format": "double"
           },
           "cvr_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "CYRISMA's own risk score, from 0 to 10.",
             "format": "double"
           },
           "epss_probability": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The EPSS probability of exploitation, from 0 to 1.",
             "format": "double"
           },
           "exploitability_label": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The evaluator's exploitability verdict."
           },
           "root_cause_key": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The key of the finding's root cause."
           },
           "root_cause_label": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "A name for the finding's root cause."
           },
           "source_type": {
             "oneOf": [
@@ -2525,46 +3194,55 @@
               {
                 "$ref": "#/components/schemas/GlobalSourceType"
               }
-            ]
+            ],
+            "description": "How the asset is scanned. Null when not known."
           },
           "asset_id": {
-            "type": "string"
+            "type": "string",
+            "description": "The asset's id. Unique within a tenant, not across tenants."
           },
           "asset_display_name": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's name, for display."
           },
           "asset_type": {
+            "description": "What kind of asset it is.",
             "$ref": "#/components/schemas/GlobalAssetType"
           },
           "os_family": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's operating-system family."
           },
           "os_name": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The asset's operating-system name."
           },
           "agent_status": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "`online` when the agent checked in within the agent online window, `offline` when it did not, null for a scan-only asset with no agent."
           },
           "tenant_name": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The tenant's name."
           },
           "detected_while_offline": {
             "type": "boolean",
+            "description": "True when the event fired on an agent asset more than an hour after its last check-in: a detection inferred while the asset was offline, not one observed while the agent was reporting.",
             "default": false
           },
           "exploit_sources": {
@@ -2574,9 +3252,11 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The sources of exploit evidence, by label."
           }
-        }
+        },
+        "description": "One live vulnerability detection event on an asset."
       },
       "GlobalFindingEventType": {
         "enum": [
@@ -2586,8 +3266,10 @@
           "reopened",
           "suppressed",
           "remediated",
+          "retired",
           "unknown"
-        ]
+        ],
+        "description": "What happened to a finding: `opened`, `evidence_changed`, `fixed`, `reopened`, `suppressed`, `remediated`, or `retired`. `retired` means the rule was withdrawn while the software stayed installed at the same version: nothing was remediated."
       },
       "GlobalPatchTarget": {
         "required": [
@@ -2606,25 +3288,29 @@
         "type": "object",
         "properties": {
           "kind": {
-            "type": "string"
+            "type": "string",
+            "description": "The kind of patch: `winget`, `windows_update` or `none`."
           },
           "package_manager": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The package manager that runs the patch."
           },
           "package_id": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The package to upgrade."
           },
           "target_version": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The version to upgrade to."
           },
           "kb_ids": {
             "type": [
@@ -2633,7 +3319,8 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The Windows Update KB ids to install."
           },
           "architectures": {
             "type": [
@@ -2642,49 +3329,57 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The CPU architectures the patch applies to."
           },
           "installer_scope": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Whether the installer runs per user or per machine."
           },
           "minimum_os_build": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The lowest OS build the patch applies to."
           },
           "maximum_os_build": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The highest OS build the patch applies to."
           },
           "reboot_required": {
             "type": [
               "null",
               "boolean"
-            ]
+            ],
+            "description": "True when the patch needs a reboot."
           },
           "reason": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Why `kind` is `none`."
           },
           "patch_target_key": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The patch target's identity."
           },
           "source_artifact_version": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The installed version the upgrade starts from."
           },
           "installed_app_aliases": {
             "type": [
@@ -2693,15 +3388,28 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The names the installed app is known by in inventory."
+          },
+          "config_remediation": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ConfigRemediation"
+              }
+            ]
           }
-        }
+        },
+        "description": "How to patch the finding on this asset. `kind` is `winget` (upgrade `package_id` to `target_version`), `windows_update` (install `kb_ids`) or `none` (neither can run it; `reason` says why)."
       },
       "GlobalPortObservation": {
         "enum": [
           "host_observed",
           "scan_observed"
-        ]
+        ],
+        "description": "Where an asset's ports came from: `host_observed` (the agent read its own listeners: the port is listening) or `scan_observed` (a scan reached it from outside: the port is reachable)."
       },
       "GlobalRootCauseRow": {
         "required": [
@@ -2723,41 +3431,48 @@
         "type": "object",
         "properties": {
           "root_cause_key": {
-            "type": "string"
+            "type": "string",
+            "description": "The root cause's key. Use it as `rootCauseKey` in the root-cause endpoints."
           },
           "root_cause_label": {
-            "type": "string"
+            "type": "string",
+            "description": "A name for the root cause, for display."
           },
           "root_cause_type": {
+            "description": "What kind of root cause it is.",
             "$ref": "#/components/schemas/GlobalRootCauseType"
           },
           "product_key": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The product the root cause belongs to."
           },
           "package_manager": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The package manager that installs it, where there is one."
           },
           "highest_cvr_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The highest CYRISMA risk score among its CVEs, from 0 to 10.",
             "format": "double"
           },
           "impact": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "number",
               "string"
             ],
+            "description": "CYRISMA's impact ranking for the root cause across the tenants read. Higher means more urgent.",
             "format": "double"
           },
           "affected_asset_count": {
@@ -2766,6 +3481,7 @@
               "integer",
               "string"
             ],
+            "description": "Assets affected by it.",
             "format": "uint64"
           },
           "affected_tenant_count": {
@@ -2774,6 +3490,7 @@
               "integer",
               "string"
             ],
+            "description": "Tenants affected by it.",
             "format": "uint64"
           },
           "cve_count": {
@@ -2782,42 +3499,48 @@
               "integer",
               "string"
             ],
+            "description": "CVEs it produces.",
             "format": "uint64"
           },
           "highest_epss_probability": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The highest EPSS probability among its CVEs, from 0 to 1.",
             "format": "double"
           },
           "exploitability_label": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The evaluator's exploitability verdict for its CVEs."
           },
           "patch_available": {
             "type": [
               "null",
               "boolean"
-            ]
+            ],
+            "description": "True when a patch can fix it, false when none can, null when unknown."
           },
           "fixed_version": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "The version that fixes it, where one is known."
           },
           "highest_cvss_score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The highest CVSS base score among its CVEs, from 0 to 10.",
             "format": "double"
           },
           "critical_cve_count": {
@@ -2826,6 +3549,7 @@
               "integer",
               "string"
             ],
+            "description": "Of those, CVEs rated `critical`.",
             "format": "uint64",
             "default": 0
           },
@@ -2835,6 +3559,7 @@
               "integer",
               "string"
             ],
+            "description": "Of those, CVEs rated `high`.",
             "format": "uint64",
             "default": 0
           },
@@ -2844,6 +3569,7 @@
               "integer",
               "string"
             ],
+            "description": "Of those, CVEs rated `medium`.",
             "format": "uint64",
             "default": 0
           },
@@ -2853,6 +3579,7 @@
               "integer",
               "string"
             ],
+            "description": "Of those, CVEs rated `low`.",
             "format": "uint64",
             "default": 0
           },
@@ -2863,7 +3590,8 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "A bounded, sorted sample of affected asset names, at most 25."
           },
           "tenant_names": {
             "type": [
@@ -2872,13 +3600,15 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "A bounded, sorted sample of affected tenant names, at most 25."
           },
           "patchability_reason": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Why it is or is not patchable."
           },
           "online_asset_count": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -2886,6 +3616,7 @@
               "integer",
               "string"
             ],
+            "description": "Affected assets whose agent checked in within the agent online window. Scan-only assets are in neither this nor `offline_asset_count`.",
             "format": "uint64",
             "default": 0
           },
@@ -2895,8 +3626,17 @@
               "integer",
               "string"
             ],
+            "description": "Affected assets whose agent last checked in before the agent online window.",
             "format": "uint64",
             "default": 0
+          },
+          "device_status_as_of": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "When the online and offline counts were taken, in UTC. With several tenants it is the oldest of theirs.",
+            "format": "date-time"
           },
           "exploit_sources": {
             "type": [
@@ -2905,9 +3645,11 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The sources of exploit evidence, by label: KEV, EDB, Metasploit, Nuclei or PoC."
           }
-        }
+        },
+        "description": "A root cause with its impact across the authorized tenants: the product, package, library or setting that produces one or more CVEs, and which a single fix can clear."
       },
       "GlobalRootCauseType": {
         "enum": [
@@ -2919,7 +3661,8 @@
           "configuration",
           "software",
           "unknown"
-        ]
+        ],
+        "description": "What a root cause is: a `product`, `package`, `library`, `os`, `service`, `configuration` or `software` item, or `unknown`."
       },
       "GlobalSeverity": {
         "enum": [
@@ -2929,7 +3672,8 @@
           "low",
           "info",
           "unknown"
-        ]
+        ],
+        "description": "How serious a finding is: `critical`, `high`, `medium`, `low`, `info`, or `unknown` when it has not been rated."
       },
       "GlobalSourceCount": {
         "required": [
@@ -2939,6 +3683,7 @@
         "type": "object",
         "properties": {
           "source_type": {
+            "description": "The scan source.",
             "$ref": "#/components/schemas/GlobalSourceType"
           },
           "count": {
@@ -2947,9 +3692,11 @@
               "integer",
               "string"
             ],
+            "description": "How many affected assets come from this source.",
             "format": "uint64"
           }
-        }
+        },
+        "description": "How many affected assets come from one scan source."
       },
       "GlobalSourceTabCountRow": {
         "required": [
@@ -2965,6 +3712,7 @@
         "type": "object",
         "properties": {
           "source_type": {
+            "description": "The scan source.",
             "$ref": "#/components/schemas/GlobalSourceType"
           },
           "open_finding_count": {
@@ -2973,6 +3721,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings from this source.",
             "format": "uint64"
           },
           "affected_asset_count": {
@@ -2981,6 +3730,7 @@
               "integer",
               "string"
             ],
+            "description": "Assets from this source with an open finding.",
             "format": "uint64"
           },
           "affected_tenant_count": {
@@ -2989,6 +3739,7 @@
               "integer",
               "string"
             ],
+            "description": "Tenants with an open finding from this source.",
             "format": "uint64"
           },
           "critical_cve_count": {
@@ -2997,6 +3748,7 @@
               "integer",
               "string"
             ],
+            "description": "Distinct CVEs rated `critical` among them.",
             "format": "uint64"
           },
           "high_cve_count": {
@@ -3005,6 +3757,7 @@
               "integer",
               "string"
             ],
+            "description": "Distinct CVEs rated `high` among them.",
             "format": "uint64"
           },
           "medium_cve_count": {
@@ -3013,6 +3766,7 @@
               "integer",
               "string"
             ],
+            "description": "Distinct CVEs rated `medium` among them.",
             "format": "uint64"
           },
           "low_cve_count": {
@@ -3021,9 +3775,11 @@
               "integer",
               "string"
             ],
+            "description": "Distinct CVEs rated `low` among them.",
             "format": "uint64"
           }
-        }
+        },
+        "description": "Open findings for one scan source."
       },
       "GlobalSourceType": {
         "enum": [
@@ -3032,7 +3788,8 @@
           "external",
           "domain",
           "unknown"
-        ]
+        ],
+        "description": "How an asset is scanned: `endpoint` (an agent on the machine), `network` (a network scan), `external` (an external IP scan), `domain` (a web-app or domain scan), or `unknown`."
       },
       "GlobalVulnerabilitySeriesPoint": {
         "required": [
@@ -3045,6 +3802,7 @@
         "properties": {
           "date": {
             "type": "string",
+            "description": "The day, in UTC.",
             "format": "date"
           },
           "opened_count": {
@@ -3053,6 +3811,7 @@
               "integer",
               "string"
             ],
+            "description": "Findings opened that day.",
             "format": "uint64"
           },
           "remediated_count": {
@@ -3061,6 +3820,7 @@
               "integer",
               "string"
             ],
+            "description": "Findings remediated that day.",
             "format": "uint64"
           },
           "cumulative_open_count": {
@@ -3069,9 +3829,11 @@
               "integer",
               "string"
             ],
+            "description": "Findings still open at the end of that day.",
             "format": "uint64"
           }
-        }
+        },
+        "description": "One day of the findings lifecycle."
       },
       "PartnerAssetsResponse": {
         "required": [
@@ -3085,6 +3847,7 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope: the tenant the access token was issued for.",
             "format": "uuid"
           },
           "page_size": {
@@ -3093,27 +3856,32 @@
               "integer",
               "string"
             ],
+            "description": "The number of rows this page was limited to: the `page_size` you asked for, or the default.",
             "format": "int32"
           },
           "next_cursor": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Opaque cursor for the next page: send it back as `cursor`. Null on the last page."
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants this response was read from, after `tenant_ids` and `include_descendants` were applied. A tenant with no rows still appears here."
           },
           "items": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GlobalAssetRow"
-            }
+            },
+            "description": "The assets on this page. Empty when nothing matches."
           }
-        }
+        },
+        "description": "One cursor-paginated page of assets across the authorized tenants. Keep requesting pages, passing `next_cursor` as `cursor`, until `next_cursor` is null."
       },
       "PartnerCveDetailResponse": {
         "required": [
@@ -3125,13 +3893,15 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope.",
             "format": "uuid"
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants the CVE was looked up in."
           },
           "cve": {
             "oneOf": [
@@ -3141,9 +3911,249 @@
               {
                 "$ref": "#/components/schemas/GlobalCveRow"
               }
-            ]
+            ],
+            "description": "The CVE. Null when none of the covered tenants is affected by it."
           }
-        }
+        },
+        "description": "One CVE across the authorized tenants."
+      },
+      "PartnerOverallDashboardResponse": {
+        "required": [
+          "root_tenant_id",
+          "tenants"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "description": "The top of the caller's authorized scope.",
+            "format": "uuid"
+          },
+          "tenants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerOverallTenant"
+            },
+            "description": "One entry per tenant read, ordered by position in the hierarchy."
+          }
+        },
+        "description": "Each authorized tenant with its asset and finding counts and its current grades."
+      },
+      "PartnerOverallTenant": {
+        "required": [
+          "tenant_id",
+          "tenant_host",
+          "name",
+          "kind",
+          "status",
+          "parent_tenant_id",
+          "depth",
+          "industry_id",
+          "industry_name",
+          "tags",
+          "asset_count",
+          "endpoint_count",
+          "network_asset_count",
+          "open_finding_count",
+          "open_critical_count",
+          "open_high_count",
+          "open_medium_count",
+          "open_low_count",
+          "affected_asset_count",
+          "remediated_30d_count",
+          "overall",
+          "vulnerability",
+          "secure_baseline"
+        ],
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "description": "The tenant's id.",
+            "format": "uuid"
+          },
+          "tenant_host": {
+            "type": "string",
+            "description": "The tenant's host name."
+          },
+          "name": {
+            "type": "string",
+            "description": "The tenant's name."
+          },
+          "kind": {
+            "type": "string",
+            "description": "Where the tenant sits in the hierarchy, for example `organization`, `customer` or `tenant`."
+          },
+          "status": {
+            "type": "string",
+            "description": "The tenant's state, for example `active`, `provisioning`, `suspended`, `disabled` or `deleted`."
+          },
+          "parent_tenant_id": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The tenant directly above this one. For the roots of the caller's scope this is a tenant outside the scope, or null.",
+            "format": "uuid"
+          },
+          "depth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "How many levels below the top of the hierarchy the tenant is. `0` is the top.",
+            "format": "int32"
+          },
+          "industry_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "The tenant's industry id. Null when not set.",
+            "format": "int32"
+          },
+          "industry_name": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The name of the industry. Null when not set."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The names of the tenant's tags. Empty when it has none."
+          },
+          "asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "All assets in the tenant.",
+            "format": "uint64"
+          },
+          "endpoint_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Agent-backed endpoints in the tenant.",
+            "format": "uint64"
+          },
+          "network_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Network-scanned assets in the tenant.",
+            "format": "uint64"
+          },
+          "open_finding_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Open findings in the tenant.",
+            "format": "uint64"
+          },
+          "open_critical_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Open findings rated `critical`.",
+            "format": "uint64"
+          },
+          "open_high_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Open findings rated `high`.",
+            "format": "uint64"
+          },
+          "open_medium_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Open findings rated `medium`.",
+            "format": "uint64"
+          },
+          "open_low_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Open findings rated `low`.",
+            "format": "uint64"
+          },
+          "affected_asset_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Assets with an open finding.",
+            "format": "uint64"
+          },
+          "remediated_30d_count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Findings remediated in the last 30 days.",
+            "format": "uint64"
+          },
+          "overall": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PartnerPostureGrade"
+              }
+            ],
+            "description": "The overall risk grade, which combines the vulnerability and secure baseline grades."
+          },
+          "vulnerability": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PartnerPostureGrade"
+              }
+            ],
+            "description": "The vulnerability grade."
+          },
+          "secure_baseline": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PartnerPostureGrade"
+              }
+            ],
+            "description": "The secure baseline (configuration benchmark) grade."
+          }
+        },
+        "description": "One tenant with its asset and finding counts and its grades. A grade is null until the tenant has been scored for it, which is not the same as scoring `A+`."
       },
       "PartnerPagedResponseOfGlobalAffectedAssetRow": {
         "required": [
@@ -3157,6 +4167,7 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope: the tenant the access token was issued for.",
             "format": "uuid"
           },
           "page_size": {
@@ -3165,27 +4176,80 @@
               "integer",
               "string"
             ],
+            "description": "The number of rows this page was limited to: the `page_size` you asked for, or the default.",
             "format": "int32"
           },
           "next_cursor": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Opaque cursor for the next page: send it back as `cursor`. Null on the last page."
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants this response was read from, after `tenant_ids` and `include_descendants` were applied. A tenant with no rows still appears here."
           },
           "items": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GlobalAffectedAssetRow"
-            }
+            },
+            "description": "The rows on this page. Empty when nothing matches."
           }
-        }
+        },
+        "description": "One cursor-paginated page of rows across the authorized tenants. Keep requesting pages, passing `next_cursor` as `cursor`, until `next_cursor` is null."
+      },
+      "PartnerPagedResponseOfGlobalConfigurationAssetRow": {
+        "required": [
+          "root_tenant_id",
+          "page_size",
+          "next_cursor",
+          "coverage",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "root_tenant_id": {
+            "type": "string",
+            "description": "The top of the caller's authorized scope: the tenant the access token was issued for.",
+            "format": "uuid"
+          },
+          "page_size": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "The number of rows this page was limited to: the `page_size` you asked for, or the default.",
+            "format": "int32"
+          },
+          "next_cursor": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Opaque cursor for the next page: send it back as `cursor`. Null on the last page."
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerTenantCoverage"
+            },
+            "description": "The tenants this response was read from, after `tenant_ids` and `include_descendants` were applied. A tenant with no rows still appears here."
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalConfigurationAssetRow"
+            },
+            "description": "The rows on this page. Empty when nothing matches."
+          }
+        },
+        "description": "One cursor-paginated page of rows across the authorized tenants. Keep requesting pages, passing `next_cursor` as `cursor`, until `next_cursor` is null."
       },
       "PartnerPagedResponseOfGlobalCveRow": {
         "required": [
@@ -3199,6 +4263,7 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope: the tenant the access token was issued for.",
             "format": "uuid"
           },
           "page_size": {
@@ -3207,27 +4272,32 @@
               "integer",
               "string"
             ],
+            "description": "The number of rows this page was limited to: the `page_size` you asked for, or the default.",
             "format": "int32"
           },
           "next_cursor": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Opaque cursor for the next page: send it back as `cursor`. Null on the last page."
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants this response was read from, after `tenant_ids` and `include_descendants` were applied. A tenant with no rows still appears here."
           },
           "items": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GlobalCveRow"
-            }
+            },
+            "description": "The rows on this page. Empty when nothing matches."
           }
-        }
+        },
+        "description": "One cursor-paginated page of rows across the authorized tenants. Keep requesting pages, passing `next_cursor` as `cursor`, until `next_cursor` is null."
       },
       "PartnerPagedResponseOfGlobalRootCauseRow": {
         "required": [
@@ -3241,6 +4311,7 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope: the tenant the access token was issued for.",
             "format": "uuid"
           },
           "page_size": {
@@ -3249,27 +4320,32 @@
               "integer",
               "string"
             ],
+            "description": "The number of rows this page was limited to: the `page_size` you asked for, or the default.",
             "format": "int32"
           },
           "next_cursor": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Opaque cursor for the next page: send it back as `cursor`. Null on the last page."
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants this response was read from, after `tenant_ids` and `include_descendants` were applied. A tenant with no rows still appears here."
           },
           "items": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GlobalRootCauseRow"
-            }
+            },
+            "description": "The rows on this page. Empty when nothing matches."
           }
-        }
+        },
+        "description": "One cursor-paginated page of rows across the authorized tenants. Keep requesting pages, passing `next_cursor` as `cursor`, until `next_cursor` is null."
       },
       "PartnerPostureGrade": {
         "required": [
@@ -3280,25 +4356,29 @@
         "type": "object",
         "properties": {
           "score": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The score, from 0 to 100. Higher is better.",
             "format": "double"
           },
           "grade": {
-            "type": "string"
+            "type": "string",
+            "description": "The letter grade, from `A+` to `F`, computed from the score by CYRISMA's grading policy. Do not derive your own letter."
           },
           "scores_as_of": {
             "type": [
               "null",
               "string"
             ],
+            "description": "When the score was last calculated, in UTC.",
             "format": "date-time"
           }
-        }
+        },
+        "description": "One posture component's score and letter grade."
       },
       "PartnerPostureResponse": {
         "required": [
@@ -3309,15 +4389,18 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope.",
             "format": "uuid"
           },
           "tenants": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantPosture"
-            }
+            },
+            "description": "One entry per tenant read, whether or not it has been scored."
           }
-        }
+        },
+        "description": "Each authorized tenant's current posture grades."
       },
       "PartnerRootCauseDetailResponse": {
         "required": [
@@ -3329,13 +4412,15 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope.",
             "format": "uuid"
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants the root cause was looked up in."
           },
           "root_cause": {
             "oneOf": [
@@ -3345,9 +4430,11 @@
               {
                 "$ref": "#/components/schemas/GlobalRootCauseRow"
               }
-            ]
+            ],
+            "description": "The root cause. Null when none of the covered tenants is affected by it."
           }
-        }
+        },
+        "description": "One vulnerability root cause across the authorized tenants."
       },
       "PartnerTenantCoverage": {
         "required": [
@@ -3358,12 +4445,15 @@
         "properties": {
           "tenant_id": {
             "type": "string",
+            "description": "The tenant's id.",
             "format": "uuid"
           },
           "tenant_host": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's host name, for example `cc2080fe.cyrisma.com`."
           }
-        }
+        },
+        "description": "A tenant a response was read from."
       },
       "PartnerTenantListResponse": {
         "required": [
@@ -3374,15 +4464,18 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope.",
             "format": "uuid"
           },
           "items": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantRow"
-            }
+            },
+            "description": "The tenants. Use `parent_tenant_id` and `depth` to rebuild the hierarchy."
           }
-        }
+        },
+        "description": "The tenants the caller is authorized for, as a flat list ordered by position in the hierarchy."
       },
       "PartnerTenantPosture": {
         "required": [
@@ -3396,10 +4489,12 @@
         "properties": {
           "tenant_id": {
             "type": "string",
+            "description": "The tenant's id.",
             "format": "uuid"
           },
           "tenant_host": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's host name."
           },
           "overall": {
             "oneOf": [
@@ -3409,7 +4504,8 @@
               {
                 "$ref": "#/components/schemas/PartnerPostureGrade"
               }
-            ]
+            ],
+            "description": "The overall risk grade, which combines the vulnerability and secure baseline grades."
           },
           "vulnerability": {
             "oneOf": [
@@ -3419,7 +4515,8 @@
               {
                 "$ref": "#/components/schemas/PartnerPostureGrade"
               }
-            ]
+            ],
+            "description": "The vulnerability grade."
           },
           "secure_baseline": {
             "oneOf": [
@@ -3429,9 +4526,11 @@
               {
                 "$ref": "#/components/schemas/PartnerPostureGrade"
               }
-            ]
+            ],
+            "description": "The secure baseline (configuration benchmark) grade."
           }
-        }
+        },
+        "description": "One tenant's posture grades. A component is null until the tenant has been scored for it, which is not the same as scoring `A+`."
       },
       "PartnerTenantRow": {
         "required": [
@@ -3447,25 +4546,31 @@
         "properties": {
           "tenant_id": {
             "type": "string",
+            "description": "The tenant's id. Use it in `tenant_ids` on the other endpoints.",
             "format": "uuid"
           },
           "tenant_host": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's host name, for example `cc2080fe.cyrisma.com`."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's name."
           },
           "kind": {
-            "type": "string"
+            "type": "string",
+            "description": "Where the tenant sits in the hierarchy, for example `organization`, `customer` or `tenant`."
           },
           "status": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's state, for example `active`, `provisioning`, `suspended`, `disabled` or `deleted`."
           },
           "parent_tenant_id": {
             "type": [
               "null",
               "string"
             ],
+            "description": "The tenant directly above this one. For the roots of the caller's scope this is a tenant outside the scope, or null.",
             "format": "uuid"
           },
           "depth": {
@@ -3474,9 +4579,11 @@
               "integer",
               "string"
             ],
+            "description": "How many levels below the top of the hierarchy the tenant is. `0` is the top.",
             "format": "int32"
           }
-        }
+        },
+        "description": "One tenant in the authorized scope."
       },
       "PartnerTenantVulnerabilityRollups": {
         "required": [
@@ -3488,18 +4595,22 @@
         "properties": {
           "tenant_id": {
             "type": "string",
+            "description": "The tenant the rows belong to.",
             "format": "uuid"
           },
           "tenant_host": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's host name."
           },
           "rows": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/VulnerabilityRollupRow"
-            }
+            },
+            "description": "The tenant's rollup rows, highest `value_int` first, at most `limit`."
           }
-        }
+        },
+        "description": "One tenant's rollup rows."
       },
       "PartnerTenantVulnerabilitySeries": {
         "required": [
@@ -3511,18 +4622,22 @@
         "properties": {
           "tenant_id": {
             "type": "string",
+            "description": "The tenant the series belongs to.",
             "format": "uuid"
           },
           "tenant_host": {
-            "type": "string"
+            "type": "string",
+            "description": "The tenant's host name."
           },
           "points": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/DashboardVulnerabilitySeriesPoint"
-            }
+            },
+            "description": "One point per day, oldest first."
           }
-        }
+        },
+        "description": "One tenant's daily vulnerability series."
       },
       "PartnerUsageResponse": {
         "required": [
@@ -3537,32 +4652,39 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope.",
             "format": "uuid"
           },
           "grain": {
-            "type": "string"
+            "type": "string",
+            "description": "The bucket size the items are in: `day` or `month`."
           },
           "from": {
             "type": "string",
+            "description": "First day of the range, as requested.",
             "format": "date"
           },
           "to": {
             "type": "string",
+            "description": "Last day of the range, as requested.",
             "format": "date"
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants the history was read from."
           },
           "items": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TenantEndpointHistoryPoint"
-            }
+            },
+            "description": "One item per tenant and period. A tenant with no history in a period has no item for it."
           }
-        }
+        },
+        "description": "Endpoint usage history over a date range."
       },
       "PartnerVulnerabilityEventExportResponse": {
         "required": [
@@ -3578,36 +4700,44 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope.",
             "format": "uuid"
           },
           "generated_at": {
             "type": "string",
+            "description": "When the export was produced, in UTC.",
             "format": "date-time"
           },
           "from": {
             "type": "string",
+            "description": "Start of the detection window, in UTC.",
             "format": "date-time"
           },
           "to": {
             "type": "string",
+            "description": "End of the detection window, in UTC.",
             "format": "date-time"
           },
           "format": {
-            "type": "string"
+            "type": "string",
+            "description": "The export format. Always `json`."
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants the events were read from."
           },
           "items": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GlobalDetectionRow"
-            }
+            },
+            "description": "The detection events, at most 500."
           }
-        }
+        },
+        "description": "A single page of live vulnerability detection events for download, capped at 500 events and not paginated. Sent with a `Content-Disposition: attachment` header."
       },
       "PartnerVulnerabilityEventsResponse": {
         "required": [
@@ -3623,14 +4753,17 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope: the tenant the access token was issued for.",
             "format": "uuid"
           },
           "from": {
             "type": "string",
+            "description": "Start of the detection window, in UTC. The default is 24 hours before `to`.",
             "format": "date-time"
           },
           "to": {
             "type": "string",
+            "description": "End of the detection window, in UTC. The default is the time of the request.",
             "format": "date-time"
           },
           "page_size": {
@@ -3639,27 +4772,32 @@
               "integer",
               "string"
             ],
+            "description": "The number of rows this page was limited to: the `page_size` you asked for, or the default.",
             "format": "int32"
           },
           "next_cursor": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "Opaque cursor for the next page: send it back as `cursor`. Null on the last page."
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants this response was read from, after `tenant_ids` and `include_descendants` were applied. A tenant with no rows still appears here."
           },
           "items": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GlobalDetectionRow"
-            }
+            },
+            "description": "The detection events on this page. Empty when nothing was detected in the window."
           }
-        }
+        },
+        "description": "One cursor-paginated page of live vulnerability detection events inside the requested window, newest first."
       },
       "PartnerVulnerabilityRollupsResponse": {
         "required": [
@@ -3675,18 +4813,22 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope.",
             "format": "uuid"
           },
           "from": {
             "type": "string",
+            "description": "First day of the range, as requested.",
             "format": "date"
           },
           "to": {
             "type": "string",
+            "description": "Last day of the range, as requested.",
             "format": "date"
           },
           "group_by": {
-            "type": "string"
+            "type": "string",
+            "description": "The dimension the rows are grouped by: `cve`, `root_cause`, `severity` or `asset_type`."
           },
           "limit": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -3694,21 +4836,25 @@
               "integer",
               "string"
             ],
+            "description": "The most rows returned per tenant.",
             "format": "int32"
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants the rollups were read from."
           },
           "tenants": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantVulnerabilityRollups"
-            }
+            },
+            "description": "The rollups, one entry per tenant read."
           }
-        }
+        },
+        "description": "Vulnerability rollups per tenant, grouped by one dimension over a date range."
       },
       "PartnerVulnerabilitySeriesResponse": {
         "required": [
@@ -3721,6 +4867,7 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope.",
             "format": "uuid"
           },
           "range_days": {
@@ -3729,21 +4876,25 @@
               "integer",
               "string"
             ],
+            "description": "The number of days of history returned: `30`, `60` or `90`.",
             "format": "int32"
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants the series were read from."
           },
           "tenants": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantVulnerabilitySeries"
-            }
+            },
+            "description": "One series per tenant read."
           }
-        }
+        },
+        "description": "A vulnerability trend per tenant: one point per day over the requested range."
       },
       "PartnerVulnerabilityStateResponse": {
         "required": [
@@ -3768,13 +4919,15 @@
         "properties": {
           "root_tenant_id": {
             "type": "string",
+            "description": "The top of the caller's authorized scope.",
             "format": "uuid"
           },
           "coverage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PartnerTenantCoverage"
-            }
+            },
+            "description": "The tenants the snapshot covers."
           },
           "open_finding_count": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -3782,6 +4935,7 @@
               "integer",
               "string"
             ],
+            "description": "Findings that are currently open, across all severities.",
             "format": "uint64"
           },
           "open_critical_count": {
@@ -3790,6 +4944,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `critical`.",
             "format": "uint64"
           },
           "open_high_count": {
@@ -3798,6 +4953,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `high`.",
             "format": "uint64"
           },
           "open_medium_count": {
@@ -3806,6 +4962,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `medium`.",
             "format": "uint64"
           },
           "open_low_count": {
@@ -3814,6 +4971,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings rated `low`.",
             "format": "uint64"
           },
           "affected_asset_count": {
@@ -3822,6 +4980,7 @@
               "integer",
               "string"
             ],
+            "description": "Assets with at least one open finding.",
             "format": "uint64"
           },
           "affected_tenant_count": {
@@ -3830,6 +4989,7 @@
               "integer",
               "string"
             ],
+            "description": "Tenants with at least one open finding.",
             "format": "uint64"
           },
           "kev_finding_count": {
@@ -3838,6 +4998,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings for CVEs on a known-exploited-vulnerabilities list.",
             "format": "uint64"
           },
           "exploitable_finding_count": {
@@ -3846,6 +5007,7 @@
               "integer",
               "string"
             ],
+            "description": "Open findings with published exploit evidence.",
             "format": "uint64"
           },
           "patchable_root_cause_count": {
@@ -3854,6 +5016,7 @@
               "integer",
               "string"
             ],
+            "description": "Root causes with open findings that a patch can fix.",
             "format": "uint64"
           },
           "remediated_30d_count": {
@@ -3862,6 +5025,7 @@
               "integer",
               "string"
             ],
+            "description": "Findings remediated in the last 30 days.",
             "format": "uint64"
           },
           "last_detection_at": {
@@ -3869,21 +5033,25 @@
               "null",
               "string"
             ],
+            "description": "When a finding was last detected, in UTC. Null when none has been.",
             "format": "date-time"
           },
           "source_tab_counts": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GlobalSourceTabCountRow"
-            }
+            },
+            "description": "The open findings split by how the asset is scanned."
           },
           "lifecycle_series": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GlobalVulnerabilitySeriesPoint"
-            }
+            },
+            "description": "Findings opened, remediated and still open, one point per day."
           }
-        }
+        },
+        "description": "A snapshot of vulnerability posture across the authorized tenants."
       },
       "ProblemDetails": {
         "type": "object",
@@ -3892,13 +5060,15 @@
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "A URI reference that identifies the kind of error."
           },
           "title": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "A short summary of the error, or its code."
           },
           "status": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -3907,21 +5077,25 @@
               "integer",
               "string"
             ],
+            "description": "The HTTP status code.",
             "format": "int32"
           },
           "detail": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "More detail about this occurrence, when there is any."
           },
           "instance": {
             "type": [
               "null",
               "string"
-            ]
+            ],
+            "description": "A URI reference that identifies this occurrence, when there is one."
           }
-        }
+        },
+        "description": "An error in the RFC 9457 problem format. The error code is in `title`, for example `tenant_out_of_scope` or `pulse_posture_unavailable`."
       },
       "TenantEndpointHistoryPoint": {
         "required": [
@@ -3934,10 +5108,12 @@
         "properties": {
           "tenant_id": {
             "type": "string",
+            "description": "The tenant the usage belongs to.",
             "format": "uuid"
           },
           "period_start": {
             "type": "string",
+            "description": "The first day of the period: the day itself for `day`, the first of the month for `month`.",
             "format": "date"
           },
           "endpoint_count": {
@@ -3946,6 +5122,7 @@
               "integer",
               "string"
             ],
+            "description": "The number of endpoints in the period.",
             "format": "int64"
           },
           "email_count": {
@@ -3954,9 +5131,11 @@
               "integer",
               "string"
             ],
+            "description": "The number of email addresses in the period.",
             "format": "int64"
           }
-        }
+        },
+        "description": "A tenant's usage in one period."
       },
       "VulnerabilityRollupRow": {
         "required": [
@@ -3973,19 +5152,24 @@
         "type": "object",
         "properties": {
           "group_value": {
-            "type": "string"
+            "type": "string",
+            "description": "The value of the `group_by` dimension this row is for, for example a CVE id or a severity."
           },
           "metric_group": {
-            "type": "string"
+            "type": "string",
+            "description": "The family the metric belongs to, for example `finding_lifecycle`."
           },
           "metric_name": {
-            "type": "string"
+            "type": "string",
+            "description": "The metric, for example `open_finding_count`."
           },
           "severity": {
-            "type": "string"
+            "type": "string",
+            "description": "The severity the row is for. Empty when the row is not split by severity."
           },
           "asset_type": {
-            "type": "string"
+            "type": "string",
+            "description": "The asset type the row is for. Empty when the row is not split by asset type."
           },
           "value_int": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -3993,15 +5177,17 @@
               "integer",
               "string"
             ],
+            "description": "The metric's value, summed over the days in the range.",
             "format": "int64"
           },
           "value_float": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
+            "description": "The metric's fractional value, summed over the days in the range. Null when the metric has none.",
             "format": "double"
           },
           "sample_count": {
@@ -4010,18 +5196,21 @@
               "integer",
               "string"
             ],
+            "description": "How many samples the value was built from.",
             "format": "uint64"
           },
           "reconciliation_state": {
+            "description": "Whether the row's figures agree with their source.",
             "$ref": "#/components/schemas/DashboardReconciliationState"
           }
-        }
+        },
+        "description": "One rollup row: a metric summed over the requested days for one value of the grouping dimension."
       }
     },
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
-        "description": "A Tenant Authority machine-client token from POST /v1/auth/client-token, carrying subject_type=machine_client and the pulse.read scope.",
+        "description": "A machine-client token from POST /v1/auth/client-token, carrying subject_type=machine_client and the pulse.read scope.",
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
