@@ -3,7 +3,8 @@ title: "Conventions"
 description: "Pagination, filters, expansions, time windows, and errors in the Cyrisma New Partner API"
 ---
 
-These conventions apply across the reporting endpoints under `/app/pulse/v1/partner`.
+These conventions apply across the reporting endpoints under `/app/pulse/v1/partner`. The
+provisioning lists under `/ta` page by number instead; see [Provisioning lists](#provisioning-lists).
 
 ## Response envelope
 
@@ -46,6 +47,22 @@ curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
 Cursors are opaque. Do not construct or modify them. Ordering is deterministic, so a full walk
 returns every row exactly once.
 
+## Provisioning lists
+
+The tenant, user, and technician lists under `/ta/v1/msp/admin` take `page`, starting at `1`, and
+`page_size`, from `1` to `100` with a default of `50`. Each response returns `page`, `page_size`,
+`total_count`, and `next_page`.
+
+Request the next page with `page` set to `next_page`, until `next_page` is `null`.
+
+```bash
+curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "https://ccnnnnnn.cyrisma.com/ta/v1/msp/admin/tenants?page_size=100&page=1"
+
+curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "https://ccnnnnnn.cyrisma.com/ta/v1/msp/admin/tenants?page_size=100&page=$NEXT_PAGE"
+```
+
 ## Filters
 
 | Parameter | Values |
@@ -53,7 +70,7 @@ returns every row exactly once.
 | `tenant_ids` | Comma-separated tenant identifiers. |
 | `include_descendants` | `true` to widen each `tenant_ids` entry to its sub-tenants. |
 | `severity` | Comma-separated: `critical`, `high`, `medium`, `low`, `info`. |
-| `source_type` | `endpoint`, `network`, or `external`. |
+| `source_type` | Comma-separated: `endpoint`, `network`, `external`, `domain`. |
 | `root_cause_type` | `product`, `package`, `library`, `os`, `service`, `configuration`, `software`, `unknown`. |
 | `patchability` | `patch_available`, `manual_only`, or `unknown`. |
 | `asset_id` | A single asset. Requires `tenant_ids`; see below. |

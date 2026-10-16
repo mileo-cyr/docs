@@ -4535,6 +4535,7 @@
       "PartnerTenantRow": {
         "required": [
           "tenant_id",
+          "legacy_instance_id",
           "tenant_host",
           "name",
           "kind",
@@ -4548,6 +4549,13 @@
             "type": "string",
             "description": "The tenant's id. Use it in `tenant_ids` on the other endpoints.",
             "format": "uuid"
+          },
+          "legacy_instance_id": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The tenant's id in the previous CYRISMA API, where it was called `instance_id`, normally 32 hexadecimal\ncharacters. Use it to match records kept from that API to `tenant_id`.\nEvery tenant has one, tenants created since included."
           },
           "tenant_host": {
             "type": "string",

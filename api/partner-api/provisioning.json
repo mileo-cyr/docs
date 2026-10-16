@@ -823,7 +823,7 @@
           "MSP Administration"
         ],
         "summary": "List tenants",
-        "description": "Lists a tenant and every tenant beneath it, ordered by name. Needs `pulse.read`.\n\n* **400**: `page` must be 1–100000, `page_size` 1–100 and `search` at most 100 characters; otherwise 400 with `paging: [\"invalid\"]`. An unknown `kind` or `status` returns `kind: [\"unsupported\"]` or `status: [\"unsupported\"]`.\n* **401** (no body): missing or invalid token, no `pulse.read`, or `root_tenant_id` is outside your hierarchy.",
+        "description": "Lists a tenant and every tenant beneath it, ordered by name. Needs `pulse.read`.\n\nTo read every tenant, request `?page_size=100&page=1`, then the same with `page` set to the\nresponse's `next_page`, until `next_page` is null.\n\n* **400**: `page` must be 1–100000, `page_size` 1–100 and `search` at most 100 characters; otherwise 400 with `paging: [\"invalid\"]`. An unknown `kind` or `status` returns `kind: [\"unsupported\"]` or `status: [\"unsupported\"]`.\n* **401** (no body): missing or invalid token, no `pulse.read`, or `root_tenant_id` is outside your hierarchy.",
         "operationId": "ListMspAdminTenantsV1",
         "parameters": [
           {
@@ -1689,6 +1689,16 @@
             ],
             "description": "The number of technicians that match across all pages.",
             "format": "int32"
+          },
+          "next_page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "The `page` to request next. Null when this is the last page.",
+            "format": "int32"
           }
         },
         "description": "One page of technicians, ordered by name."
@@ -1696,6 +1706,7 @@
       "MspAdminTenantListItem": {
         "required": [
           "tenant_id",
+          "legacy_instance_id",
           "tenant_host",
           "name",
           "short_name",
@@ -1720,6 +1731,13 @@
             "type": "string",
             "description": "The tenant's id. Use it as `tenantId` or `parent_tenant_id` in the other endpoints.",
             "format": "uuid"
+          },
+          "legacy_instance_id": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The tenant's id in the previous CYRISMA API, where it was called `instance_id`, normally 32 hexadecimal\ncharacters. Use it to match records kept from that API to `tenant_id`.\nEvery tenant has one, tenants created since included."
           },
           "tenant_host": {
             "type": "string",
@@ -1833,6 +1851,7 @@
         "description": "A summary of one tenant. Call **Get a tenant** (`GET /v1/msp/admin/tenants/{tenantId}`) with `tenant_id` for its full details.",
         "example": {
           "tenant_id": "5c0e7a92-3f4b-4d1e-a8c6-7b2d9e1f0a34",
+          "legacy_instance_id": "7E3A91C04B5D28F6A0C1E9B4D7F25A83",
           "tenant_host": "cc2080fe.cyrisma.com",
           "name": "Contoso Ltd",
           "short_name": "Contoso",
@@ -1894,9 +1913,19 @@
             ],
             "description": "The number of tenants that match the filters across all pages.",
             "format": "int32"
+          },
+          "next_page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "The `page` to request next. Null when this is the last page.",
+            "format": "int32"
           }
         },
-        "description": "One page of tenants, ordered by name. Keep requesting the next `page` while\n`page * page_size` is less than `total_count`."
+        "description": "One page of tenants, ordered by name. Request the next page with `page` set to `next_page`;\nthe last page has `next_page` null."
       },
       "MspAdminUserCreateRequest": {
         "required": [
@@ -1989,6 +2018,16 @@
               "string"
             ],
             "description": "The number of items that match across all pages.",
+            "format": "int32"
+          },
+          "next_page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "The `page` to request next. Null when this is the last page.",
             "format": "int32"
           }
         },

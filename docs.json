@@ -97,6 +97,10 @@
     {
       "source": "/new-partner-api/conventions",
       "destination": "/api/partner-api/conventions"
+    },
+    {
+      "source": "/api-reference/msp-administration/list-tenant-kinds",
+      "destination": "/api-reference/msp-administration/list-tenant-types"
     }
   ],
   "api": {
