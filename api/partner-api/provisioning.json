@@ -1737,7 +1737,7 @@
               "null",
               "string"
             ],
-            "description": "The tenant's id in the previous CYRISMA API, where it was called `instance_id`, normally 32 hexadecimal\ncharacters. Use it to match records kept from that API to `tenant_id`.\nEvery tenant has one, tenants created since included."
+            "description": "The tenant's id in the previous CYRISMA API, where it was called `instance_id`, normally 32 hexadecimal\ncharacters. Use it to match records kept from that API to `tenant_id`.\nNull for tenants that did not exist in the previous API."
           },
           "tenant_host": {
             "type": "string",

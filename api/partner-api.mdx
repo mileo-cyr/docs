@@ -42,9 +42,10 @@ single hostname covers the whole API.
 | `PATCH /partner/instances/convert` | `PATCH /ta/v1/msp/admin/tenants/{tenantId}` with `{"trial": false}` |
 | `GET /partner/dashboards/overall` | `GET /app/pulse/v1/partner/dashboards/posture` |
 
-Each tenant in `GET /ta/v1/msp/admin/tenants` and `GET /app/pulse/v1/partner/tenants` carries
-`legacy_instance_id`, its `instance_id` in the Legacy Partner API. Use it to match the instance ids
-an integration kept from the Legacy Partner API to the `tenant_id` the New Partner API takes.
+In `GET /ta/v1/msp/admin/tenants` and `GET /app/pulse/v1/partner/tenants`, a tenant that existed in
+the Legacy Partner API carries `legacy_instance_id`, its `instance_id` there. Use it to match the
+instance ids an integration kept from the Legacy Partner API to the `tenant_id` the New Partner API
+takes.
 
 Suspending a tenant blocks sign in, API keys, and agent check in for that tenant, so its data stops
 updating until it is reactivated. Nothing is deleted. A suspended tenant stays in the tenant list
